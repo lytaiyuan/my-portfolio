@@ -8,7 +8,7 @@ html, body, #root { height: 100%; }
 body { background: #0a0a0a; }
 /* --- glass fallback: 固定 50% 半透明 + 模糊，不依赖 Tailwind --- */
 .glass {
-  background-color: rgba(10,10,10,0.5);        /* 50% 透明黑 */
+  background-color: rgba(10,10,10,0.3);        /* 50% 透明黑 */
   -webkit-backdrop-filter: saturate(1.1) blur(10px);
   backdrop-filter: saturate(1.1) blur(10px);
 }

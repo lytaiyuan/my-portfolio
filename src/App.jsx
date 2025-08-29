@@ -13,32 +13,58 @@ import GraphicDetail from "./pages/design/GraphicDetail.jsx";
 import ViDetail from "./pages/design/ViDetail.jsx";
 import PackagingDetail from "./pages/design/PackagingDetail.jsx";
 import Product from "./pages/design/Product.jsx";
+import VideoDetail from "./pages/VideoDetail.jsx";
 
-/** 顶部固定半透明条（真正的“背景条”），不依赖 sticky 头部的层级 */
+/** ===== 可调参数（0~1 之间）===== */
+const OPACITY_HEADER = 0.30; // 顶部玻璃条透明度
+const OPACITY_DRAWER = 0.30; // 手机端抽屉透明度
+const HEADER_HEIGHT_PX = 48; // 12 * 4px
+
+/** 固定在最上方的玻璃背景条（真正制造半透明 & 毛玻璃） */
 function FixedGlassBar() {
   return (
     <div
-      className="fixed top-0 left-0 w-screen h-12 z-[105] pointer-events-none glass"
+      className="fixed top-0 left-0 w-screen"
       style={{
-        backgroundColor: "rgba(10,10,10,0.5)",
+        height: HEADER_HEIGHT_PX,
+        zIndex: 105,
+        pointerEvents: "none",
+        backgroundColor: `rgba(10,10,10,${OPACITY_HEADER})`,
         backdropFilter: "saturate(1.1) blur(10px)",
         WebkitBackdropFilter: "saturate(1.1) blur(10px)",
+        borderBottom: "1px solid rgba(38,38,38,0.8)", // neutral-800/80
       }}
       aria-hidden
     />
   );
 }
 
+/** 路由变化时滚动到页顶（避免 SPA 保留滚动位置） */
+function ScrollToTop() {
+  const { pathname, hash } = useLocation();
+  useEffect(() => {
+    if (hash) return; // 带锚点时保留浏览器默认行为
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    });
+  }, [pathname, hash]);
+  return null;
+}
+
 function TopNav() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
 
+  // 路由切换时自动收起抽屉
   useEffect(() => { setOpen(false); }, [location.pathname]);
 
   return (
     <header
-      className="sticky top-0 z-[110] isolate h-12 border-b border-neutral-800/80"
-      /* 这里故意不再用半透明背景，背景由 FixedGlassBar 负责，更稳 */
+      className="sticky top-0 z-[110] isolate"
+      style={{
+        height: HEADER_HEIGHT_PX,
+        borderBottom: "1px solid rgba(38,38,38,0.8)", // neutral-800/80
+      }}
     >
       <div className="max-w-[1120px] mx-auto px-4">
         <div className="h-12 flex items-center justify-between md:grid md:grid-cols-3 md:justify-normal">
@@ -61,6 +87,7 @@ function TopNav() {
             <img src="/logo.png" alt="Li Yang Studio" className="h-5 w-auto" />
           </Link>
 
+          {/* 桌面：右占位 */}
           <div className="hidden md:block justify-self-end" />
 
           {/* 手机：右侧菜单键 */}
@@ -89,18 +116,17 @@ function TopNav() {
       {/* 抽屉（层级最高） */}
       <div
         className={
-          "fixed inset-y-0 right-0 z-[120] w-72 border-l border-neutral-800 " +
-          "glass p-4 " +
+          "fixed inset-y-0 right-0 z-[120] w-72 border-l border-neutral-800 p-4 " +
           "transform transition-transform duration-300 ease-out " +
           (open ? "translate-x-0" : "translate-x-full pointer-events-none")
         }
         style={{
-          backgroundColor: "rgba(10,10,10,0.5)",
+          backgroundColor: `rgba(10,10,10,${OPACITY_DRAWER})`,
           backdropFilter: "saturate(1.1) blur(10px)",
           WebkitBackdropFilter: "saturate(1.1) blur(10px)",
         }}
       >
-        {/* 关闭按钮：抽屉右上角 */}
+        {/* 关闭按钮：抽屉右上角（与菜单键位置一致） */}
         <button
           aria-label="关闭菜单"
           onClick={() => setOpen(false)}
@@ -142,6 +168,7 @@ function DrawerLink({ to, children }) {
 export default function App() {
   const location = useLocation();
 
+  // 设置标签页标题
   useEffect(() => {
     const TITLES = {
       "/": "主页",
@@ -157,11 +184,9 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-100 selection:bg-neutral-800">
-      {/* 顶部固定半透明条（真正显示玻璃效果的背景） */}
       <FixedGlassBar />
-
-      {/* 粘性导航（只负责内容和边框，不再负责半透明背景） */}
       <TopNav />
+      <ScrollToTop />
 
       <AnimatePresence mode="wait">
         <motion.main
@@ -181,13 +206,16 @@ export default function App() {
             <Route path="/design/vi/:slug" element={<ViDetail />} />
             <Route path="/design/packaging/:slug" element={<PackagingDetail />} />
             <Route path="/design/product" element={<Product />} />
+            <Route path="/videos/:slug" element={<VideoDetail />} />
           </Routes>
         </motion.main>
       </AnimatePresence>
 
-      <footer className="border-t border-neutral-900/80 glass"
+      {/* 页脚也给同款玻璃效果（保持一致） */}
+      <footer
+        className="border-t border-neutral-900/80"
         style={{
-          backgroundColor: "rgba(10,10,10,0.5)",
+          backgroundColor: `rgba(10,10,10,${OPACITY_HEADER})`,
           backdropFilter: "saturate(1.1) blur(10px)",
           WebkitBackdropFilter: "saturate(1.1) blur(10px)",
         }}
