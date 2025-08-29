@@ -1,0 +1,14 @@
+{
+  "featuredId": 1,
+  "items": [
+    {
+      "id": 1,
+      "slug": "brand-identity",
+      "title": "品牌视觉手册提案",
+      "cover": "/vi/km/cover.jpg",
+      "images": ["/vi/km/image.jpg"],
+      "pdf": "/vi/km/doc.pdf",
+      "subtitle": "春城湖畔度假村"
+    }
+  ]
+}

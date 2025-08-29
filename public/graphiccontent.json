@@ -1,0 +1,14 @@
+{
+  "featuredId": 1,
+  "items": [
+    {
+      "id": 1,
+      "slug": "mosque-brochure",
+      "title": "春城湖畔度假村",
+      "subtitle": "品牌视觉手册提案",
+      "cover": "/graphic/km/cover.jpg",
+      "images": ["/graphic/km/image.jpg"],
+      "pdf": "/graphic/km/doc.pdf"
+    }
+  ]
+}

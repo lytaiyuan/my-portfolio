@@ -1,0 +1,23 @@
+{
+  "featuredId": 1,
+  "items": [
+    {
+      "id": 1,
+      "slug": "oufen",
+      "title": "藕粉包装设计",
+      "cover": "/packaging/oufen/cover.jpg",
+      "images": ["/packaging/oufen/image.jpg"],
+      "pdf": "/packaging/oufen/doc.pdf",
+      "subtitle": "年轻化"
+    },
+    {
+      "id": 2,
+      "slug": "bupin",
+      "title": "补品包装设计",
+      "cover": "/packaging/bupin/cover.jpg",
+      "pdf": "/packaging/bupin/doc.pdf",
+      "images": ["/packaging/bupin/image.jpg"],
+      "subtitle": "金银花，精致饮片"
+    }
+  ]
+}
