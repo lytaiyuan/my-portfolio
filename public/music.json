@@ -1,0 +1,39 @@
+{
+  "featuredId": 1,
+  "items": [
+    {
+      "id": 1,
+      "title": "Epic",
+      "slug": "epic",
+      "cover": "/music/Epic/cover.jpg",
+      "video": {
+        "bilibili": "BV1xx411c7mD",
+        "page": 1
+      },
+      "hottitle": "史诗级配乐",
+      "hotintro": "震撼人心的史诗配乐，融合古典与现代元素",
+      "descriptionFile": "/music/Epic/Epic.txt",
+      "scoreFolder": "/music/Epic/score/",
+      "tags": ["配乐", "史诗", "电影", "交响乐"],
+      "duration": "4:32",
+      "created_at": "2024-01-15"
+    },
+    {
+      "id": 2,
+      "title": "Another Song",
+      "slug": "another-song",
+      "cover": "/music/AnotherSong/cover.jpg",
+      "video": {
+        "bilibili": "BV1xx411c7mE",
+        "page": 1
+      },
+      "hottitle": "现代流行音乐",
+      "hotintro": "充满活力的现代流行音乐，青春与梦想的主题",
+      "descriptionFile": "/music/AnotherSong/AnotherSong.txt",
+      "scoreFolder": "/music/AnotherSong/score/",
+      "tags": ["流行", "摇滚", "电子", "青春"],
+      "duration": "3:45",
+      "created_at": "2024-02-01"
+    }
+  ]
+}

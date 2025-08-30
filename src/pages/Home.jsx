@@ -8,6 +8,7 @@ export default function Home() {
   const [hero, setHero] = useState("/photos/hero.jpg");
   const [photos, setPhotos] = useState([]);
   const [videos, setVideos] = useState([]);
+  const [music, setMusic] = useState([]);
   const [loading, setLoading] = useState(true);
   const [player, setPlayer] = useState(null); // { title, poster, src }
 
@@ -17,10 +18,12 @@ export default function Home() {
       try {
         const p = await fetch("/photos.json", { cache: "no-cache" }).then(r => r.json());
         const v = await fetch("/videos.json", { cache: "no-cache" }).then(r => r.json());
+        const m = await fetch("/music.json", { cache: "no-cache" }).then(r => r.json());
         if (!alive) return;
         setHero(typeof p.hero === "string" ? p.hero : "/photos/hero.jpg");
         setPhotos(Array.isArray(p.items) ? p.items : []);
         setVideos(Array.isArray(v.items) ? v.items : []);
+        setMusic(Array.isArray(m.items) ? m.items : []);
       } finally {
         if (alive) setLoading(false);
       }
@@ -30,6 +33,7 @@ export default function Home() {
 
   const featuredPhoto = useMemo(() => (Array.isArray(photos) && photos.length ? photos[0] : null), [photos]);
   const featuredVideo = useMemo(() => (Array.isArray(videos) && videos.length ? videos[0] : null), [videos]);
+  const featuredMusic = useMemo(() => (Array.isArray(music) && music.length ? music[0] : null), [music]);
 
   const heroUrl = `${hero}${import.meta.env.DEV ? `?v=${Date.now()}` : ""}`;
 
@@ -143,23 +147,31 @@ export default function Home() {
       {/* 设计（单独组件，使用 /public/home/design/cover.jpg） */}
       <HomeDesign />
 
-      {/* 音乐（简单占位，可按需替换为你的 music.json） */}
+      {/* 音乐（展示 music.json 的第一条，带 hottitle/hotintro） */}
       <SectionOverlayCard
         id="home-music"
-        ctaText="进入音乐页"
+        ctaText="查看全部音乐"
         ctaTo="/music"
         card={
-          <CardImage
-            to="/music"
-            src={"/covers/2023.jpg"}
-            captionTitle={"音乐视频"}
-            overlayTitle="音乐"
-            overlaySubtitle="展示原创音乐的视频作品。"
-          />
+          featuredMusic ? (
+            <CardImage
+              to={`/music/${featuredMusic.slug}`}
+              src={featuredMusic.cover || "/covers/placeholder.jpg"}
+              captionTitle={featuredMusic.title}
+              overlayTitle={featuredMusic.hottitle || featuredMusic.title}
+              overlaySubtitle={featuredMusic.hotintro}
+              extra={
+                <Link
+                  to={`/music/${featuredMusic.slug}`}
+                  className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-neutral-700 bg-neutral-800/80 hover:bg-neutral-800 text-sm"
+                ><PlayIcon /> 查看详情</Link>
+              }
+            />
+          ) : <EmptyCard tip="还没有添加音乐。" />
         }
       />
 
-      {/* —— 关于我们（恢复） —— */}
+      {/* —— 关于我们（更新） —— */}
       <section id="about" className="border-t border-neutral-900/80 bg-neutral-950">
         <div className="max-w-[1120px] mx-auto px-4 py-14">
           <h2 className="text-2xl font-semibold">关于我们</h2>
@@ -209,6 +221,31 @@ export default function Home() {
               <div className="md:col-span-3 justify-self-start md:justify-self-end">
                 <div className="w-36 md:w-40 aspect-[3/4] overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900">
                   <img src="/about2.jpg" alt="王蒙" className="w-full h-full object-cover" />
+                </div>
+              </div>
+            </div>
+          </article>
+
+          {/* 原世芳 */}
+          <article className="mt-6 rounded-2xl border border-neutral-800 bg-neutral-900 p-4 md:p-6">
+            <div className="grid gap-6 md:grid-cols-12 md:items-center">
+              <div className="md:col-span-5">
+                <h3 className="text-2xl md:text-3xl font-semibold tracking-tight">原世芳</h3>
+                <p className="mt-2 text-neutral-300 text-sm leading-relaxed">
+                  作曲硕士
+          </p>
+              </div>
+              <div className="md:col-span-4">
+                <h4 className="text-sm font-medium text-neutral-200">优势</h4>
+                <ul className="mt-2 space-y-2 text-sm text-neutral-300/90 list-disc pl-5">
+                  <li>吃了喝，喝了睡，睡了还得吃</li>
+                  <li>睡了吃，吃了喝，喝了还得麻烦睡</li>
+                  <li>元芳牛逼</li>
+                </ul>
+              </div>
+              <div className="md:col-span-3 justify-self-start md:justify-self-end">
+                <div className="w-36 md:w-40 aspect-[3/4] overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900">
+                  <img src="/about3.jpg" alt="原世芳" className="w-full h-full object-cover" />
                 </div>
               </div>
             </div>

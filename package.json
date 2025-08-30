@@ -1,33 +1,32 @@
 {
-  "name": "my-portfolio",
-  "private": true,
-  "version": "1.5.0",
-  "type": "module",
+  "name": "photo-json-manager",
+  "version": "1.5.1",
+  "description": "照片JSON管理工具 - 支持拖拽排序、封面图管理",
+  "main": "index.js",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "keywords": ["photo", "json", "manager", "electron", "react"],
+  "author": "Li Yang Studio",
+  "license": "ISC",
   "dependencies": {
-    "framer-motion": "^12.23.12",
-    "pdfjs-dist": "^3.11.174",
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
+    "@types/react": "^19.1.12",
+    "@types/react-dom": "^19.1.9",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "react-router-dom": "^7.8.2"
+    "typescript": "^5.9.2"
   },
   "devDependencies": {
-    "@eslint/js": "^9.33.0",
-    "@types/react": "^19.1.10",
-    "@types/react-dom": "^19.1.7",
-    "@vitejs/plugin-react": "^5.0.0",
+    "@vitejs/plugin-react": "^5.0.2",
     "autoprefixer": "^10.4.21",
-    "eslint": "^9.33.0",
-    "eslint-plugin-react-hooks": "^5.2.0",
-    "eslint-plugin-react-refresh": "^0.4.20",
-    "globals": "^16.3.0",
     "postcss": "^8.5.6",
-    "tailwindcss": "^3.4.13",
-    "vite": "^7.1.2"
+    "tailwindcss": "^4.1.12",
+    "vite": "^7.1.3"
   }
 }

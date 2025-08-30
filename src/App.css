@@ -40,3 +40,15 @@
 .read-the-docs {
   color: #888;
 }
+
+.video-description p {
+  text-indent: 2em; /* 设置首行缩进 */
+  margin-bottom: 20px; /* 设置段落间距 */
+}
+
+@media screen and (max-width: 768px) {
+  .video-description p {
+    text-indent: 0; /* 手机端不显示首行缩进 */
+    margin-bottom: 20px; /* 设置段落间距 */
+  }
+}

@@ -1,14 +1,17 @@
-/* src/index.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* 可选：全局暗色背景兜底 */
-html, body, #root { height: 100%; }
-body { background: #0a0a0a; }
-/* --- glass fallback: 固定 50% 半透明 + 模糊，不依赖 Tailwind --- */
-.glass {
-  background-color: rgba(10,10,10,0.3);        /* 50% 透明黑 */
-  -webkit-backdrop-filter: saturate(1.1) blur(10px);
-  backdrop-filter: saturate(1.1) blur(10px);
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
 }
