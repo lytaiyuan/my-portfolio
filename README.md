@@ -30,30 +30,80 @@ Li Yang Studio · 个人影像与设计作品集
 
 说明：本地 Node 版本建议使用 v22 系列（例如 v22.18.0）。
 
-三、目录结构（简要）
+三、目录结构（详细）
 --------------------
 my-portfolio/
-├─ public/
+├─ public/                    静态资源目录
 │  ├─ logo.png                顶部 Logo
 │  ├─ about.jpg               “关于我们”人物照片1
 │  ├─ about2.jpg              “关于我们”人物照片2
-│  ├─ photos/                 照片原图（含 hero.jpg）
+│  ├─ photos/                 照片原图目录（含 hero.jpg）
 │  ├─ covers/                 视频封面/设计封面等
-│  ├─ videos/                 视频源文件（mp4 等）
-│  ├─ photos.json             照片数据（见下）
-│  ├─ videos.json             视频数据（见下）
-│  └─ site.json               站点级配置（可选：hero、站点标题等）
-└─ src/
-   ├─ App.jsx                 路由、导航、全局框架
-   ├─ main.jsx                入口
-   ├─ index.css               Tailwind 引入
-   └─ pages/
-      ├─ Home.jsx
-      ├─ Photos.jsx
-      ├─ Videos.jsx
-      ├─ VideoDetail.jsx      /videos/:slug
-      ├─ Design.jsx
-      └─ Music.jsx
+│  ├─ videos/                 视频源文件目录（mp4 等）
+│  ├─ design/                 设计相关资源目录
+│  │  ├─ graphic/             平面设计资源
+│  │  ├─ vi/                  VI设计资源
+│  │  ├─ packaging/           包装设计资源
+│  │  ├─ product/             产品摄影资源
+│  │  └─ home/                首页设计展示资源
+│  ├─ music/                  音乐相关资源目录
+│  │  ├─ Epic/                音乐项目示例
+│  │  │  ├─ cover.jpg         音乐封面
+│  │  │  ├─ Epic.txt         音乐介绍文本
+│  │  │  └─ score/            乐谱图片目录
+│  │  └─ AnotherSong/         另一个音乐项目
+│  ├─ photos.json             照片数据（瀑布流展示）
+│  ├─ videos.json             视频数据（B站播放）
+│  ├─ music.json              音乐数据（音乐列表）
+│  ├─ content.json            综合内容数据
+│  ├─ graphiccontent.json     平面设计内容数据
+│  ├─ vi.json                 VI设计内容数据
+│  ├─ packaging.json          包装设计内容数据
+│  └─ productphotos.json      产品摄影内容数据
+└─ src/                       源代码目录
+   ├─ App.jsx                 主应用组件（路由、导航、全局框架）
+   ├─ App.tsx                 照片管理工具主组件
+   ├─ main.jsx                主入口文件
+   ├─ main.tsx                照片管理工具入口
+   ├─ index.css               主样式文件（Tailwind 引入）
+   ├─ App.css                 应用样式文件
+   ├─ types/                  类型定义目录
+   │  └─ index.ts             TypeScript类型定义
+   ├─ components/             组件目录
+   │  ├─ HomeDesign.jsx       首页设计展示组件
+   │  ├─ PhotoList.tsx        照片列表组件（支持拖拽排序）
+   │  └─ Toolbar.tsx          工具栏组件
+   ├─ pages/                  页面组件目录
+   │  ├─ Home.jsx             首页
+   │  ├─ Photos.jsx           照片页（瀑布流）
+   │  ├─ Videos.jsx           视频列表页
+   │  ├─ VideoDetail.jsx      视频详情页（/videos/:slug）
+   │  ├─ Design.jsx           设计页
+   │  ├─ design/              设计子页面目录
+   │  │  ├─ GraphicDetail.jsx 平面设计详情页
+   │  │  ├─ ViDetail.jsx      VI设计详情页
+   │  │  ├─ PackagingDetail.jsx 包装设计详情页
+   │  │  └─ Product.jsx       产品摄影页
+   │  ├─ Music.jsx            音乐列表页
+   │  └─ MusicDetail.jsx      音乐详情页（/music/:slug）
+   ├─ lib/                    工具库目录
+   └─ assets/                 资源文件目录
+├─ dist/                      构建输出目录
+├─ node_modules/              依赖包目录
+├─ .vscode/                   VS Code配置目录
+├─ package.json               项目配置文件
+├─ package-lock.json          依赖锁定文件
+├─ vite.config.ts             Vite配置文件
+├─ vite.config.js             Vite配置文件（兼容）
+├─ tsconfig.json              TypeScript配置
+├─ tsconfig.node.json         Node.js TypeScript配置
+├─ tailwind.config.js         Tailwind CSS配置
+├─ tailwind.config.cjs        Tailwind CSS配置（兼容）
+├─ postcss.config.js          PostCSS配置
+├─ postcss.config.cjs         PostCSS配置（兼容）
+├─ eslint.config.js           ESLint配置
+├─ .gitignore                 Git忽略文件
+└─ README.md                  项目说明文档
 
 四、本地开发
 ------------
