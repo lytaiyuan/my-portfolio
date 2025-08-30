@@ -2,7 +2,7 @@ Li Yang Studio · 个人影像与设计作品集
 ==================================
 
 暗黑扁平风 · 响应式 · 内容由 JSON 驱动
-当前代码版本：v1.0.0
+当前代码版本：v1.5.1
 
 一、特性
 --------
@@ -10,6 +10,8 @@ Li Yang Studio · 个人影像与设计作品集
 - Hero 首屏大图 + 顶部居中 Logo（移动端带抽屉式菜单）
 - 图片：瀑布流 + Lightbox（支持竖图、放大、标题/标签/简介）
 - 视频：列表（桌面端最多两列）→ 详情页（顶部视频、下方长文案）
+- 音乐：列表（桌面端最多两列）→ 详情页（顶部封面+播放按钮、B站视频、乐谱展示）
+- 设计：平面/VI/包装/产品摄影四板块展示
 - 模块化路由：主页 / 图片 / 视频 / 设计 / 音乐
 - 内容即数据：所有作品来自 public/*.json，无需改代码即可更新
 - 移动端优化：安全区域、抽屉菜单、触控体验
@@ -23,30 +25,50 @@ Li Yang Studio · 个人影像与设计作品集
 
 说明：本地 Node 版本建议使用 v22 系列（例如 v22.18.0）。
 
-三、目录结构（简要）
+三、目录结构（详细）
 --------------------
 my-portfolio/
 ├─ public/
 │  ├─ logo.png                顶部 Logo
-│  ├─ about.jpg               “关于我们”人物照片1
-│  ├─ about2.jpg              “关于我们”人物照片2
+│  ├─ about.jpg               "关于我们"人物照片1（李洋）
+│  ├─ about2.jpg              "关于我们"人物照片2（王蒙）
+│  ├─ about3.jpg              "关于我们"人物照片3（原世芳）
 │  ├─ photos/                 照片原图（含 hero.jpg）
 │  ├─ covers/                 视频封面/设计封面等
 │  ├─ videos/                 视频源文件（mp4 等）
-│  ├─ photos.json             照片数据（见下）
-│  ├─ videos.json             视频数据（见下）
+│  ├─ videos/                 视频介绍文本文件（.txt）
+│  ├─ music/                  音乐资源文件夹
+│  │  ├─ Epic/                音乐作品1
+│  │  │  ├─ cover.jpg         封面图片
+│  │  │  ├─ score/            乐谱文件夹
+│  │  │  │  ├─ 01.jpg         乐谱第1页
+│  │  │  │  ├─ 02.jpg         乐谱第2页
+│  │  │  │  └─ 03.jpg         乐谱第3页
+│  │  │  └─ Epic.txt          音乐介绍文本
+│  │  └─ AnotherSong/         音乐作品2
+│  │     ├─ cover.jpg         封面图片
+│  │     ├─ score/            乐谱文件夹
+│  │     │  ├─ 01.jpg         乐谱第1页
+│  │  │  └─ 02.jpg         乐谱第2页
+│  │     └─ AnotherSong.txt   音乐介绍文本
+│  ├─ design/                 设计作品文件夹
+│  ├─ photos.json             照片数据
+│  ├─ videos.json             视频数据
+│  ├─ music.json              音乐数据
+│  ├─ vi.json                 设计数据
 │  └─ site.json               站点级配置（可选：hero、站点标题等）
 └─ src/
    ├─ App.jsx                 路由、导航、全局框架
    ├─ main.jsx                入口
    ├─ index.css               Tailwind 引入
    └─ pages/
-      ├─ Home.jsx
-      ├─ Photos.jsx
-      ├─ Videos.jsx
-      ├─ VideoDetail.jsx      /videos/:slug
-      ├─ Design.jsx
-      └─ Music.jsx
+      ├─ Home.jsx              主页（包含音乐板块展示）
+      ├─ Photos.jsx            照片瀑布流
+      ├─ Videos.jsx            视频列表
+      ├─ VideoDetail.jsx       视频详情页（/videos/:slug）
+      ├─ Design.jsx            设计作品展示
+      ├─ Music.jsx             音乐列表
+      └─ MusicDetail.jsx       音乐详情页（/music/:slug）
 
 四、本地开发
 ------------
@@ -66,7 +88,7 @@ my-portfolio/
    npm run preview
    打开 http://localhost:4173
 
-提示：这是一个前端单页应用（SPA）。若部署到 Nginx/静态服务器，需配置“所有子路由回退到 index.html”。
+提示：这是一个前端单页应用（SPA）。若部署到 Nginx/静态服务器，需配置"所有子路由回退到 index.html"。
 若托管在 GitHub Pages，建议使用 HashRouter（URL 形如 #/videos/slug），最省心不 404。
 
 六、内容管理（JSON 约定）
@@ -96,33 +118,69 @@ my-portfolio/
 - 文件名区分大小写（上线到 Linux/对象存储时尤为重要）。
 
 2) public/videos.json
-用于视频列表（桌面最多两列）与视频详情页（/videos/:slug）。
+用于视频列表（桌面最多两列）与视频详情页（/videos/:slug）。支持从外部txt文件读取详细介绍。
 
 示例：
 {
-  "version": "2025.08.29-1",
+  "version": "2025.08.29-4",
   "items": [
     {
       "id": 1,
-      "slug": "liuzhuan-2023",
-      "title": "流转-2023",
-      "poster": "/covers/2023.jpg",
-      "src": "/videos/2023.mp4",
+      "slug": "yuntingfinal",
+      "title": "云听",
+      "poster": "/covers/yuntingfinal.jpg",
+      "src": "/videos/yuntingfinal.mp4",
       "duration": "2:41",
-      "excerpt": "一起回顾 2023 的高光与日常。",
-      "body": "较长说明文案，支持换行。可写多段内容，讲拍摄契机、器材、地点等。"
+      "hottitle": "云听",
+      "hotintro": "一起回顾 2023 的高光与日常。",
+      "descriptionFile": "/videos/yuntingfinal.txt"
     }
   ]
 }
 
 放置规则：
 - 封面图 poster 放 public/covers/；视频放 public/videos/；
+- 详细介绍文本放 public/videos/ 下的 .txt 文件；
 - slug 使用小写短横线，避免中文/空格，利于 SEO 与后端迁移。
+
+3) public/music.json
+用于音乐列表与音乐详情页（/music/:slug）。支持B站视频嵌入和乐谱展示。
+
+示例：
+{
+  "version": "2025.01.29-1",
+  "items": [
+    {
+      "id": 1,
+      "slug": "epic",
+      "title": "Epic",
+      "hottitle": "史诗级配乐",
+      "hotintro": "震撼人心的史诗配乐，融合古典与现代元素",
+      "cover": "/music/Epic/cover.jpg",
+      "embed": {
+        "playerUrl": "https://player.bilibili.com/player.html?bvid=BV1xx411c7mu",
+        "iframe": "<iframe src=\"https://player.bilibili.com/player.html?bvid=BV1xx411c7mu\" scrolling=\"no\" border=\"0\" frameborder=\"no\" framespacing=\"0\" allowfullscreen=\"true\" width=\"100%\" height=\"100%\"> </iframe>"
+      },
+      "descriptionFile": "/music/Epic/Epic.txt",
+      "scoreFolder": "/music/Epic/score/",
+      "duration": "3:45"
+    }
+  ]
+}
+
+放置规则：
+- 封面图 cover 放 public/music/{音乐名}/cover.jpg；
+- 乐谱图片放 public/music/{音乐名}/score/ 文件夹，命名格式为 01.jpg, 02.jpg...；
+- 音乐介绍文本放 public/music/{音乐名}/{音乐名}.txt；
+- B站视频通过 embed.playerUrl 或 embed.iframe 字段配置。
+
+4) public/design/ 文件夹
+用于存放设计作品，支持平面设计、VI设计、包装设计、产品摄影等分类。
 
 七、版本管理（建议）
 --------------------
-- 代码版本（App）：语义化版本 MAJOR.MINOR.PATCH（例如 1.0.0）。
-  用 Git 标签记录版本，例如 v1.0.0。
+- 代码版本（App）：语义化版本 MAJOR.MINOR.PATCH（例如 1.5.1）。
+  用 Git 标签记录版本，例如 v1.5.1。
 - 内容版本（JSON）：每个 JSON 顶层写 version（建议日历版：YYYY.MM.DD-N）。
   页面请求时可附带 ?v=版本号 规避缓存，比如：/photos.json?v=2025.08.29-1。
 
@@ -131,7 +189,7 @@ my-portfolio/
 1) File → Add Local Repository… 选择项目目录
 2) 若不是 Git 仓库，点击 Create a Repository（.gitignore 选 Node）
 3) Commit → Push（首次会显示 Publish repository）
-4) 打 Tag：Repository → Create Tag… → v1.0.0 → Push
+4) 打 Tag：Repository → Create Tag… → v1.5.1 → Push
 
 九、常见问题（FAQ）
 -------------------
@@ -150,13 +208,31 @@ my-portfolio/
 - 移动端抽屉关闭按钮错位
   关闭按钮放在抽屉容器内的 absolute top-2 right-4，与触发按钮保持镜像位置；层级 z-[80] 保证在遮罩之上。
 
+- 乐谱图片不显示
+  确保乐谱图片文件真实存在且为有效的图片格式；检查 scoreFolder 路径配置是否正确。
+
 十、路线图（Roadmap）
 ---------------------
-- 设计页：平面/VI/包装/产品摄影四板块 + 详情（图片长图方案）
-- 音乐页：封面 + 播放入口，按视频详情页复用布局
+✅ 设计页：平面/VI/包装/产品摄影四板块 + 详情（图片长图方案）
+✅ 音乐页：封面 + 播放入口，按视频详情页复用布局
+✅ 视频详情页：支持从外部txt文件读取详细介绍，支持首行缩进和段落间距
+✅ 音乐详情页：支持B站视频嵌入、乐谱展示、封面图片播放控制
 - 内容后台：后续可对接自托管 Headless CMS（Strapi/Directus）
 - NAS 部署：Nginx 回退、对象存储、版本目录与回滚
+- 乐谱展示优化：支持更多图片格式，添加乐谱预览功能
 
-十一、许可
+十一、v1.5.1 版本更新内容
+--------------------------
+- 新增音乐板块：完整的音乐列表和详情页功能
+- 音乐详情页支持B站视频嵌入，点击封面后播放
+- 乐谱展示功能：支持多页乐谱图片，自动检测文件存在性
+- 视频详情页优化：支持从外部txt文件读取详细介绍
+- 文本格式优化：支持首行缩进、段落间距、响应式布局
+- 主页音乐板块：动态显示第一条音乐信息
+- 新增"关于我们"成员：原世芳
+- 完善设计板块：支持多种设计类型展示
+- 响应式优化：移动端和桌面端体验统一
+
+十二、许可
 ----------
 如无特别声明，个人作品版权归 Li Yang Studio 所有；页面代码可按个人项目使用，不得用于侵犯作品权益的场景。
