@@ -5,6 +5,7 @@ import { useParams, Link } from "react-router-dom";
 export default function VideoDetail() {
   const { slug } = useParams(); // /videos/:slug
   const [items, setItems] = useState([]);
+  const [videoDescription, setVideoDescription] = useState("");  // 存储视频描述
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState(null);
 
@@ -59,7 +60,6 @@ export default function VideoDetail() {
     if (!raw) return { playerSrc: null, pageUrl: null };
     try {
       const u = new URL(raw);
-      // https://www.bilibili.com/video/BVxxxx/?p=2
       const m = u.href.match(/bilibili\.com\/video\/(BV[0-9A-Za-z]+)/i);
       if (m) {
         const bvid = m[1];
@@ -69,7 +69,6 @@ export default function VideoDetail() {
           pageUrl: `https://www.bilibili.com/video/${bvid}${p > 1 ? `?p=${p}` : ""}`,
         };
       }
-      // https://player.bilibili.com/player.html?bvid=BVxxxx&page=1
       if (/player\.bilibili\.com/i.test(u.hostname)) {
         const bvid = u.searchParams.get("bvid");
         const p = Number(u.searchParams.get("page") || u.searchParams.get("p") || 1) || 1;
@@ -83,6 +82,16 @@ export default function VideoDetail() {
     }
     return { playerSrc: raw, pageUrl: null };
   };
+
+  // 加载视频描述文件
+  useEffect(() => {
+    if (video && video.descriptionFile) {
+      fetch(video.descriptionFile)
+        .then((res) => res.text())
+        .then((text) => setVideoDescription(text))
+        .catch((err) => console.error("Failed to load video description:", err));
+    }
+  }, [video]);
 
   if (loading) return <Wrap><p className="text-neutral-400">加载中…</p></Wrap>;
   if (err) return <Wrap><p className="text-red-400">读取出错：{String(err.message || err)}</p></Wrap>;
@@ -107,7 +116,6 @@ export default function VideoDetail() {
   const onStart = () => {
     setIsPlaying(true);
     if (!useIframe) {
-      // HTML5 视频：下一帧再播放，确保已挂载
       setTimeout(() => {
         html5Ref.current?.play?.();
       }, 0);
@@ -173,13 +181,16 @@ export default function VideoDetail() {
         {video.excerpt && <p className="mt-2 text-neutral-300 md:text-[15px]">{video.excerpt}</p>}
       </div>
 
-      {/* 正文：空行分段 */}
-      {video.body && (
-        <div className="mt-6 text-neutral-300 leading-relaxed space-y-4 max-w-3xl mx-auto">
-          {String(video.body)
-            .split(/\n{2,}/)
+      {/* 正文：从txt文件读取，空行分段，首行缩进，段落间距 */}
+      {videoDescription && (
+        <div className="mt-6 text-neutral-300 leading-8 text-lg max-w-3xl mx-auto px-4 sm:px-0">
+          {String(videoDescription)
+            .split(/\n/)
+            .filter(para => para.trim())
             .map((para, i) => (
-              <p key={i} className="whitespace-pre-line">
+              <p key={i} className="mb-8 text-justify">
+                {/* 桌面端显示首行缩进，移动端隐藏 */}
+                <span className="hidden md:inline-block w-8"></span>
                 {para.trim()}
               </p>
             ))}
