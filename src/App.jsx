@@ -14,6 +14,7 @@ import ViDetail from "./pages/design/ViDetail.jsx";
 import PackagingDetail from "./pages/design/PackagingDetail.jsx";
 import Product from "./pages/design/Product.jsx";
 import VideoDetail from "./pages/VideoDetail.jsx";
+import MusicDetail from "./pages/MusicDetail.jsx";
 
 /** ===== 可调参数（0~1 之间）===== */
 const OPACITY_HEADER = 0.30; // 顶部玻璃条透明度
@@ -178,8 +179,14 @@ export default function App() {
       "/music": "音乐",
       "/design/product": "产品摄影",
     };
-    const suffix = TITLES[location.pathname] || "";
-    document.title = suffix ? `Li Yang Studio — ${suffix}` : "Li Yang Studio";
+    
+    // 动态设置音乐详情页标题
+    if (location.pathname.startsWith("/music/")) {
+      document.title = "Li Yang Studio — 音乐详情";
+    } else {
+      const suffix = TITLES[location.pathname] || "";
+      document.title = suffix ? `Li Yang Studio — ${suffix}` : "Li Yang Studio";
+    }
   }, [location.pathname]);
 
   return (
@@ -207,6 +214,7 @@ export default function App() {
             <Route path="/design/packaging/:slug" element={<PackagingDetail />} />
             <Route path="/design/product" element={<Product />} />
             <Route path="/videos/:slug" element={<VideoDetail />} />
+            <Route path="/music/:slug" element={<MusicDetail />} />
           </Routes>
         </motion.main>
       </AnimatePresence>

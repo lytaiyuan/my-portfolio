@@ -1,0 +1,35 @@
+{
+  "version": "2025.01.29-1",
+  "items": [
+    {
+      "id": 1,
+      "slug": "epic",
+      "title": "Epic",
+      "hottitle": "史诗级配乐",
+      "hotintro": "震撼人心的史诗配乐，融合古典与现代元素",
+      "cover": "/music/Epic/cover.jpg",
+      "embed": {
+        "playerUrl": "https://player.bilibili.com/player.html?bvid=BV1xx411c7mu",
+        "iframe": "<iframe src=\"https://player.bilibili.com/player.html?bvid=BV1xx411c7mu\" scrolling=\"no\" border=\"0\" frameborder=\"no\" framespacing=\"0\" allowfullscreen=\"true\" width=\"100%\" height=\"100%\"> </iframe>"
+      },
+      "descriptionFile": "/music/Epic/Epic.txt",
+      "scoreFolder": "/music/Epic/score/",
+      "duration": "3:45"
+    },
+    {
+      "id": 2,
+      "slug": "another-song",
+      "title": "Another Song",
+      "hottitle": "现代流行音乐",
+      "hotintro": "充满活力的现代流行音乐作品",
+      "cover": "/music/AnotherSong/cover.jpg",
+      "embed": {
+        "playerUrl": "https://player.bilibili.com/player.html?bvid=BV1xx411c7mu",
+        "iframe": "<iframe src=\"https://player.bilibili.com/player.html?bvid=BV1xx411c7mu\" scrolling=\"no\" border=\"0\" frameborder=\"no\" framespacing=\"0\" allowfullscreen=\"true\" width=\"100%\" height=\"100%\"> </iframe>"
+      },
+      "descriptionFile": "/music/AnotherSong/AnotherSong.txt",
+      "scoreFolder": "/music/AnotherSong/score/",
+      "duration": "4:12"
+    }
+  ]
+}

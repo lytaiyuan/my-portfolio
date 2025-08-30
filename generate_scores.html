@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>生成乐谱占位符</title>
+</head>
+<body>
+    <h1>乐谱占位符生成器</h1>
+    <p>点击下面的按钮来生成乐谱占位符图片</p>
+    
+    <button onclick="generateEpicScores()">生成Epic乐谱</button>
+    <button onclick="generateAnotherSongScores()">生成AnotherSong乐谱</button>
+    
+    <div id="output"></div>
+    
+    <script>
+        function generateScoreImage(text, filename) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 800;
+            canvas.height = 600;
+            const ctx = canvas.getContext('2d');
+            
+            // 白色背景
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, 800, 600);
+            
+            // 标题
+            ctx.fillStyle = '#333333';
+            ctx.font = 'bold 48px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(text, 400, 200);
+            
+            // 副标题
+            ctx.fillStyle = '#666666';
+            ctx.font = '24px Arial';
+            ctx.fillText('Music Sheet Placeholder', 400, 250);
+            
+            // 边框
+            ctx.strokeStyle = '#cccccc';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(50, 50, 700, 500);
+            
+            // 转换为blob并下载
+            canvas.toBlob(function(blob) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                a.click();
+                URL.revokeObjectURL(url);
+            }, 'image/jpeg', 0.8);
+        }
+        
+        function generateEpicScores() {
+            for (let i = 1; i <= 3; i++) {
+                const paddedNum = i.toString().padStart(2, '0');
+                generateScoreImage(`Epic Score ${i}`, `${paddedNum}.jpg`);
+            }
+        }
+        
+        function generateAnotherSongScores() {
+            for (let i = 1; i <= 2; i++) {
+                const paddedNum = i.toString().padStart(2, '0');
+                generateScoreImage(`AnotherSong Score ${i}`, `${paddedNum}.jpg`);
+            }
+        }
+    </script>
+</body>
+</html>
