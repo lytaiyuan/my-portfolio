@@ -1,0 +1,41 @@
+{
+  "version": "2025.09.01-1756656481533",
+  "images": [
+    {
+      "id": 1,
+      "filename": "123.jpg",
+      "path": "/hero/123.jpg",
+      "alt": "Hero图片1"
+    },
+    {
+      "id": 2,
+      "filename": "2.jpg",
+      "path": "/hero/2.jpg",
+      "alt": "Hero图片2"
+    },
+    {
+      "id": 3,
+      "filename": "234.jpg",
+      "path": "/hero/234.jpg",
+      "alt": "Hero图片3"
+    },
+    {
+      "id": 4,
+      "filename": "DSC09073.JPG",
+      "path": "/hero/DSC09073.JPG",
+      "alt": "Hero图片4"
+    },
+    {
+      "id": 5,
+      "filename": "hero.1756305625.bak.jpg",
+      "path": "/hero/hero.1756305625.bak.jpg",
+      "alt": "Hero图片5"
+    },
+    {
+      "id": 6,
+      "filename": "hero.jpg",
+      "path": "/hero/hero.jpg",
+      "alt": "Hero图片6"
+    }
+  ]
+}

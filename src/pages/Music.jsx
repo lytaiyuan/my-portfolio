@@ -5,70 +5,70 @@ import { Link } from "react-router-dom";
 export default function Music() {
   const [music, setMusic] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState(null);
 
   useEffect(() => {
+    let alive = true;
     fetch("/music.json", { cache: "no-cache" })
       .then((r) => {
         if (!r.ok) throw new Error("HTTP " + r.status);
         return r.json();
       })
       .then((json) => {
-        setMusic(Array.isArray(json.items) ? json.items : []);
+        if (!alive) return;
+        const arr = Array.isArray(json.items) ? json.items : [];
+        setMusic(arr);
         setLoading(false);
       })
       .catch((e) => {
-        console.error("[Music] 读取 /music.json 失败：", e);
+        if (!alive) return;
+        setErr(e);
         setLoading(false);
+        console.error("[Music] 读取 /music.json 失败：", e);
       });
+    return () => { alive = false; };
   }, []);
 
-  if (loading) {
-    return (
-      <section className="bg-neutral-950 text-neutral-100">
-        <div className="max-w-[1120px] mx-auto px-4 py-10">
-          <h1 className="text-2xl font-semibold">音乐</h1>
-          <p className="mt-2 text-neutral-400">加载中…</p>
-        </div>
-      </section>
-    );
-  }
+  if (loading) return <PageWrap><p className="text-neutral-400">加载音乐列表…</p></PageWrap>;
+  if (err) return <PageWrap><p className="text-red-400">读取出错：{String(err.message || err)}</p></PageWrap>;
+  if (!music.length) return <PageWrap><p className="text-neutral-400">暂无音乐。</p></PageWrap>;
 
   return (
-    <section className="bg-neutral-950 text-neutral-100">
-      <div className="max-w-[1120px] mx-auto px-4 py-10">
-        <h1 className="text-2xl font-semibold">音乐</h1>
-        
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-          {music.map((item) => (
-            <Link
-              key={item.id}
-              to={`/music/${item.slug}`}
-              className="group block overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900 hover:border-neutral-700 transition-colors"
-            >
-              <div className="aspect-video overflow-hidden">
-                <img
-                  src={item.cover}
-                  alt={item.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  loading="lazy"
-                />
-              </div>
-              <div className="p-4">
-                <h3 className="font-medium text-lg group-hover:text-blue-400 transition-colors">
-                  {item.hottitle}
-                </h3>
-                <p className="mt-2 text-sm text-neutral-400 line-clamp-2">
-                  {item.hotintro}
-                </p>
-                <div className="mt-3 flex items-center justify-between text-xs text-neutral-500">
-                  <span>{item.duration}</span>
-                  <span className="text-blue-400">查看详情 →</span>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+    <PageWrap>
+      <h1 className="text-3xl font-semibold mb-6">音乐</h1>
+
+      {/* 桌面每行最多两个（md:grid-cols-2），手机 1 列 */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {music.map(m => (
+          <Link
+            key={m.slug || m.id}
+            to={`/music/${encodeURIComponent(m.slug ?? String(m.id))}`}
+            className="group overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-600"
+          >
+            <div className="relative aspect-[16/9] w-full overflow-hidden">
+              <img
+                src={m.cover}
+                alt={m.title || ""}
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+            <div className="p-3">
+              <div className="text-sm font-medium text-neutral-100">{m.title}</div>
+              {m.excerpt && <div className="mt-1 text-xs text-neutral-400 line-clamp-2">{m.excerpt}</div>}
+            </div>
+          </Link>
+        ))}
       </div>
+    </PageWrap>
+  );
+}
+
+function PageWrap({ children }) {
+  return (
+    <section className="border-t border-neutral-900/80 bg-neutral-950">
+      <div className="max-w-[1120px] mx-auto px-4 py-8">{children}</div>
     </section>
   );
 }

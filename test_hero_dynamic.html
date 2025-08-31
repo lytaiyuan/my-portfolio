@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试动态Hero图片扫描</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background: #1a1a1a; 
+            color: #fff; 
+        }
+        .container { max-width: 800px; margin: 0 auto; }
+        .hero-section { 
+            margin: 20px 0; 
+            padding: 20px; 
+            border: 1px solid #333; 
+            border-radius: 8px;
+            background: #2a2a2a;
+        }
+        .hero-image { 
+            max-width: 100%; 
+            height: auto; 
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        button { 
+            padding: 10px 20px; 
+            margin: 10px; 
+            font-size: 16px; 
+            background: #007AFF;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        button:hover { background: #0056CC; }
+        .image-list { margin: 20px 0; }
+        .image-item { 
+            margin: 10px 0; 
+            padding: 15px; 
+            background: #333; 
+            border-radius: 6px;
+        }
+        .status { 
+            padding: 10px; 
+            margin: 10px 0; 
+            border-radius: 6px; 
+            font-weight: bold; 
+        }
+        .success { background: #28a745; color: white; }
+        .error { background: #dc3545; color: white; }
+        .info { background: #17a2b8; color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 测试动态Hero图片扫描功能</h1>
+        
+        <div class="hero-section">
+            <h2>当前Hero图片</h2>
+            <img id="currentHero" class="hero-image" alt="当前Hero图片">
+            <br>
+            <button onclick="loadRandomHero()">🔄 随机选择新图片</button>
+            <button onclick="refreshHeroList()">📁 刷新图片列表</button>
+            <button onclick="addTestImage()">➕ 添加测试图片</button>
+        </div>
+        
+        <div class="status" id="status"></div>
+        
+        <div class="image-list">
+            <h2>Hero文件夹中的所有图片</h2>
+            <div id="imageList"></div>
+        </div>
+        
+        <div class="hero-section">
+            <h2>测试说明</h2>
+            <p>这个页面测试动态扫描hero文件夹的功能：</p>
+            <ul>
+                <li>点击"刷新图片列表"来扫描hero文件夹中的所有jpg/JPG图片</li>
+                <li>点击"随机选择新图片"来随机选择一张图片</li>
+                <li>点击"添加测试图片"来模拟添加新图片的效果</li>
+                <li>新添加的图片会自动被包含在随机选择中</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let heroImages = [];
+        
+        // 动态获取hero文件夹中的所有jpg/JPG图片
+        async function getHeroImages() {
+            try {
+                const response = await fetch('/hero/', { cache: "no-cache" });
+                if (response.ok) {
+                    const html = await response.text();
+                    // 解析HTML，提取所有jpg和JPG文件
+                    const jpgMatches = html.match(/href="([^"]*\.[jJ][pP][gG])"/g);
+                    if (jpgMatches && jpgMatches.length > 0) {
+                        return jpgMatches.map(match => {
+                            const filename = match.match(/href="([^"]*\.[jJ][pP][gG])"/)[1];
+                            return `/hero/${filename}`;
+                        });
+                    }
+                }
+            } catch (error) {
+                console.warn("Failed to get hero directory listing:", error);
+            }
+            
+            // 如果无法获取目录列表，返回默认图片列表作为后备
+            return [
+                "/hero/hero.jpg",
+                "/hero/hero.1756305625.bak.jpg",
+                "/hero/2.jpg",
+                "/hero/IMG_8176.JPG",
+                "/hero/DSC09073.JPG"
+            ];
+        }
+        
+        // 随机选择hero图片
+        function getRandomHeroImage(images) {
+            if (!Array.isArray(images) || images.length === 0) {
+                return "/hero/hero.jpg";
+            }
+            const randomIndex = Math.floor(Math.random() * images.length);
+            return images[randomIndex];
+        }
+        
+        // 加载随机hero图片
+        async function loadRandomHero() {
+            if (heroImages.length === 0) {
+                heroImages = await getHeroImages();
+            }
+            const randomHero = getRandomHeroImage(heroImages);
+            document.getElementById('currentHero').src = randomHero;
+            showStatus(`随机选择了: ${randomHero}`, 'success');
+            console.log('随机选择的图片:', randomHero);
+        }
+        
+        // 刷新图片列表
+        async function refreshHeroList() {
+            showStatus('正在扫描hero文件夹...', 'info');
+            heroImages = await getHeroImages();
+            displayImageList();
+            loadRandomHero();
+            showStatus(`扫描完成！找到 ${heroImages.length} 张图片`, 'success');
+        }
+        
+        // 显示图片列表
+        function displayImageList() {
+            const listDiv = document.getElementById('imageList');
+            listDiv.innerHTML = '';
+            
+            heroImages.forEach((imagePath, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'image-item';
+                const extension = imagePath.split('.').pop();
+                const isUpperCase = extension === extension.toUpperCase();
+                
+                itemDiv.innerHTML = `
+                    <strong>${index + 1}.</strong> ${imagePath} 
+                    <span style="color: ${isUpperCase ? '#FFD700' : '#87CEEB'};">
+                        ${isUpperCase ? '(大写JPG)' : '(小写jpg)'}
+                    </span>
+                    <br>
+                    <img src="${imagePath}" style="max-width: 200px; height: auto; margin-top: 5px;">
+                `;
+                listDiv.appendChild(itemDiv);
+            });
+        }
+        
+        // 添加测试图片（模拟）
+        function addTestImage() {
+            const testImage = `/hero/test_${Date.now()}.jpg`;
+            heroImages.push(testImage);
+            displayImageList();
+            showStatus(`模拟添加了测试图片: ${testImage}`, 'success');
+        }
+        
+        // 显示状态信息
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+            setTimeout(() => {
+                statusDiv.textContent = '';
+                statusDiv.className = 'status';
+            }, 3000);
+        }
+        
+        // 页面加载时初始化
+        window.onload = async function() {
+            showStatus('正在初始化...', 'info');
+            heroImages = await getHeroImages();
+            displayImageList();
+            loadRandomHero();
+            showStatus('初始化完成！', 'success');
+        };
+    </script>
+</body>
+</html>
