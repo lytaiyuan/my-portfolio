@@ -2,7 +2,7 @@ Li Yang Studio · 个人影像与设计作品集
 ==================================
 
 暗黑扁平风 · 响应式 · 内容由 JSON 驱动
-当前代码版本：v1.5.1
+当前代码版本：v1.6.0
 
 一、特性
 --------
@@ -34,9 +34,11 @@ my-portfolio/
 │  ├─ about2.jpg              "关于我们"人物照片2（王蒙）
 │  ├─ about3.jpg              "关于我们"人物照片3（原世芳）
 │  ├─ photos/                 照片原图（含 hero.jpg）
-│  ├─ covers/                 视频封面/设计封面等
-│  ├─ videos/                 视频源文件（mp4 等）
-│  ├─ videos/                 视频介绍文本文件（.txt）
+│  ├─ hero/                   Hero背景图片文件夹（支持随机展示）
+│  ├─ videos/                 视频文件夹
+│  │  ├─ yuntingfinal/        视频项目1：包含封面和描述文件
+│  │  ├─ 2023/                视频项目2：包含封面和描述文件
+│  │  └─ weishan/             视频项目3：包含封面和描述文件
 │  ├─ music/                  音乐资源文件夹
 │  │  ├─ Epic/                音乐作品1
 │  │  │  ├─ cover.jpg         封面图片
@@ -97,10 +99,12 @@ my-portfolio/
 1) public/photos.json
 用于图片瀑布流 + Lightbox。新增字段 desc（约 30 字）只在点开大图时显示。
 
+2) public/hero/ 文件夹
+用于存放网站首页背景图片。支持.jpg和.JPG格式，系统会自动随机选择展示。
+
 示例：
 {
   "version": "2025.08.29-1",
-  "hero": "/photos/hero.jpg",
   "items": [
     {
       "id": 1,
@@ -114,7 +118,7 @@ my-portfolio/
 
 放置规则：
 - 图片放 public/photos/，路径在 JSON 里以 /photos/xxx.jpg 引用；
-- hero.jpg 也在 public/photos/；
+- hero背景图片放 public/hero/，支持.jpg和.JPG格式，系统自动随机选择；
 - 文件名区分大小写（上线到 Linux/对象存储时尤为重要）。
 
 2) public/videos.json
@@ -128,19 +132,19 @@ my-portfolio/
       "id": 1,
       "slug": "yuntingfinal",
       "title": "云听",
-      "poster": "/covers/yuntingfinal.jpg",
+      "poster": "/videos/yuntingfinal/yuntingfinal.jpg",
       "src": "/videos/yuntingfinal.mp4",
       "duration": "2:41",
       "hottitle": "云听",
       "hotintro": "一起回顾 2023 的高光与日常。",
-      "descriptionFile": "/videos/yuntingfinal.txt"
+      "descriptionFile": "/videos/yuntingfinal/yuntingfinal.txt"
     }
   ]
 }
 
 放置规则：
-- 封面图 poster 放 public/covers/；视频放 public/videos/；
-- 详细介绍文本放 public/videos/ 下的 .txt 文件；
+- 封面图 poster 放 public/videos/[项目名]/；视频放 public/videos/；
+- 详细介绍文本放 public/videos/[项目名]/ 下的 .txt 文件；
 - slug 使用小写短横线，避免中文/空格，利于 SEO 与后端迁移。
 
 3) public/music.json
@@ -221,7 +225,17 @@ my-portfolio/
 - NAS 部署：Nginx 回退、对象存储、版本目录与回滚
 - 乐谱展示优化：支持更多图片格式，添加乐谱预览功能
 
-十一、v1.5.1 版本更新内容
+十一、v1.6.0 版本更新内容
+--------------------------
+- 视频区路径重构：为每个视频创建独立子文件夹，包含封面和描述文件
+- Hero图片系统重构：创建专门的hero文件夹，支持随机展示多张背景图
+- 数据结构优化：移除老旧的content.json，使用专门的配置文件管理不同类型内容
+- 支持多种图片格式：hero文件夹同时支持.jpg和.JPG扩展名
+- 代码架构优化：useContent hook重构，支持并行数据加载和智能错误处理
+- 文件组织优化：videos文件夹结构从扁平改为层级，便于管理
+- 性能提升：减少不必要的数据请求，优化加载流程
+
+十二、v1.5.1 版本更新内容
 --------------------------
 - 新增音乐板块：完整的音乐列表和详情页功能
 - 音乐详情页支持B站视频嵌入，点击封面后播放

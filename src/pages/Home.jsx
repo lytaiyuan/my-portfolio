@@ -3,11 +3,10 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import HomeDesign from "../components/HomeDesign.jsx";
+import { useContent } from "../lib/useContent.js";
 
 export default function Home() {
-  const [hero, setHero] = useState("/photos/hero.jpg");
-  const [photos, setPhotos] = useState([]);
-  const [videos, setVideos] = useState([]);
+  const { hero, photos, videos, loading: contentLoading } = useContent();
   const [music, setMusic] = useState([]);
   const [loading, setLoading] = useState(true);
   const [player, setPlayer] = useState(null); // { title, poster, src }
@@ -16,13 +15,8 @@ export default function Home() {
     let alive = true;
     (async () => {
       try {
-        const p = await fetch("/photos.json", { cache: "no-cache" }).then(r => r.json());
-        const v = await fetch("/videos.json", { cache: "no-cache" }).then(r => r.json());
         const m = await fetch("/music.json", { cache: "no-cache" }).then(r => r.json());
         if (!alive) return;
-        setHero(typeof p.hero === "string" ? p.hero : "/photos/hero.jpg");
-        setPhotos(Array.isArray(p.items) ? p.items : []);
-        setVideos(Array.isArray(v.items) ? v.items : []);
         setMusic(Array.isArray(m.items) ? m.items : []);
       } finally {
         if (alive) setLoading(false);
@@ -40,7 +34,7 @@ export default function Home() {
   const openPlay = (title, poster, src) => setPlayer({ title, poster, src });
   const closePlay = () => setPlayer(null);
 
-  if (loading) {
+  if (contentLoading || loading) {
     return <div className="min-h-[60svh] grid place-items-center text-neutral-400">加载主页内容…</div>;
   }
 
