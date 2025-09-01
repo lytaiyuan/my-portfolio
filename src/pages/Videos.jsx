@@ -7,25 +7,42 @@ export default function Videos() {
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState(null);
 
+  // 路径转换函数：将相对路径转换为GitHub raw URL
+  const getGitHubUrl = (path) => {
+    if (path.startsWith('http')) {
+      return path; // 如果是外部链接，直接返回
+    }
+    return `https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main${path}`;
+  };
+
   useEffect(() => {
     let alive = true;
-    fetch("/videos.json", { cache: "no-cache" })
-      .then(r => {
-        if (!r.ok) throw new Error("HTTP " + r.status);
-        return r.json();
-      })
-      .then(json => {
+    
+    const fetchVideos = async () => {
+      try {
+        const response = await fetch(
+          'https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/config/videos.json'
+        );
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
         if (!alive) return;
-        const arr = Array.isArray(json.items) ? json.items : [];
+        const arr = Array.isArray(data.items) ? data.items : [];
         setItems(arr);
         setLoading(false);
-      })
-      .catch(e => {
+      } catch (e) {
         if (!alive) return;
+        console.error("[Videos] 读取GitHub视频数据失败：", e);
         setErr(e);
         setLoading(false);
-        console.error("[Videos] 读取 /videos.json 失败：", e);
-      });
+      }
+    };
+    
+    fetchVideos();
     return () => { alive = false; };
   }, []);
 
@@ -47,7 +64,7 @@ export default function Videos() {
           >
             <div className="relative aspect-[16/9] w-full overflow-hidden">
               <img
-                src={v.poster}
+                src={getGitHubUrl(v.poster)}
                 alt={v.title || ""}
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                 loading="lazy"

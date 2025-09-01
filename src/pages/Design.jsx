@@ -34,17 +34,35 @@ export default function Design() {
 
   useEffect(() => {
     let alive = true;
-    (async () => {
-      const g = await fetch("/graphiccontent.json", { cache: "no-cache" }).then(r => r.json()).catch(() => ({ items: [] }));
-      const v = await fetch("/vi.json",              { cache: "no-cache" }).then(r => r.json()).catch(() => ({ items: [] }));
-      const p = await fetch("/packaging.json",       { cache: "no-cache" }).then(r => r.json()).catch(() => ({ items: [] }));
-      if (!alive) return;
-      setGraphic(Array.isArray(g.items) ? g.items : []);
-      setVi(Array.isArray(v.items) ? v.items : []);
-      setPack(Array.isArray(p.items) ? p.items : []);
-      setLoading(false);
-      document.title = "Li Yang Studio — 设计";
-    })();
+    
+    const fetchDesignData = async () => {
+      try {
+        const [g, v, p] = await Promise.all([
+          fetch('https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/config/graphiccontent.json')
+            .then(r => r.json())
+            .catch(() => ({ items: [] })),
+          fetch('https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/vi.json')
+            .then(r => r.json())
+            .catch(() => ({ items: [] })),
+          fetch('https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/packaging.json')
+            .then(r => r.json())
+            .catch(() => ({ items: [] }))
+        ]);
+        
+        if (!alive) return;
+        setGraphic(Array.isArray(g.items) ? g.items : []);
+        setVi(Array.isArray(v.items) ? v.items : []);
+        setPack(Array.isArray(p.items) ? p.items : []);
+        setLoading(false);
+        document.title = "Li Yang Studio — 设计";
+      } catch (error) {
+        if (!alive) return;
+        console.error('[Design] 读取GitHub设计数据失败：', error);
+        setLoading(false);
+      }
+    };
+    
+    fetchDesignData();
     return () => { alive = false; };
   }, []);
 

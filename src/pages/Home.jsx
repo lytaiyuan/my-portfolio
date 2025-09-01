@@ -11,17 +11,54 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [player, setPlayer] = useState(null); // { title, poster, src }
 
+  // 路径转换函数：将相对路径转换为GitHub raw URL，避免重复
+  const getGitHubUrl = (path) => {
+    if (!path) return '';
+    
+    console.log('[Home] 原始路径:', path);
+    
+    // 如果路径已经包含GitHub URL，直接返回
+    if (path.includes('raw.githubusercontent.com')) {
+      console.log('[Home] 路径已包含GitHub URL，直接返回:', path);
+      return path;
+    }
+    
+    // 如果是外部链接，直接返回
+    if (path.startsWith('http')) {
+      console.log('[Home] 外部链接，直接返回:', path);
+      return path;
+    }
+    
+    // 处理相对路径
+    const cleanPath = path.startsWith('/') ? path : `/${path}`;
+    const finalUrl = `https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main${cleanPath}`;
+    console.log('[Home] 构建的最终URL:', finalUrl);
+    return finalUrl;
+  };
+
   useEffect(() => {
     let alive = true;
-    (async () => {
+    
+    const fetchMusic = async () => {
       try {
-        const m = await fetch("/music.json", { cache: "no-cache" }).then(r => r.json());
-        if (!alive) return;
-        setMusic(Array.isArray(m.items) ? m.items : []);
+        const response = await fetch(
+          'https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/config/music.json'
+        );
+        
+        if (response.ok) {
+          const m = await response.json();
+          
+          if (!alive) return;
+          setMusic(Array.isArray(m.items) ? m.items : []);
+        }
+      } catch (error) {
+        console.error('[Home] 读取GitHub音乐数据失败：', error);
       } finally {
         if (alive) setLoading(false);
       }
-    })();
+    };
+    
+    fetchMusic();
     return () => { alive = false; };
   }, []);
 
@@ -99,7 +136,7 @@ export default function Home() {
           featuredPhoto ? (
             <CardImage
               to="/photos"
-              src={featuredPhoto.url}
+              src={getGitHubUrl(featuredPhoto.url)}
               captionTitle={featuredPhoto.title}
               overlayTitle="云南也有中东风情？"
               overlaySubtitle="探索云南省红河州沙甸清真寺的风情。"
@@ -117,7 +154,7 @@ export default function Home() {
           featuredVideo ? (
             <CardImage
               to={`/videos/${featuredVideo.slug}`}
-              src={featuredVideo.poster || "/covers/placeholder.jpg"}
+              src={featuredVideo.poster ? getGitHubUrl(featuredVideo.poster) : "/covers/placeholder.jpg"}
               captionTitle={featuredVideo.title}
               overlayTitle={featuredVideo.hottitle || featuredVideo.title}
               overlaySubtitle={featuredVideo.hotintro}
@@ -150,7 +187,7 @@ export default function Home() {
           featuredMusic ? (
             <CardImage
               to={`/music/${featuredMusic.slug}`}
-              src={featuredMusic.cover}
+              src={getGitHubUrl(featuredMusic.cover)}
               captionTitle={featuredMusic.title}
               overlayTitle={featuredMusic.hottitle || featuredMusic.title}
               overlaySubtitle={featuredMusic.hotintro}

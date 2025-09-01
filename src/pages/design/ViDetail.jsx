@@ -10,17 +10,61 @@ export default function ViDetail() {
   const [err, setErr] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // 路径转换函数：将相对路径转换为GitHub raw URL
+  const getGitHubUrl = (path) => {
+    if (!path) return '';
+    
+    console.log('[ViDetail] 原始路径:', path);
+    
+    // 如果路径已经包含GitHub URL，直接返回
+    if (path.includes('raw.githubusercontent.com')) {
+      console.log('[ViDetail] 路径已包含GitHub URL，直接返回:', path);
+      return path;
+    }
+    
+    // 如果是外部链接，直接返回
+    if (path.startsWith('http')) {
+      console.log('[ViDetail] 外部链接，直接返回:', path);
+      return path;
+    }
+    
+    // 处理相对路径
+    const cleanPath = path.startsWith('/') ? path : `/${path}`;
+    const finalUrl = `https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main${cleanPath}`;
+    console.log('[ViDetail] 构建的最终URL:', finalUrl);
+    return finalUrl;
+  };
+
   useEffect(() => {
     let alive = true;
     setLoading(true);
-    fetch("/vi.json", { cache: "no-cache" })
-      .then((r) => {
-        if (!r.ok) throw new Error("HTTP " + r.status);
-        return r.json();
-      })
-      .then((j) => { if (alive) { setData(j); setErr(null); } })
-      .catch((e) => { if (alive) setErr(e); })
-      .finally(() => { if (alive) setLoading(false); });
+    
+    const fetchViData = async () => {
+      try {
+        const response = await fetch(
+          'https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/vi.json'
+        );
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        
+        const json = await response.json();
+        
+        if (!alive) return;
+        setData(json);
+        setErr(null);
+      } catch (e) {
+        if (!alive) return;
+        setErr(e);
+        console.error("[ViDetail] 读取GitHub VI设计数据失败：", e);
+      } finally {
+        if (!alive) return;
+        setLoading(false);
+      }
+    };
+    
+    fetchViData();
     return () => { alive = false; };
   }, []);
 
@@ -31,13 +75,18 @@ export default function ViDetail() {
 
   const images = useMemo(() => {
     if (!item) return [];
-    const arr = normArray(item.images);
-    if (arr.length) return arr;
-    const cover = ensureSlash(item.cover);
-    return cover ? [cover] : [];
+    // 直接使用原始路径，不经过normArray处理
+    if (item.images && Array.isArray(item.images) && item.images.length > 0) {
+      return item.images;
+    }
+    // 如果没有images数组，使用cover
+    if (item.cover) {
+      return [item.cover];
+    }
+    return [];
   }, [item]);
 
-  const pdfPath = ensureSlash(item?.pdf || "");
+  const pdfPath = item?.pdf || "";
 
   if (loading) return <div className="min-h-screen grid place-items-center bg-neutral-950 text-neutral-300">加载中…</div>;
   if (err) return <div className="min-h-screen grid place-items-center bg-neutral-950 text-neutral-300">读取 vi.json 出错：{String(err.message || err)}</div>;
@@ -62,14 +111,14 @@ export default function ViDetail() {
         <div className="mt-6 space-y-4">
           {images.map((src, i) => (
             <figure key={src} className="overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900">
-              <img src={src} alt={`${item.title} - ${i + 1}`} className="w-full h-auto block" loading="lazy" />
+              <img src={getGitHubUrl(src)} alt={`${item.title} - ${i + 1}`} className="w-full h-auto block" loading="lazy" />
             </figure>
           ))}
         </div>
 
         {pdfPath && (
           <div className="mt-8">
-            <a href={pdfPath} download className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-neutral-700 bg-neutral-900 hover:bg-neutral-800">
+            <a href={getGitHubUrl(pdfPath)} download className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-neutral-700 bg-neutral-900 hover:bg-neutral-800">
               下载该 PDF
             </a>
           </div>

@@ -11,24 +11,58 @@ export default function MusicDetail() {
   const [err, setErr] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
+  // 路径转换函数：将相对路径转换为GitHub raw URL，避免重复
+  const getGitHubUrl = (path) => {
+    if (!path) return '';
+    
+    console.log('[MusicDetail] 原始路径:', path);
+    
+    // 如果路径已经包含GitHub URL，直接返回
+    if (path.includes('raw.githubusercontent.com')) {
+      console.log('[MusicDetail] 路径已包含GitHub URL，直接返回:', path);
+      return path;
+    }
+    
+    // 如果是外部链接，直接返回
+    if (path.startsWith('http')) {
+      console.log('[MusicDetail] 外部链接，直接返回:', path);
+      return path;
+    }
+    
+    // 处理相对路径
+    const cleanPath = path.startsWith('/') ? path : `/${path}`;
+    const finalUrl = `https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main${cleanPath}`;
+    console.log('[MusicDetail] 构建的最终URL:', finalUrl);
+    return finalUrl;
+  };
+
   useEffect(() => {
     let alive = true;
-    fetch("/music.json", { cache: "no-cache" })
-      .then((r) => {
-        if (!r.ok) throw new Error("HTTP " + r.status);
-        return r.json();
-      })
-      .then((json) => {
+    
+    const fetchMusicData = async () => {
+      try {
+        const response = await fetch(
+          'https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/config/music.json'
+        );
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        
+        const json = await response.json();
+        
         if (!alive) return;
         setItems(Array.isArray(json.items) ? json.items : []);
         setLoading(false);
-      })
-      .catch((e) => {
+      } catch (e) {
         if (!alive) return;
         setErr(e);
         setLoading(false);
-        console.error("[MusicDetail] 读取 /music.json 失败：", e);
-      });
+        console.error("[MusicDetail] 读取GitHub音乐数据失败：", e);
+      }
+    };
+    
+    fetchMusicData();
     return () => {
       alive = false;
     };
@@ -48,7 +82,10 @@ export default function MusicDetail() {
   // 加载音乐描述文件
   useEffect(() => {
     if (music && music.descriptionFile) {
-      fetch(music.descriptionFile)
+      const descriptionUrl = getGitHubUrl(music.descriptionFile);
+      console.log('[MusicDetail] 加载描述文件:', descriptionUrl);
+      
+      fetch(descriptionUrl)
         .then((res) => res.text())
         .then((text) => setMusicDescription(text))
         .catch((err) => console.error("Failed to load music description:", err));
@@ -77,10 +114,11 @@ export default function MusicDetail() {
         for (let i = 1; i <= 10; i++) {
           const paddedNum = i.toString().padStart(2, '0');
           const imageUrl = `${music.scoreFolder}${paddedNum}.jpg`;
-          console.log(`尝试加载乐谱图片: ${imageUrl}`);
-          if (await checkImageExists(imageUrl)) {
-            validImages.push(imageUrl);
-            console.log(`乐谱图片 ${imageUrl} 加载成功`);
+          const githubImageUrl = getGitHubUrl(imageUrl);
+          console.log(`尝试加载乐谱图片: ${githubImageUrl}`);
+          if (await checkImageExists(githubImageUrl)) {
+            validImages.push(githubImageUrl);
+            console.log(`乐谱图片 ${githubImageUrl} 加载成功`);
           }
         }
         console.log(`最终找到的乐谱图片:`, validImages);
@@ -168,7 +206,7 @@ export default function MusicDetail() {
               className="absolute inset-0 w-full h-full group"
             >
               <img
-                src={music.cover}
+                src={getGitHubUrl(music.cover)}
                 alt={music.title || "cover"}
                 className="absolute inset-0 w-full h-full object-cover"
                 loading="lazy"

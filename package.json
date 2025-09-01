@@ -11,6 +11,7 @@
     "update-hero": "node scripts/update-hero.js"
   },
   "dependencies": {
+    "dotenv": "^17.2.1",
     "framer-motion": "^12.23.12",
     "pdfjs-dist": "^3.11.174",
     "react": "^19.1.1",

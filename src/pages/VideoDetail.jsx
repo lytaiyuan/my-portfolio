@@ -9,24 +9,41 @@ export default function VideoDetail() {
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState(null);
 
+  // 路径转换函数：将相对路径转换为GitHub raw URL
+  const getGitHubUrl = (path) => {
+    if (path.startsWith('http')) {
+      return path; // 如果是外部链接，直接返回
+    }
+    return `https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main${path}`;
+  };
+
   useEffect(() => {
     let alive = true;
-    fetch("/videos.json", { cache: "no-cache" })
-      .then((r) => {
-        if (!r.ok) throw new Error("HTTP " + r.status);
-        return r.json();
-      })
-      .then((json) => {
+    
+    const fetchVideos = async () => {
+      try {
+        const response = await fetch(
+          'https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/config/videos.json'
+        );
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        
+        const json = await response.json();
+        
         if (!alive) return;
         setItems(Array.isArray(json.items) ? json.items : []);
         setLoading(false);
-      })
-      .catch((e) => {
+      } catch (e) {
         if (!alive) return;
         setErr(e);
         setLoading(false);
-        console.error("[VideoDetail] 读取 /videos.json 失败：", e);
-      });
+        console.error("[VideoDetail] 读取GitHub视频数据失败：", e);
+      }
+    };
+    
+    fetchVideos();
     return () => {
       alive = false;
     };
@@ -86,7 +103,7 @@ export default function VideoDetail() {
   // 加载视频描述文件
   useEffect(() => {
     if (video && video.descriptionFile) {
-      fetch(video.descriptionFile)
+      fetch(getGitHubUrl(video.descriptionFile))
         .then((res) => res.text())
         .then((text) => setVideoDescription(text))
         .catch((err) => console.error("Failed to load video description:", err));
@@ -110,7 +127,7 @@ export default function VideoDetail() {
 
   const { playerSrc, pageUrl } = fromEmbed(video.embed);
   const useIframe = !!playerSrc;
-  const poster = video.poster || "/covers/placeholder.jpg";
+  const poster = video.poster ? getGitHubUrl(video.poster) : "/covers/placeholder.jpg";
 
   // 点击海报开始播放（iframe 直接加载；mp4 自动播放）
   const onStart = () => {

@@ -10,23 +10,44 @@ export default function Photos() {
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState(null);
 
+  // 路径转换函数：将相对路径转换为GitHub raw URL
+  const getGitHubUrl = (path) => {
+    if (path.startsWith('http')) {
+      return path; // 如果是外部链接，直接返回
+    }
+    return `https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main${path}`;
+  };
+
   useEffect(() => {
     let alive = true;
-    fetch("/photos.json", { cache: "no-cache" })
-      .then((r) => {
-        if (!r.ok) throw new Error("HTTP " + r.status);
-        return r.json();
-      })
-      .then((json) => {
+    
+    const fetchPhotos = async () => {
+      try {
+        console.log('🚀 开始从GitHub获取照片数据...');
+        
+        const response = await fetch(
+          'https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/config/photos.json'
+        );
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('📸 照片数据获取成功:', data);
+        
         if (!alive) return;
-        setItems(Array.isArray(json.items) ? json.items : []);
+        setItems(Array.isArray(data.items) ? data.items : []);
         setLoading(false);
-      })
-      .catch((e) => {
+      } catch (e) {
         if (!alive) return;
+        console.error('❌ 从GitHub获取照片数据失败:', e);
         setErr(e);
         setLoading(false);
-      });
+      }
+    };
+    
+    fetchPhotos();
     return () => { alive = false; };
   }, []);
 
@@ -169,7 +190,7 @@ export default function Photos() {
                   onClick={() => openBox(i)}
                 >
                   <img
-                    src={img.url}
+                    src={getGitHubUrl(img.url)}
                     alt={img.title}
                     className="w-full h-auto block"
                     loading="lazy"
@@ -220,7 +241,7 @@ export default function Photos() {
                 style={{ width: `${fit.width}px`, height: `${fit.height}px` }}
               >
                 <img
-                  src={photos[box.index]?.url}
+                  src={getGitHubUrl(photos[box.index]?.url)}
                   alt={photos[box.index]?.title}
                   className="w-full h-full object-contain block"
                   // 万一 json 没提供尺寸，用自然尺寸回填一次，之后就稳定

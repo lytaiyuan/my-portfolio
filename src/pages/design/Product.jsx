@@ -10,15 +10,55 @@ export default function Product() {
   const [tag, setTag] = useState(ALL);
   const [q, setQ] = useState("");
 
+  // 路径转换函数：将相对路径转换为GitHub raw URL
+  const getGitHubUrl = (path) => {
+    if (!path) return '';
+    
+    console.log('[Product] 原始路径:', path);
+    
+    // 如果路径已经包含GitHub URL，直接返回
+    if (path.includes('raw.githubusercontent.com')) {
+      console.log('[Product] 路径已包含GitHub URL，直接返回:', path);
+      return path;
+    }
+    
+    // 如果是外部链接，直接返回
+    if (path.startsWith('http')) {
+      console.log('[Product] 外部链接，直接返回:', path);
+      return path;
+    }
+    
+    // 处理相对路径
+    const cleanPath = path.startsWith('/') ? path : `/${path}`;
+    const finalUrl = `https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main${cleanPath}`;
+    console.log('[Product] 构建的最终URL:', finalUrl);
+    return finalUrl;
+  };
+
   useEffect(() => {
     let alive = true;
-    fetch("/productphotos.json", { cache: "no-cache" })
-      .then(r => r.json())
-      .then(json => {
+    
+    const fetchProductPhotos = async () => {
+      try {
+        const response = await fetch(
+          'https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/productphotos.json'
+        );
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        
+        const json = await response.json();
+        
         if (!alive) return;
         setItems(Array.isArray(json.photos) ? json.photos : []);
         document.title = "Li Yang Studio — 产品摄影";
-      });
+      } catch (error) {
+        console.error("[Product] 读取GitHub产品照片数据失败：", error);
+      }
+    };
+    
+    fetchProductPhotos();
     return () => { alive = false; };
   }, []);
 
@@ -67,7 +107,7 @@ export default function Product() {
                 layout initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.98 }} transition={{ duration: 0.25 }}
                 className="mb-4 break-inside-avoid overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900"
               >
-                < img src={img.url} alt={img.title} className="w-full h-auto block" loading="lazy" />
+                <img src={getGitHubUrl(img.url)} alt={img.title} className="w-full h-auto block" loading="lazy" />
                 <figcaption className="p-3">
                   <div className="text-sm font-medium text-neutral-100">{img.title}</div>
                 </figcaption>

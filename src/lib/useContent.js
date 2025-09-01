@@ -1,10 +1,10 @@
 // src/lib/useContent.js
 import { useEffect, useState } from "react";
 
-// 从hero.json配置文件获取hero图片列表
+// 从GitHub获取hero.json配置文件
 async function getHeroImages() {
   try {
-    const response = await fetch('/hero.json', { cache: "no-cache" });
+    const response = await fetch('https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/hero.json');
     if (response.ok) {
       const data = await response.json();
       if (Array.isArray(data.images)) {
@@ -12,7 +12,7 @@ async function getHeroImages() {
       }
     }
   } catch (error) {
-    console.warn("Failed to load hero.json:", error);
+    console.warn("Failed to load hero.json from GitHub:", error);
   }
   
   // 如果无法获取配置，返回默认图片列表作为后备
@@ -23,6 +23,25 @@ async function getHeroImages() {
     "/hero/IMG_8176.JPG",
     "/hero/DSC09073.JPG"
   ];
+}
+
+// 路径转换函数：将相对路径转换为GitHub raw URL，避免重复
+function getGitHubUrl(path) {
+  if (!path) return '';
+  
+  // 如果路径已经包含GitHub URL，直接返回
+  if (path.includes('raw.githubusercontent.com')) {
+    return path;
+  }
+  
+  // 如果是外部链接，直接返回
+  if (path.startsWith('http')) {
+    return path;
+  }
+  
+  // 处理相对路径
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  return `https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main${cleanPath}`;
 }
 
 // 随机选择hero图片的函数
@@ -42,24 +61,41 @@ export function useContent() {
   useEffect(() => {
     let alive = true;
     
-    // 从hero.json获取图片列表并随机选择
+    // 从GitHub获取数据
     Promise.all([
       getHeroImages(),
-      fetch("/photos.json", { cache: "no-cache" }),
-      fetch("/videos.json", { cache: "no-cache" })
+      (async () => {
+        try {
+          const response = await fetch('https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/config/photos.json');
+          if (response.ok) {
+            return await response.json();
+          }
+          return { items: [] };
+        } catch (error) {
+          console.warn("Failed to load photos from GitHub:", error);
+          return { items: [] };
+        }
+      })(),
+      (async () => {
+        try {
+          const response = await fetch('https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/config/videos.json');
+          if (response.ok) {
+            return await response.json();
+          }
+          return { items: [] };
+        } catch (error) {
+          console.warn("Failed to load videos from GitHub:", error);
+          return { items: [] };
+        }
+      })()
     ])
-      .then((responses) => {
-        if (!responses[1].ok) throw new Error("Photos HTTP " + responses[1].status);
-        if (!responses[2].ok) throw new Error("Videos HTTP " + responses[2].status);
-        return Promise.all([responses[0], responses[1].json(), responses[2].json()]);
-      })
       .then(([heroImages, photosData, videosData]) => {
         if (alive) {
           // 从配置文件中获取的图片列表中随机选择
           const randomHero = getRandomHeroImage(heroImages);
           
           setData({
-            hero: randomHero,
+            hero: getGitHubUrl(randomHero),
             photos: Array.isArray(photosData.items) ? photosData.items : [],
             videos: Array.isArray(videosData.items) ? videosData.items : [],
           });
