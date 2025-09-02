@@ -326,19 +326,17 @@ export default function Home() {
       </section>
 
       {/* —— 联系（恢复） —— */}
-      <section id="contact" className="border-t border-theme-primary bg-theme-primary">
-        <div className="max-w-[1120px] mx-auto px-4 py-14">
-          <div className="max-w-2xl">
-            <h2 className="text-2xl font-semibold">联系</h2>
-            <p className="mt-2 text-theme-muted text-sm">
-              欢迎合作。请发送邮件至 <a className="underline" href="mailto:lytaiyuan@qq.com">lytaiyuan@qq.com</a>，
-              或通过下方社交账号联系。
-            </p>
-            <div className="mt-6 text-sm text-theme-muted space-y-1">
-              <p>微信：LYPUBL</p>
-              <p>手机：150 3514 8062</p>
-              <p>小红书：@6738496349</p>
-            </div>
+      <section className="contact-section mb-8">
+        <div className="max-w-[1120px] mx-auto px-4">
+          <h2 className="text-2xl font-semibold">联系</h2>
+          <p>
+            通过邮箱 <a href="mailto:lytaiyuan@qq.com" className="text-theme-accent">lytaiyuan@qq.com</a>
+            或通过下方社交账号联系。
+          </p>
+          <div className="mt-6 text-sm text-theme-muted space-y-1">
+            <p>微信：LYPUBL</p>
+            <p>手机：150 3514 8062</p>
+            <p>小红书：@6738496349</p>
           </div>
         </div>
       </section>

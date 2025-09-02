@@ -253,7 +253,7 @@ export default function App() {
 
       {/* 页脚也给同款玻璃效果（保持一致） */}
       <footer
-        className="border-t border-neutral-900/80"
+        className="footer-glass"
         style={{
           backgroundColor: `rgba(10,10,10,${OPACITY_HEADER})`,
           backdropFilter: "saturate(1.1) blur(10px)",

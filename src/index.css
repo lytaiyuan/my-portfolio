@@ -254,3 +254,8 @@ button:focus {
 [data-theme="dark"] .overlay-glass {
   background-color: rgba(0, 0, 0, 0.5);
 }
+
+/* 深色模式下桌面工具栏导航链接为纯白色 */
+[data-theme="dark"] .text-theme-secondary {
+  color: #FFFFFF !important;
+}
