@@ -2,7 +2,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import HomeDesign from "../components/HomeDesign.jsx";
+
 import { useContent } from "../lib/useContent.js";
 
 export default function Home() {
@@ -15,25 +15,19 @@ export default function Home() {
   const getGitHubUrl = (path) => {
     if (!path) return '';
     
-    console.log('[Home] 原始路径:', path);
-    
     // 如果路径已经包含GitHub URL，直接返回
     if (path.includes('raw.githubusercontent.com')) {
-      console.log('[Home] 路径已包含GitHub URL，直接返回:', path);
       return path;
     }
     
     // 如果是外部链接，直接返回
     if (path.startsWith('http')) {
-      console.log('[Home] 外部链接，直接返回:', path);
       return path;
     }
     
     // 处理相对路径
     const cleanPath = path.startsWith('/') ? path : `/${path}`;
-    const finalUrl = `https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main${cleanPath}`;
-    console.log('[Home] 构建的最终URL:', finalUrl);
-    return finalUrl;
+    return `https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main${cleanPath}`;
   };
 
   useEffect(() => {
@@ -77,7 +71,7 @@ export default function Home() {
 
   return (
     <>
-      {/* HERO：文字与底部渐变动画时长 1s（注意：图片从顶端开始，被顶栏“盖住”以形成毛玻璃效果） */}
+      {/* HERO：文字与底部渐变动画时长 1s（注意：图片从顶端开始，被顶栏"盖住"以形成毛玻璃效果） */}
       <section className="relative min-h-[100svh]">
         <img
           src={heroUrl}
@@ -135,6 +129,7 @@ export default function Home() {
         id="home-photos"
         ctaText="查看全部图片"
         ctaTo="/photos"
+        gradientType="photos"
         card={
           featuredPhoto ? (
             <CardImage
@@ -143,6 +138,7 @@ export default function Home() {
               captionTitle={featuredPhoto.title}
               overlayTitle="云南也有中东风情？"
               overlaySubtitle="探索云南省红河州沙甸清真寺的风情。"
+              gradientType="photos"
             />
           ) : <EmptyCard tip="还没有添加照片。" />
         }
@@ -153,6 +149,7 @@ export default function Home() {
         id="home-videos"
         ctaText="查看全部视频"
         ctaTo="/videos"
+        gradientType="videos"
         card={
           featuredVideo ? (
             <CardImage
@@ -161,15 +158,16 @@ export default function Home() {
               captionTitle={featuredVideo.title}
               overlayTitle={featuredVideo.hottitle || featuredVideo.title}
               overlaySubtitle={featuredVideo.hotintro}
+              gradientType="videos"
               extra={
                 (featuredVideo.src
                   ? <button
                       onClick={() => openPlay(featuredVideo.title, featuredVideo.poster, featuredVideo.src)}
-                      className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-theme-primary bg-theme-card/80 hover:bg-theme-hover text-sm"
+                      className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-theme-primary bg-theme-card/80 hover:bg-theme-hover text-sm text-theme-primary"
                     ><PlayIcon /> 立即播放</button>
                   : <Link
                       to={`/videos/${featuredVideo.slug}`}
-                      className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-theme-primary bg-theme-card/80 hover:bg-theme-hover text-sm"
+                      className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-theme-primary bg-theme-card/80 hover:bg-theme-hover text-sm text-theme-primary"
                     ><PlayIcon /> 查看详情</Link>
                 )
               }
@@ -178,24 +176,70 @@ export default function Home() {
         }
       />
 
-      {/* 设计（单独组件，使用 /public/home/design/cover.jpg） */}
-      <HomeDesign />
+      {/* 设计板块 */}
+      <section id="home-design" className="border-t border-theme-primary bg-theme-primary" style={{ background: 'var(--design-gradient)' }}>
+        <div className="max-w-[1120px] mx-auto px-4 py-12">
+          {/* 右上角 CTA */}
+          <div className="flex justify-end">
+            <Link
+              to="/design"
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-white/20 bg-black/10 hover:bg-black/20 text-sm transition-colors duration-200 text-white"
+            >
+              进入设计页
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 4l1.41 1.41L8.83 10H20v2H8.83l4.58 4.59L12 18l-8-8 8-8z" transform="scale(-1,1) translate(-24,0)"/>
+              </svg>
+            </Link>
+          </div>
+
+          {/* 整张卡片可点击 */}
+          <Link to="/design" className="mt-6 block group overflow-hidden rounded-2xl border border-white/20 bg-black/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/20">
+            <div className="relative aspect-[16/9] w-full overflow-hidden">
+              <img
+                src="/home/design/cover.jpg"
+                alt="设计代表作"
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                loading="lazy"
+                decoding="async"
+              />
+              {/* 覆盖文案 */}
+              <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" style={{ background: 'var(--design-gradient-overlay)' }} />
+                <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6">
+                  <div className="text-white text-lg md:text-2xl font-semibold tracking-tight">补品包装设计</div>
+                  <div className="mt-1 text-white/85 text-xs md:text-sm max-w-[85%]">
+                    立即查看我们的获奖设计作品集
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="p-3" style={{ backgroundColor: 'rgba(0, 0, 0, 0.1)' }}>
+              <div className="text-white text-sm font-medium">进入设计页查看更多方案</div>
+            </div>
+          </Link>
+        </div>
+      </section>
 
       {/* 音乐（动态展示 music.json 的第一条） */}
       <SectionOverlayCard
         id="home-music"
         ctaText="进入音乐页"
         ctaTo="/music"
+        gradientType="music"
+        ctaTextColor="text-white"
         card={
-          featuredMusic ? (
-            <CardImage
-              to={`/music/${featuredMusic.slug}`}
-              src={getGitHubUrl(featuredMusic.cover)}
-              captionTitle={featuredMusic.title}
-              overlayTitle={featuredMusic.hottitle || featuredMusic.title}
-              overlaySubtitle={featuredMusic.hotintro}
-            />
-          ) : <EmptyCard tip="还没有添加音乐。" />
+                           featuredMusic ? (
+                   <CardImage
+                     to={`/music/${featuredMusic.slug}`}
+                     src={getGitHubUrl(featuredMusic.cover)}
+                     captionTitle={featuredMusic.title}
+                     overlayTitle={featuredMusic.hottitle || featuredMusic.title}
+                     overlaySubtitle={featuredMusic.hotintro}
+                     gradientType="music"
+                     textColor="text-white"
+                     extraTextColor="text-white"
+                   />
+                 ) : <EmptyCard tip="还没有添加音乐。" />
         }
       />
 
@@ -325,12 +369,21 @@ export default function Home() {
 }
 
 /* —— 公用 UI —— */
-function SectionOverlayCard({ id, ctaText, ctaTo, card }) {
+function SectionOverlayCard({ id, ctaText, ctaTo, card, gradientType = 'photos', ctaTextColor = 'text-theme-primary' }) {
+  const getGradientStyle = () => {
+    switch (gradientType) {
+      case 'photos': return { background: 'var(--photos-gradient)' };
+      case 'videos': return { background: 'var(--videos-gradient)' };
+      case 'music': return { background: 'var(--music-gradient)' };
+      default: return { background: 'var(--photos-gradient)' };
+    }
+  };
+
   return (
-          <section id={id} className="border-t border-theme-primary bg-theme-primary">
+    <section id={id} className="border-t border-theme-primary bg-theme-primary" style={getGradientStyle()}>
       <div className="max-w-[1120px] mx-auto px-4 py-12">
         <div className="flex justify-end">
-                      <Link to={ctaTo} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-theme-primary bg-theme-card hover:bg-theme-hover text-sm">
+          <Link to={ctaTo} className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-theme-primary bg-black/5 hover:bg-black/15 text-sm transition-colors duration-200 ${ctaTextColor}`} style={{ color: ctaTextColor === 'text-white' ? '#ffffff' : undefined }}>
             {ctaText} <ArrowRight />
           </Link>
         </div>
@@ -340,9 +393,18 @@ function SectionOverlayCard({ id, ctaText, ctaTo, card }) {
   );
 }
 
-function CardImage({ src, captionTitle, overlayTitle, overlaySubtitle, to, extra }) {
+function CardImage({ src, captionTitle, overlayTitle, overlaySubtitle, to, extra, gradientType = 'photos', textColor = 'text-theme-primary', extraTextColor = 'text-theme-primary' }) {
+  const getOverlayGradient = () => {
+    switch (gradientType) {
+      case 'photos': return 'var(--photos-gradient-overlay)';
+      case 'videos': return 'var(--videos-gradient-overlay)';
+      case 'music': return 'var(--music-gradient-overlay)';
+      default: return 'var(--photos-gradient-overlay)';
+    }
+  };
+
   const image = (
-            <div className="group overflow-hidden rounded-2xl border border-theme-primary bg-theme-card">
+    <div className="group overflow-hidden rounded-2xl border border-theme-primary bg-black/5">
       <div className="relative aspect-[16/9] w-full overflow-hidden">
         <img
           src={src}
@@ -352,7 +414,7 @@ function CardImage({ src, captionTitle, overlayTitle, overlaySubtitle, to, extra
           decoding="async"
         />
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+          <div className="absolute inset-0" style={{ background: getOverlayGradient() }} />
           <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6">
             {overlayTitle && (
               <div className="text-white text-lg md:text-2xl font-semibold tracking-tight">
@@ -367,9 +429,12 @@ function CardImage({ src, captionTitle, overlayTitle, overlaySubtitle, to, extra
           </div>
         </div>
       </div>
-      <div className="p-3">
-        {captionTitle && <div className="text-sm font-medium text-theme-primary">{captionTitle}</div>}
-        {extra}
+      <div className="p-3 bg-black/5">
+        {captionTitle && <div className={`text-sm font-medium ${textColor}`} style={{ color: textColor === 'text-white' ? '#ffffff' : undefined }}>{captionTitle}</div>}
+        {extra && React.cloneElement(extra, { 
+          className: `${extra.props.className || ''} ${extraTextColor}`.trim(),
+          style: { ...extra.props.style, color: extraTextColor === 'text-white' ? '#ffffff' : undefined }
+        })}
       </div>
     </div>
   );
@@ -377,7 +442,7 @@ function CardImage({ src, captionTitle, overlayTitle, overlaySubtitle, to, extra
 }
 
 function EmptyCard({ tip = "暂无内容" }) {
-  return <div className="overflow-hidden rounded-2xl border border-theme-primary bg-theme-card p-6 text-theme-muted">{tip}</div>;
+  return <div className="overflow-hidden rounded-2xl border border-theme-primary bg-black/5 p-6 text-theme-muted">{tip}</div>;
 }
 function PlayIcon() {
   return <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>;

@@ -8,6 +8,7 @@
   /* 深色主题（默认） */
   --bg-primary: #0a0a0a;
   --bg-primary-80: rgba(10, 10, 10, 0.8);
+  --toolbar-bg: rgba(10, 10, 10, 0.9);
   --bg-secondary: #171717;
   --bg-tertiary: #262626;
   --bg-card: #1c1c1c;
@@ -34,7 +35,8 @@
 /* 浅色主题 */
 [data-theme="light"] {
   --bg-primary: #ffffff;
-  --bg-primary-80: rgba(255, 255, 255, 0.2);
+  --bg-primary-80: rgba(163, 122, 99, 0.2);
+  --toolbar-bg: rgba(249, 223, 209, 0.7);
   --bg-secondary: #fafafa;
   --bg-tertiary: #f5f5f5;
   --bg-card: #ffffff;
@@ -56,12 +58,41 @@
   
   --shadow-primary: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
   --shadow-secondary: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  
+  /* 浅色模式下的工具栏和菜单栏 */
+  --toolbar-bg: rgba(255, 255, 255, 0.4);
+  --drawer-bg: rgba(255, 255, 255, 0.4);
+  --toolbar-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.15);
+  
+  /* 浅色模式下的主题色 */
+  --theme-color: #a37a63;
+  --theme-color-light: rgba(163, 122, 99, 0.2);
+  --theme-color-medium: rgba(163, 122, 99, 0.4);
+  
+  /* 浅色模式下的照片板块渐变 */
+  --photos-gradient: linear-gradient(135deg, #C6FFDD 0%, #FBD786 50%, #F7797D 100%);
+  
+  /* 浅色模式下的视频板块渐变 */
+  --videos-gradient: linear-gradient(135deg, #A1FFCE 0%, #FAFFD1 100%);
+  
+  /* 浅色模式下的设计板块渐变 */
+  --design-gradient: linear-gradient(135deg, #000428 0%, #004E92 100%);
+  
+  /* 浅色模式下的音乐板块渐变 */
+  --music-gradient: linear-gradient(135deg, #8E0E00 0%, #1F1C18 100%);
+  
+  /* 浅色模式下图片覆盖层的渐变（保持渐变效果） */
+  --photos-gradient-overlay: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3), transparent);
+  --videos-gradient-overlay: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3), transparent);
+  --design-gradient-overlay: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3), transparent);
+  --music-gradient-overlay: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3), transparent);
 }
 
 /* 深色主题 */
 [data-theme="dark"] {
   --bg-primary: #0a0a0a;
-  --bg-primary-80: rgba(10, 10, 10, 0.8);
+  --bg-primary-80: rgba(10, 10, 10, 0.4);
+  --toolbar-bg: rgba(10, 10, 10, 0.4);
   --bg-secondary: #171717;
   --bg-tertiary: #262626;
   --bg-card: #1c1c1c;
@@ -83,6 +114,12 @@
   
   --shadow-primary: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   --shadow-secondary: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  
+  /* 深色模式下图片覆盖层的渐变（保持原有渐变） */
+  --photos-gradient-overlay: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3), transparent);
+  --videos-gradient-overlay: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3), transparent);
+  --design-gradient-overlay: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3), transparent);
+  --music-gradient-overlay: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3), transparent);
 }
 
 /* 基础样式 */
@@ -90,6 +127,18 @@ body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* 去除主题切换按钮的焦点边框 */
+button:focus,
+button:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* 去除所有按钮的默认焦点样式 */
+button:focus {
+  outline: none !important;
 }
 
 /* 主题切换过渡动画 */
@@ -166,4 +215,42 @@ body {
 
 .link-theme:hover {
   color: var(--accent-hover);
+}
+
+[data-theme="light"] .toolbar-glass {
+  background-color: rgba(255, 255, 255, 0.4);
+  backdrop-filter: saturate(1.1) blur(10px);
+  -webkit-backdrop-filter: saturate(1.1) blur(10px);
+  border-bottom: 1px solid rgba(229, 229, 229, 0.2);
+  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="dark"] .toolbar-glass {
+  background-color: rgba(10, 10, 10, 0.4);
+  backdrop-filter: saturate(1.1) blur(10px);
+  -webkit-backdrop-filter: saturate(1.1) blur(10px);
+  border-bottom: 1px solid #404040;
+  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="light"] .drawer-glass {
+  background-color: rgba(255, 255, 255, 0.4);
+  backdrop-filter: saturate(1.1) blur(10px);
+  -webkit-backdrop-filter: saturate(1.1) blur(10px);
+  border-left: 1px solid rgba(229, 229, 229, 0.2);
+}
+
+[data-theme="dark"] .drawer-glass {
+  background-color: rgba(10, 10, 10, 0.4);
+  backdrop-filter: saturate(1.1) blur(10px);
+  -webkit-backdrop-filter: saturate(1.1) blur(10px);
+  border-left: 1px solid #404040;
+}
+
+[data-theme="light"] .overlay-glass {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] .overlay-glass {
+  background-color: rgba(0, 0, 0, 0.5);
 }
