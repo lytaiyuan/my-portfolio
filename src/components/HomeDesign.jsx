@@ -7,13 +7,13 @@ export default function HomeDesign() {
   const cover = `${"/home/design/cover.jpg"}${import.meta.env.DEV ? `?v=${Date.now()}` : ""}`;
 
   return (
-    <section id="home-design" className="border-t border-neutral-900/80 bg-neutral-950">
+    <section id="home-design" className="border-t border-theme-primary bg-theme-primary">
       <div className="max-w-[1120px] mx-auto px-4 py-12">
         {/* 右上角 CTA */}
         <div className="flex justify-end">
           <Link
             to="/design"
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-neutral-700 bg-neutral-900 hover:bg-neutral-800 text-sm"
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-theme-primary bg-theme-card hover:bg-theme-hover text-sm"
           >
             进入设计页
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
@@ -23,7 +23,7 @@ export default function HomeDesign() {
         </div>
 
         {/* 整张卡片可点击 */}
-        <Link to="/design" className="mt-6 block group overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-600">
+        <Link to="/design" className="mt-6 block group overflow-hidden rounded-2xl border border-theme-primary bg-theme-card focus:outline-none focus-visible:ring-2 focus-visible:ring-theme-accent">
           <div className="relative aspect-[16/9] w-full overflow-hidden">
             <img
               src={cover}
@@ -44,7 +44,7 @@ export default function HomeDesign() {
             </div>
           </div>
           <div className="p-3">
-            <div className="text-sm font-medium text-neutral-100">进入设计页查看更多方案</div>
+            <div className="text-sm font-medium text-theme-primary">进入设计页查看更多方案</div>
           </div>
         </Link>
       </div>

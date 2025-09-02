@@ -134,28 +134,28 @@ export default function Photos() {
   if (err) return <div className="min-h-[60svh] grid place-items-center text-neutral-400">读取 photos.json 出错：{String(err.message || err)}</div>;
 
   return (
-    <div className="bg-neutral-950 text-neutral-100">
+    <div className="bg-theme-primary text-theme-primary">
       {/* 顶部留白标题（简洁版） */}
-      <section className="border-b border-neutral-900/80 bg-neutral-950">
+              <section className="border-b border-theme-primary bg-theme-primary">
         <div className="max-w-[1120px] mx-auto px-4 py-8">
           <h1 className="text-2xl font-semibold">图片</h1>
         </div>
       </section>
 
       {/* 筛选区 */}
-      <section className="bg-neutral-950">
+      <section className="bg-theme-primary">
         <div className="max-w-[1120px] mx-auto px-4 py-6">
           <div className="flex flex-wrap items-center gap-2">
             {tags.map((t) => (
               <button
                 key={t}
                 onClick={() => setTag(t)}
-                className={cx(
-                  "px-3 py-1.5 rounded-full text-sm border transition",
-                  tag === t
-                    ? "bg-neutral-100 text-neutral-900 border-neutral-200"
-                    : "bg-neutral-900 text-neutral-300 border-neutral-800 hover:bg-neutral-800"
-                )}
+                                  className={cx(
+                    "px-3 py-1.5 rounded-full text-sm border transition",
+                    tag === t
+                      ? "bg-theme-secondary text-theme-primary border-theme-secondary"
+                      : "bg-theme-card text-theme-secondary border-theme-primary hover:bg-theme-hover"
+                  )}
               >
                 {t}
               </button>
@@ -166,7 +166,7 @@ export default function Photos() {
                 placeholder="搜索标题…"
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
-                className="w-full rounded-xl border border-neutral-800 px-3 py-2 text-sm bg-neutral-900 text-neutral-100 placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-neutral-600"
+                className="w-full rounded-xl border border-theme-primary px-3 py-2 text-sm bg-theme-card text-theme-primary placeholder:text-theme-muted focus:outline-none focus:ring-2 focus:ring-theme-accent"
               />
             </div>
           </div>
@@ -174,7 +174,7 @@ export default function Photos() {
       </section>
 
       {/* Masonry 瀑布流 */}
-      <section className="bg-neutral-950">
+      <section className="bg-theme-primary">
         <div className="max-w-[1120px] mx-auto px-4 pb-10">
           <div className="mt-2 columns-1 sm:columns-2 lg:columns-3 gap-4 [column-fill:_balance]">
             <AnimatePresence>
@@ -186,7 +186,7 @@ export default function Photos() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.98 }}
                   transition={{ duration: 0.25 }}
-                  className="mb-4 break-inside-avoid overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900 cursor-zoom-in"
+                  className="mb-4 break-inside-avoid overflow-hidden rounded-2xl border border-theme-primary bg-theme-card cursor-zoom-in"
                   onClick={() => openBox(i)}
                 >
                   <img
@@ -201,7 +201,7 @@ export default function Photos() {
                     {!!img.desc && <div className="mt-1 text-xs text-neutral-400 line-clamp-2">{img.desc}</div>}
                     <div className="mt-2 flex flex-wrap gap-1">
                       {(img.tags || []).map((t) => (
-                        <span key={t} className="px-2 py-0.5 text-xs rounded-full bg-neutral-800 text-neutral-300 border border-neutral-700">
+                        <span key={t} className="px-2 py-0.5 text-xs rounded-full bg-theme-secondary text-theme-secondary border border-theme-primary">
                           {t}
                         </span>
                       ))}
@@ -230,7 +230,7 @@ export default function Photos() {
               {/* 关闭按钮固定在右上角（和手机抽屉按钮对齐） */}
               <button
                 onClick={closeBox}
-                className="absolute top-3 right-4 px-3 py-1.5 rounded-full border border-neutral-700 bg-neutral-900/90 text-neutral-200 text-sm hover:bg-neutral-800"
+                className="absolute top-3 right-4 px-3 py-1.5 rounded-full border border-theme-primary bg-theme-card/90 text-theme-secondary text-sm hover:bg-theme-hover"
               >
                 关闭
               </button>

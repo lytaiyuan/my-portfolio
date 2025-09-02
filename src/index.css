@@ -3,12 +3,167 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 可选：全局暗色背景兜底 */
-html, body, #root { height: 100%; }
-body { background: #0a0a0a; }
-/* --- glass fallback: 固定 50% 半透明 + 模糊，不依赖 Tailwind --- */
-.glass {
-  background-color: rgba(10,10,10,0.3);        /* 50% 透明黑 */
-  -webkit-backdrop-filter: saturate(1.1) blur(10px);
-  backdrop-filter: saturate(1.1) blur(10px);
+/* 主题CSS变量 */
+:root {
+  /* 深色主题（默认） */
+  --bg-primary: #0a0a0a;
+  --bg-primary-80: rgba(10, 10, 10, 0.8);
+  --bg-secondary: #171717;
+  --bg-tertiary: #262626;
+  --bg-card: #1c1c1c;
+  --bg-hover: #262626;
+  
+  --text-primary: #fafafa;
+  --text-secondary: #a3a3a3;
+  --text-muted: #737373;
+  
+  --border-primary: #404040;
+  --border-secondary: #525252;
+  --border-hover: #737373;
+  
+  --accent-primary: #3b82f6;
+  --accent-hover: #60a5fa;
+  
+  --hero-gradient: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.6));
+  --overlay-color: rgba(0, 0, 0, 0.5);
+  
+  --shadow-primary: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-secondary: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* 浅色主题 */
+[data-theme="light"] {
+  --bg-primary: #ffffff;
+  --bg-primary-80: rgba(255, 255, 255, 0.2);
+  --bg-secondary: #fafafa;
+  --bg-tertiary: #f5f5f5;
+  --bg-card: #ffffff;
+  --bg-hover: #f5f5f5;
+  
+  --text-primary: #000000;
+  --text-secondary: #000000;
+  --text-muted: #000000;
+  
+  --border-primary: rgba(229, 229, 229, 0.2);
+  --border-secondary: rgba(212, 212, 212, 0.2);
+  --border-hover: rgba(163, 163, 163, 0.2);
+  
+  --accent-primary: #2563eb;
+  --accent-hover: #3b82f6;
+  
+  --hero-gradient: none;
+  --overlay-color: rgba(0, 0, 0, 0.1);
+  
+  --shadow-primary: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  --shadow-secondary: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* 深色主题 */
+[data-theme="dark"] {
+  --bg-primary: #0a0a0a;
+  --bg-primary-80: rgba(10, 10, 10, 0.8);
+  --bg-secondary: #171717;
+  --bg-tertiary: #262626;
+  --bg-card: #1c1c1c;
+  --bg-hover: #262626;
+  
+  --text-primary: #fafafa;
+  --text-secondary: #a3a3a3;
+  --text-muted: #737373;
+  
+  --border-primary: #404040;
+  --border-secondary: #525252;
+  --border-hover: #737373;
+  
+  --accent-primary: #3b82f6;
+  --accent-hover: #60a5fa;
+  
+  --hero-gradient: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.6));
+  --overlay-color: rgba(0, 0, 0, 0.5);
+  
+  --shadow-primary: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-secondary: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* 基础样式 */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* 主题切换过渡动画 */
+* {
+  transition: background-color 0.3s ease, 
+              color 0.3s ease, 
+              border-color 0.3s ease, 
+              box-shadow 0.3s ease;
+}
+
+/* 通用组件样式 */
+.bg-theme-primary { background-color: var(--bg-primary); }
+.bg-theme-secondary { background-color: var(--bg-secondary); }
+.bg-theme-tertiary { background-color: var(--bg-tertiary); }
+.bg-theme-card { background-color: var(--bg-card); }
+.bg-theme-hover { background-color: var(--bg-hover); }
+
+.text-theme-primary { color: var(--text-primary); }
+.text-theme-secondary { color: var(--text-secondary); }
+.text-theme-muted { color: var(--text-muted); }
+
+.border-theme-primary { border-color: var(--border-primary); }
+.border-theme-secondary { border-color: var(--border-secondary); }
+.border-theme-hover { border-color: var(--border-hover); }
+
+.shadow-theme-primary { box-shadow: var(--shadow-primary); }
+.shadow-theme-secondary { box-shadow: var(--shadow-secondary); }
+
+/* 悬停效果 */
+.hover\:bg-theme-hover:hover { background-color: var(--bg-hover); }
+.hover\:border-theme-hover:hover { border-color: var(--border-hover); }
+
+/* 焦点效果 */
+.focus\:ring-theme-accent:focus { 
+  --tw-ring-color: var(--accent-primary);
+  --tw-ring-opacity: 0.5;
+}
+
+/* 按钮样式 */
+.btn-theme {
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  border-color: var(--border-primary);
+}
+
+.btn-theme:hover {
+  background-color: var(--bg-hover);
+  border-color: var(--border-hover);
+}
+
+/* 卡片样式 */
+.card-theme {
+  background-color: var(--bg-card);
+  border-color: var(--border-primary);
+  box-shadow: var(--shadow-primary);
+}
+
+/* 输入框样式 */
+.input-theme {
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  border-color: var(--border-primary);
+}
+
+.input-theme:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* 链接样式 */
+.link-theme {
+  color: var(--accent-primary);
+}
+
+.link-theme:hover {
+  color: var(--accent-hover);
 }

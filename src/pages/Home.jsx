@@ -72,7 +72,7 @@ export default function Home() {
   const closePlay = () => setPlayer(null);
 
   if (contentLoading || loading) {
-    return <div className="min-h-[60svh] grid place-items-center text-neutral-400">加载主页内容…</div>;
+    return <div className="min-h-[60svh] grid place-items-center text-theme-muted">加载主页内容…</div>;
   }
 
   return (
@@ -94,7 +94,7 @@ export default function Home() {
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1.0, ease: "easeOut" }}
-                className="text-[28px] leading-tight font-medium tracking-[-0.01em] md:text-[44px] md:leading-[1.1]"
+                className="text-[28px] leading-tight font-medium tracking-[-0.01em] md:text-[44px] md:leading-[1.1] text-white"
               >
                 Li Yang  |  Studio
               </motion.h1>
@@ -102,24 +102,27 @@ export default function Home() {
                 initial={{ opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1.0, delay: 0.05, ease: "easeOut" }}
-                className="mt-3 text-neutral-100/95 max-w-prose md:text-lg"
+                className="mt-3 text-white/95 max-w-prose md:text-lg"
               >
                 让影像、设计、音乐诉说着同一种语言。
               </motion.p>
 
               {/* 桌面端快捷按钮（手机隐藏） */}
               <div className="mt-6 hidden md:flex flex-wrap gap-3">
-                <Link to="/photos" className="px-4 py-2 rounded-xl border border-neutral-800 bg-neutral-900/90 hover:bg-neutral-800 transition">图片</Link>
-                <Link to="/videos" className="px-4 py-2 rounded-xl border border-neutral-800 bg-neutral-900/90 hover:bg-neutral-800 transition">视频</Link>
-                <Link to="/design" className="px-4 py-2 rounded-xl border border-neutral-800 bg-neutral-900/90 hover:bg-neutral-800 transition">设计</Link>
-                <Link to="/music"  className="px-4 py-2 rounded-xl border border-neutral-800 bg-neutral-900/90 hover:bg-neutral-800 transition">音乐</Link>
+                <Link to="/photos" className="px-4 py-2 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">图片</Link>
+                <Link to="/videos" className="px-4 py-2 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">视频</Link>
+                <Link to="/design" className="px-4 py-2 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">设计</Link>
+                <Link to="/music"  className="px-4 py-2 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">音乐</Link>
               </div>
             </div>
             <div className="hidden md:block" />
           </div>
         </div>
         <motion.div
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-40 z-10 bg-gradient-to-b from-transparent to-black/60"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-40 z-10"
+          style={{
+            background: 'var(--hero-gradient)'
+          }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1.0, ease: "easeOut" }}
@@ -162,11 +165,11 @@ export default function Home() {
                 (featuredVideo.src
                   ? <button
                       onClick={() => openPlay(featuredVideo.title, featuredVideo.poster, featuredVideo.src)}
-                      className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-neutral-700 bg-neutral-800/80 hover:bg-neutral-800 text-sm"
+                      className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-theme-primary bg-theme-card/80 hover:bg-theme-hover text-sm"
                     ><PlayIcon /> 立即播放</button>
                   : <Link
                       to={`/videos/${featuredVideo.slug}`}
-                      className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-neutral-700 bg-neutral-800/80 hover:bg-neutral-800 text-sm"
+                      className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-theme-primary bg-theme-card/80 hover:bg-theme-hover text-sm"
                     ><PlayIcon /> 查看详情</Link>
                 )
               }
@@ -197,29 +200,29 @@ export default function Home() {
       />
 
       {/* —— 关于我们（恢复） —— */}
-      <section id="about" className="border-t border-neutral-900/80 bg-neutral-950">
+              <section id="about" className="border-t border-theme-primary bg-theme-primary">
         <div className="max-w-[1120px] mx-auto px-4 py-14">
           <h2 className="text-2xl font-semibold">关于我们</h2>
 
           {/* 李洋 */}
-          <article className="mt-8 rounded-2xl border border-neutral-800 bg-neutral-900 p-4 md:p-6">
+          <article className="mt-8 rounded-2xl border border-theme-primary bg-theme-card p-4 md:p-6">
             <div className="grid gap-6 md:grid-cols-12 md:items-center">
               <div className="md:col-span-5">
                 <h3 className="text-2xl md:text-3xl font-semibold tracking-tight">李洋</h3>
-                <p className="mt-2 text-neutral-300 text-sm leading-relaxed">
+                <p className="mt-2 text-theme-secondary text-sm leading-relaxed">
                   作曲人、摄影师。摩托、咖啡与露营爱好者。常驻云南与山西。
                 </p>
               </div>
               <div className="md:col-span-4">
-                <h4 className="text-sm font-medium text-neutral-200">优势</h4>
-                <ul className="mt-2 space-y-2 text-sm text-neutral-300/90 list-disc pl-5">
+                <h4 className="text-sm font-medium text-theme-secondary">优势</h4>
+                <ul className="mt-2 space-y-2 text-sm text-theme-secondary list-disc pl-5">
                   <li>关注自然与人文的呼吸</li>
                   <li>创作涵盖音乐、影像与多媒体叙事</li>
                   <li>可提供从作曲录音到拍摄后期的一体化解决方案</li>
                 </ul>
               </div>
               <div className="md:col-span-3 justify-self-start md:justify-self-end">
-                <div className="w-36 md:w-40 aspect-[3/4] overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900">
+                <div className="w-36 md:w-40 aspect-[3/4] overflow-hidden rounded-xl border border-theme-primary bg-theme-card">
                   <img src="/about.jpg" alt="李洋" className="w-full h-full object-cover" />
                 </div>
               </div>
@@ -227,24 +230,24 @@ export default function Home() {
           </article>
 
           {/* 王蒙 */}
-          <article className="mt-6 rounded-2xl border border-neutral-800 bg-neutral-900 p-4 md:p-6">
+          <article className="mt-6 rounded-2xl border border-theme-primary bg-theme-card p-4 md:p-6">
             <div className="grid gap-6 md:grid-cols-12 md:items-center">
               <div className="md:col-span-5">
                 <h3 className="text-2xl md:text-3xl font-semibold tracking-tight">王蒙</h3>
-                <p className="mt-2 text-neutral-300 text-sm leading-relaxed">
+                <p className="mt-2 text-theme-secondary text-sm leading-relaxed">
                   设计师、创业导师。露营、马拉松与单车长途爱好者。
                 </p>
               </div>
               <div className="md:col-span-4">
-                <h4 className="text-sm font-medium text-neutral-200">优势</h4>
-                <ul className="mt-2 space-y-2 text-sm text-neutral-300/90 list-disc pl-5">
+                <h4 className="text-sm font-medium text-theme-secondary">优势</h4>
+                <ul className="mt-2 space-y-2 text-sm text-theme-secondary list-disc pl-5">
                   <li>专注品牌视觉与产品形象打造</li>
                   <li>可提供整套 VI 设计与产品摄影</li>
                   <li>包装/平面设计等全方位方案</li>
                 </ul>
               </div>
               <div className="md:col-span-3 justify-self-start md:justify-self-end">
-                <div className="w-36 md:w-40 aspect-[3/4] overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900">
+                <div className="w-36 md:w-40 aspect-[3/4] overflow-hidden rounded-xl border border-theme-primary bg-theme-card">
                   <img src="/about2.jpg" alt="王蒙" className="w-full h-full object-cover" />
                 </div>
               </div>
@@ -252,24 +255,24 @@ export default function Home() {
           </article>
 
           {/* 原世芳 */}
-          <article className="mt-6 rounded-2xl border border-neutral-800 bg-neutral-900 p-4 md:p-6">
+          <article className="mt-6 rounded-2xl border border-theme-primary bg-theme-card p-4 md:p-6">
             <div className="grid gap-6 md:grid-cols-12 md:items-center">
               <div className="md:col-span-5">
                 <h3 className="text-2xl md:text-3xl font-semibold tracking-tight">原世芳</h3>
-                <p className="mt-2 text-neutral-300 text-sm leading-relaxed">
+                <p className="mt-2 text-theme-secondary text-sm leading-relaxed">
                   占位符描述文字，请根据实际情况修改。
                 </p>
               </div>
-              <div className="md:col-span-4">
-                <h4 className="text-sm font-medium text-neutral-200">优势</h4>
-                <ul className="mt-2 space-y-2 text-sm text-neutral-300/90 list-disc pl-5">
+                             <div className="md:col-span-4">
+                <h4 className="text-sm font-medium text-theme-secondary">优势</h4>
+                <ul className="mt-2 space-y-2 text-sm text-theme-secondary list-disc pl-5">
                   <li>占位符优势描述1</li>
                   <li>占位符优势描述2</li>
                   <li>占位符优势描述3</li>
                 </ul>
               </div>
               <div className="md:col-span-3 justify-self-start md:justify-self-end">
-                <div className="w-36 md:w-40 aspect-[3/4] overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900">
+                <div className="w-36 md:w-40 aspect-[3/4] overflow-hidden rounded-xl border border-theme-primary bg-theme-card">
                   <img src="/about3.jpg" alt="原世芳" className="w-full h-full object-cover" />
                 </div>
               </div>
@@ -279,15 +282,15 @@ export default function Home() {
       </section>
 
       {/* —— 联系（恢复） —— */}
-      <section id="contact" className="border-t border-neutral-900/80 bg-neutral-950">
+      <section id="contact" className="border-t border-theme-primary bg-theme-primary">
         <div className="max-w-[1120px] mx-auto px-4 py-14">
           <div className="max-w-2xl">
             <h2 className="text-2xl font-semibold">联系</h2>
-            <p className="mt-2 text-neutral-400 text-sm">
+            <p className="mt-2 text-theme-muted text-sm">
               欢迎合作。请发送邮件至 <a className="underline" href="mailto:lytaiyuan@qq.com">lytaiyuan@qq.com</a>，
               或通过下方社交账号联系。
             </p>
-            <div className="mt-6 text-sm text-neutral-400 space-y-1">
+            <div className="mt-6 text-sm text-theme-muted space-y-1">
               <p>微信：LYPUBL</p>
               <p>手机：150 3514 8062</p>
               <p>小红书：@6738496349</p>
@@ -307,12 +310,12 @@ export default function Home() {
             <div className="relative max-w-5xl w-full" onClick={(e) => e.stopPropagation()}>
               <button
                 onClick={closePlay}
-                className="absolute -top-10 right-0 px-3 py-1.5 rounded-full border border-neutral-700 bg-neutral-900 text-neutral-200 text-sm hover:bg-neutral-800"
+                className="absolute -top-10 right-0 px-3 py-1.5 rounded-full border border-theme-primary bg-theme-card text-theme-secondary text-sm hover:bg-theme-hover"
               >关闭</button>
               <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-black">
                 <video src={player.src} poster={player.poster} controls playsInline preload="metadata" className="w-full h-auto block" />
               </div>
-              <div className="mt-3 text-neutral-300 text-sm"><strong>{player.title}</strong></div>
+              <div className="mt-3 text-theme-secondary text-sm"><strong>{player.title}</strong></div>
             </div>
           </motion.div>
         )}
@@ -324,10 +327,10 @@ export default function Home() {
 /* —— 公用 UI —— */
 function SectionOverlayCard({ id, ctaText, ctaTo, card }) {
   return (
-    <section id={id} className="border-t border-neutral-900/80 bg-neutral-950">
+          <section id={id} className="border-t border-theme-primary bg-theme-primary">
       <div className="max-w-[1120px] mx-auto px-4 py-12">
         <div className="flex justify-end">
-          <Link to={ctaTo} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-neutral-700 bg-neutral-900 hover:bg-neutral-800 text-sm">
+                      <Link to={ctaTo} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-theme-primary bg-theme-card hover:bg-theme-hover text-sm">
             {ctaText} <ArrowRight />
           </Link>
         </div>
@@ -339,7 +342,7 @@ function SectionOverlayCard({ id, ctaText, ctaTo, card }) {
 
 function CardImage({ src, captionTitle, overlayTitle, overlaySubtitle, to, extra }) {
   const image = (
-    <div className="group overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900">
+            <div className="group overflow-hidden rounded-2xl border border-theme-primary bg-theme-card">
       <div className="relative aspect-[16/9] w-full overflow-hidden">
         <img
           src={src}
@@ -365,7 +368,7 @@ function CardImage({ src, captionTitle, overlayTitle, overlaySubtitle, to, extra
         </div>
       </div>
       <div className="p-3">
-        {captionTitle && <div className="text-sm font-medium text-neutral-100">{captionTitle}</div>}
+        {captionTitle && <div className="text-sm font-medium text-theme-primary">{captionTitle}</div>}
         {extra}
       </div>
     </div>
@@ -374,7 +377,7 @@ function CardImage({ src, captionTitle, overlayTitle, overlaySubtitle, to, extra
 }
 
 function EmptyCard({ tip = "暂无内容" }) {
-  return <div className="overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900 p-6 text-neutral-400">{tip}</div>;
+  return <div className="overflow-hidden rounded-2xl border border-theme-primary bg-theme-card p-6 text-theme-muted">{tip}</div>;
 }
 function PlayIcon() {
   return <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>;

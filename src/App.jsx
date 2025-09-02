@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from "react";
 import { Routes, Route, Link, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
+import ThemeToggle from "./components/ThemeToggle";
+import ThemeImage from "./components/ThemeImage";
 
 import Home from "./pages/Home.jsx";
 import Photos from "./pages/Photos.jsx";
@@ -30,10 +32,10 @@ function FixedGlassBar() {
         height: HEADER_HEIGHT_PX,
         zIndex: 105,
         pointerEvents: "none",
-        backgroundColor: `rgba(10,10,10,${OPACITY_HEADER})`,
+        backgroundColor: `var(--bg-primary-80)`,
         backdropFilter: "saturate(1.1) blur(10px)",
         WebkitBackdropFilter: "saturate(1.1) blur(10px)",
-        borderBottom: "1px solid rgba(38,38,38,0.8)", // neutral-800/80
+        borderBottom: "1px solid var(--border-primary)",
       }}
       aria-hidden
     />
@@ -64,18 +66,18 @@ function TopNav() {
       className="sticky top-0 z-[110] isolate"
       style={{
         height: HEADER_HEIGHT_PX,
-        borderBottom: "1px solid rgba(38,38,38,0.8)", // neutral-800/80
+        borderBottom: "1px solid var(--border-primary)",
       }}
     >
       <div className="max-w-[1120px] mx-auto px-4">
         <div className="h-12 flex items-center justify-between md:grid md:grid-cols-3 md:justify-normal">
           {/* 手机：左 LOGO */}
           <Link to="/" className="md:hidden flex items-center">
-            <img src="/logo.png" alt="Li Yang Studio" className="h-5 w-auto" />
+            <ThemeImage type="logo" alt="Li Yang Studio" className="h-5 w-auto" />
           </Link>
 
           {/* 桌面：左侧菜单 */}
-          <nav className="hidden md:flex justify-self-start gap-6 text-sm text-neutral-400">
+          <nav className="hidden md:flex justify-self-start gap-6 text-sm text-theme-secondary">
             <NavLink to="/">主页</NavLink>
             <NavLink to="/photos">图片</NavLink>
             <NavLink to="/videos">视频</NavLink>
@@ -85,11 +87,13 @@ function TopNav() {
 
           {/* 桌面：中 LOGO */}
           <Link to="/" className="hidden md:flex justify-self-center items-center">
-            <img src="/logo.png" alt="Li Yang Studio" className="h-5 w-auto" />
+            <ThemeImage type="logo" alt="Li Yang Studio" className="h-5 w-auto" />
           </Link>
 
-          {/* 桌面：右占位 */}
-          <div className="hidden md:block justify-self-end" />
+          {/* 桌面：右侧主题切换按钮 */}
+          <div className="hidden md:flex justify-self-end items-center">
+            <ThemeToggle variant="desktop" />
+          </div>
 
           {/* 手机：右侧菜单键 */}
           <div className="md:hidden">
@@ -97,9 +101,9 @@ function TopNav() {
               <button
                 aria-label="打开菜单"
                 onClick={() => setOpen(true)}
-                className="p-2 rounded-lg border border-neutral-800 bg-neutral-900/80"
+                className="p-2 rounded-lg border border-theme-primary bg-theme-card/80"
               >
-                <img src="/Menu.png" alt="menu" className="h-4 w-4" />
+                <ThemeImage type="menu" alt="menu" className="h-4 w-4" />
               </button>
             )}
           </div>
@@ -109,7 +113,10 @@ function TopNav() {
       {/* 遮罩（盖过固定背景条和页面内容） */}
       {open && (
         <div
-          className="fixed inset-0 z-[115] bg-black/50"
+          className="fixed inset-0 z-[115]"
+          style={{
+            backgroundColor: 'var(--overlay-color)'
+          }}
           onClick={() => setOpen(false)}
         />
       )}
@@ -117,12 +124,12 @@ function TopNav() {
       {/* 抽屉（层级最高） */}
       <div
         className={
-          "fixed inset-y-0 right-0 z-[120] w-72 border-l border-neutral-800 p-4 " +
+          "fixed inset-y-0 right-0 z-[120] w-72 border-l border-theme-primary p-4 " +
           "transform transition-transform duration-300 ease-out " +
           (open ? "translate-x-0" : "translate-x-full pointer-events-none")
         }
         style={{
-          backgroundColor: `rgba(10,10,10,${OPACITY_DRAWER})`,
+          backgroundColor: `var(--bg-primary-80)`,
           backdropFilter: "saturate(1.1) blur(10px)",
           WebkitBackdropFilter: "saturate(1.1) blur(10px)",
         }}
@@ -131,17 +138,24 @@ function TopNav() {
         <button
           aria-label="关闭菜单"
           onClick={() => setOpen(false)}
-          className="absolute top-2 right-4 p-2 rounded-lg border border-neutral-800 bg-neutral-900/80"
+          className="absolute top-2 right-4 p-2 rounded-lg border border-theme-primary bg-theme-card/80"
         >
-          <img src="/close.png" alt="close" className="h-4 w-4" />
+          <ThemeImage type="close" alt="close" className="h-4 w-4" />
         </button>
 
-        <div className="mt-8 flex flex-col gap-2 text-neutral-200">
+        <div className="mt-8 flex flex-col gap-2 text-theme-primary">
           <DrawerLink to="/">主页</DrawerLink>
           <DrawerLink to="/photos">图片</DrawerLink>
           <DrawerLink to="/videos">视频</DrawerLink>
           <DrawerLink to="/design">设计</DrawerLink>
           <DrawerLink to="/music">音乐</DrawerLink>
+          
+          {/* 手机端主题切换按钮 */}
+          <div className="mt-4 pt-4 border-t border-theme-primary">
+            <div className="flex items-center justify-center">
+              <ThemeToggle variant="mobile" />
+            </div>
+          </div>
         </div>
       </div>
     </header>
@@ -150,7 +164,7 @@ function TopNav() {
 
 function NavLink({ to, children }) {
   return (
-    <Link to={to} className="hover:text-neutral-200 transition">
+    <Link to={to} className="hover:text-theme-primary transition">
       {children}
     </Link>
   );
@@ -159,7 +173,7 @@ function DrawerLink({ to, children }) {
   return (
     <Link
       to={to}
-      className="px-3 py-2 rounded-lg border border-neutral-800 bg-neutral-900/70 hover:bg-neutral-800"
+      className="px-3 py-2 rounded-lg bg-theme-card/40 hover:bg-theme-card/60 text-theme-primary"
     >
       {children}
     </Link>
@@ -190,7 +204,7 @@ export default function App() {
   }, [location.pathname]);
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-100 selection:bg-neutral-800">
+    <div className="min-h-screen bg-theme-primary text-theme-primary selection:bg-theme-secondary transition-colors duration-300">
       <FixedGlassBar />
       <TopNav />
       <ScrollToTop />
