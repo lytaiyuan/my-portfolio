@@ -42,7 +42,7 @@ export default function ViDetail() {
     const fetchViData = async () => {
       try {
         const response = await fetch(
-          'https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/vi.json'
+          'https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/config/vi.json'
         );
         
         if (!response.ok) {

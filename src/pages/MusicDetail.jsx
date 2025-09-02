@@ -7,6 +7,7 @@ export default function MusicDetail() {
   const [items, setItems] = useState([]);
   const [musicDescription, setMusicDescription] = useState("");
   const [scoreImages, setScoreImages] = useState([]);
+  const [scoreLoading, setScoreLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -92,40 +93,108 @@ export default function MusicDetail() {
     }
   }, [music]);
 
-  // 加载乐谱图片
+  // 加载乐谱图片 - 优化版本
   useEffect(() => {
     if (music && music.scoreFolder) {
       console.log("开始加载乐谱图片，scoreFolder:", music.scoreFolder);
       
-      // 检测乐谱图片是否存在，只显示实际存在的图片
-      const checkImageExists = async (url) => {
+      // 设置加载状态
+      setScoreLoading(true);
+      
+      // 使用缓存避免重复检查
+      const cacheKey = `score_images_${music.slug}`;
+      const cachedImages = sessionStorage.getItem(cacheKey);
+      
+      if (cachedImages) {
         try {
-          const response = await fetch(url, { method: 'HEAD' });
-          console.log(`检查图片 ${url}: ${response.ok ? '存在' : '不存在'}`);
-          return response.ok;
-        } catch (error) {
-          console.log(`检查图片 ${url} 时出错:`, error);
-          return false;
+          const parsed = JSON.parse(cachedImages);
+          console.log('使用缓存的乐谱图片:', parsed);
+          setScoreImages(parsed);
+          setScoreLoading(false);
+          return;
+        } catch (e) {
+          console.log('缓存解析失败，重新加载');
         }
-      };
-
-      const loadScoreImages = async () => {
+      }
+      
+      // 智能预加载策略：先尝试加载前几张，再并行检查其余
+      const loadScoreImagesSmart = async () => {
         const validImages = [];
+        
+        // 策略1：直接尝试加载前3张图片（通常存在的概率最高）
+        const quickLoadPromises = [];
+        for (let i = 1; i <= 3; i++) {
+          const paddedNum = i.toString().padStart(2, '0');
+          const imageUrl = `${music.scoreFolder}${paddedNum}.jpg`;
+          const githubImageUrl = getGitHubUrl(imageUrl);
+          
+          const quickPromise = fetch(githubImageUrl, { method: 'HEAD' })
+            .then(response => {
+              if (response.ok) {
+                console.log(`快速加载乐谱图片 ${i}: 存在`);
+                return { index: i, url: githubImageUrl };
+              }
+              return null;
+            })
+            .catch(() => null);
+          
+          quickLoadPromises.push(quickPromise);
+        }
+        
+        // 等待前3张的结果
+        const quickResults = await Promise.all(quickLoadPromises);
+        const quickValid = quickResults.filter(result => result !== null);
+        
+        // 如果前3张都找到了，直接使用，避免检查更多
+        if (quickValid.length === 3) {
+          const sortedUrls = quickValid
+            .sort((a, b) => a.index - b.index)
+            .map(result => result.url);
+          
+          console.log('前3张乐谱图片全部找到，使用快速模式');
+          sessionStorage.setItem(cacheKey, JSON.stringify(sortedUrls));
+          setScoreImages(sortedUrls);
+          return;
+        }
+        
+        // 策略2：如果前3张不完整，并行检查所有图片
+        console.log('前3张不完整，检查所有图片...');
+        const allImagePromises = [];
+        
         for (let i = 1; i <= 10; i++) {
           const paddedNum = i.toString().padStart(2, '0');
           const imageUrl = `${music.scoreFolder}${paddedNum}.jpg`;
           const githubImageUrl = getGitHubUrl(imageUrl);
-          console.log(`尝试加载乐谱图片: ${githubImageUrl}`);
-          if (await checkImageExists(githubImageUrl)) {
-            validImages.push(githubImageUrl);
-            console.log(`乐谱图片 ${githubImageUrl} 加载成功`);
-          }
+          
+          const checkPromise = fetch(githubImageUrl, { method: 'HEAD' })
+            .then(response => {
+              if (response.ok) {
+                return { index: i, url: githubImageUrl };
+              }
+              return null;
+            })
+            .catch(() => null);
+          
+          allImagePromises.push(checkPromise);
         }
-        console.log(`最终找到的乐谱图片:`, validImages);
-        setScoreImages(validImages);
+        
+        const allResults = await Promise.all(allImagePromises);
+        const allValid = allResults.filter(result => result !== null);
+        
+        // 按索引排序
+        const sortedUrls = allValid
+          .sort((a, b) => a.index - b.index)
+          .map(result => result.url);
+        
+        console.log(`找到 ${sortedUrls.length} 张乐谱图片:`, sortedUrls);
+        
+        // 缓存结果
+        sessionStorage.setItem(cacheKey, JSON.stringify(sortedUrls));
+        setScoreImages(sortedUrls);
+        setScoreLoading(false);
       };
-
-      loadScoreImages();
+      
+      loadScoreImagesSmart();
     } else {
       console.log("没有找到music或scoreFolder:", { music, scoreFolder: music?.scoreFolder });
     }
@@ -173,6 +242,59 @@ export default function MusicDetail() {
   // 开始播放
   const onStart = () => {
     setIsPlaying(true);
+  };
+
+  // 清理乐谱图片缓存
+  const clearScoreCache = () => {
+    if (music?.slug) {
+      const cacheKey = `score_images_${music.slug}`;
+      sessionStorage.removeItem(cacheKey);
+      console.log('已清理乐谱图片缓存');
+      
+      // 重新加载乐谱图片
+      setScoreImages([]);
+      setScoreLoading(true);
+      
+      // 触发重新加载
+      if (music.scoreFolder) {
+        const loadScoreImagesSmart = async () => {
+          const allImagePromises = [];
+          
+          for (let i = 1; i <= 10; i++) {
+            const paddedNum = i.toString().padStart(2, '0');
+            const imageUrl = `${music.scoreFolder}${paddedNum}.jpg`;
+            const githubImageUrl = getGitHubUrl(imageUrl);
+            
+            const checkPromise = fetch(githubImageUrl, { method: 'HEAD' })
+              .then(response => {
+                if (response.ok) {
+                  return { index: i, url: githubImageUrl };
+                }
+                return null;
+              })
+              .catch(() => null);
+            
+            allImagePromises.push(checkPromise);
+          }
+          
+          const allResults = await Promise.all(allImagePromises);
+          const allValid = allResults.filter(result => result !== null);
+          
+          const sortedUrls = allValid
+            .sort((a, b) => a.index - b.index)
+            .map(result => result.url);
+          
+          console.log(`重新加载找到 ${sortedUrls.length} 张乐谱图片:`, sortedUrls);
+          
+          // 更新缓存
+          sessionStorage.setItem(cacheKey, JSON.stringify(sortedUrls));
+          setScoreImages(sortedUrls);
+          setScoreLoading(false);
+        };
+        
+        loadScoreImagesSmart();
+      }
+    }
   };
 
   if (loading) return <Wrap><p className="text-neutral-400">加载中…</p></Wrap>;
@@ -258,9 +380,32 @@ export default function MusicDetail() {
       )}
 
       {/* 乐谱展示区 */}
-      {scoreImages.length > 0 && (
-        <div className="mt-12">
-          <h2 className="text-xl font-semibold text-center mb-6">乐谱</h2>
+      <div className="mt-12">
+        <div className="flex items-center justify-center gap-3 mb-6">
+          <h2 className="text-xl font-semibold">乐谱</h2>
+          <button
+            onClick={clearScoreCache}
+            className="p-2 rounded-lg border border-neutral-700 bg-neutral-800 hover:bg-neutral-700 transition-colors"
+            title="刷新乐谱图片"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+              <path d="M21 3v5h-5"/>
+              <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+              <path d="M3 21v-5h5"/>
+            </svg>
+          </button>
+        </div>
+        
+        {scoreLoading ? (
+          <div className="max-w-4xl mx-auto text-center py-12">
+            <div className="inline-flex items-center gap-3 text-neutral-400">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-neutral-400"></div>
+              <span>正在加载乐谱图片...</span>
+            </div>
+            <p className="mt-2 text-sm text-neutral-500">使用智能预加载策略，通常只需1-2秒</p>
+          </div>
+        ) : scoreImages.length > 0 ? (
           <div className="max-w-4xl mx-auto space-y-6">
             {scoreImages.map((imageUrl, index) => (
               <div key={index} className="flex justify-center">
@@ -277,8 +422,12 @@ export default function MusicDetail() {
               </div>
             ))}
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="max-w-4xl mx-auto text-center py-8 text-neutral-400">
+            <p>暂无乐谱图片</p>
+          </div>
+        )}
+      </div>
 
       {/* 操作区 */}
       <div className="mt-8 flex items-center justify-center gap-3">

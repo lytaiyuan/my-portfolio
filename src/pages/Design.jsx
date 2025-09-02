@@ -41,10 +41,10 @@ export default function Design() {
           fetch('https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/config/graphiccontent.json')
             .then(r => r.json())
             .catch(() => ({ items: [] })),
-          fetch('https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/vi.json')
+          fetch('https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/config/vi.json')
             .then(r => r.json())
             .catch(() => ({ items: [] })),
-          fetch('https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/packaging.json')
+          fetch('https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/config/packaging.json')
             .then(r => r.json())
             .catch(() => ({ items: [] }))
         ]);

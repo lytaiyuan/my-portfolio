@@ -42,7 +42,7 @@ export default function PackagingDetail() {
     const fetchPackagingData = async () => {
       try {
         const response = await fetch(
-          'https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/packaging.json'
+          'https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/config/packaging.json'
         );
         
         if (!response.ok) {

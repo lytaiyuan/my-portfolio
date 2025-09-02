@@ -41,7 +41,7 @@ export default function Product() {
     const fetchProductPhotos = async () => {
       try {
         const response = await fetch(
-          'https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/productphotos.json'
+          'https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/config/productphotos.json'
         );
         
         if (!response.ok) {
