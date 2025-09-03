@@ -51,8 +51,19 @@ export default function Music() {
   if (!music.length) return <PageWrap><p className="text-neutral-400">暂无音乐。</p></PageWrap>;
 
   return (
+    <>
+      {/* 顶部容器：与图片页一致 */}
+      <section className="relative h-[600px] music-header overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="max-w-[1120px] mx-auto h-full px-4">
+            <div className="flex h-full justify-center items-start pt-24 md:items-center md:pt-0">
+              <h1 className="text-4xl md:text-6xl font-bold text-theme-primary text-center">音乐</h1>
+            </div>
+          </div>
+        </div>
+      </section>
     <PageWrap>
-      <h1 className="text-3xl font-semibold mb-6">音乐</h1>
+      <h2 className="text-2xl font-semibold mb-6">全部音乐</h2>
 
       {/* 桌面每行最多两个（md:grid-cols-2），手机 1 列 */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -79,6 +90,7 @@ export default function Music() {
         ))}
       </div>
     </PageWrap>
+    </>
   );
 }
 

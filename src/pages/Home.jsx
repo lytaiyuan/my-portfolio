@@ -136,8 +136,8 @@ export default function Home() {
               to="/photos"
               src={getGitHubUrl(featuredPhoto.url)}
               captionTitle={featuredPhoto.title}
-              overlayTitle="云南也有中东风情？"
-              overlaySubtitle="探索云南省红河州沙甸清真寺的风情。"
+              overlayTitle="天坑地缝"
+              overlaySubtitle="在这片陡峭的幽暗裂谷中，仿佛隐藏着通往未知世界的入口。"
               gradientType="photos"
             />
           ) : <EmptyCard tip="还没有添加照片。" />
@@ -163,11 +163,11 @@ export default function Home() {
                 (featuredVideo.src
                   ? <button
                       onClick={() => openPlay(featuredVideo.title, featuredVideo.poster, featuredVideo.src)}
-                      className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-theme-primary bg-theme-card/80 hover:bg-theme-hover text-sm text-theme-primary"
+                      className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-theme-primary bg-black/5 hover:bg-black/15 text-sm text-theme-primary transition-colors duration-200"
                     ><PlayIcon /> 立即播放</button>
                   : <Link
                       to={`/videos/${featuredVideo.slug}`}
-                      className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-theme-primary bg-theme-card/80 hover:bg-theme-hover text-sm text-theme-primary"
+                      className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-theme-primary bg-black/5 hover:bg-black/15 text-sm text-theme-primary transition-colors duration-200"
                     ><PlayIcon /> 查看详情</Link>
                 )
               }
@@ -183,7 +183,7 @@ export default function Home() {
           <div className="flex justify-end">
             <Link
               to="/design"
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-white/20 bg-black/10 hover:bg-black/20 text-sm transition-colors duration-200 text-white"
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-theme-primary bg-black/5 hover:bg-black/15 text-sm transition-colors duration-200 text-theme-primary"
             >
               进入设计页
               <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
@@ -202,19 +202,18 @@ export default function Home() {
                 loading="lazy"
                 decoding="async"
               />
-              {/* 覆盖文案 */}
+              {/* 覆盖文案（整行覆盖：黑色30%衬底 + 白字） */}
               <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" style={{ background: 'var(--design-gradient-overlay)' }} />
-                <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6">
-                  <div className="text-white text-lg md:text-2xl font-semibold tracking-tight">补品包装设计</div>
-                  <div className="mt-1 text-white/85 text-xs md:text-sm max-w-[85%]">
-                    立即查看我们的获奖设计作品集
+                <div className="absolute bottom-0 left-0 right-0">
+                  <div className="bg-black/30 text-white px-4 md:px-6 py-3">
+                    <div className="text-lg md:text-2xl font-semibold tracking-tight">补品包装设计</div>
+                    <div className="mt-1 text-xs md:text-sm max-w-[85%]">立即查看我们的获奖设计作品集</div>
                   </div>
                 </div>
               </div>
             </div>
             <div className="p-3" style={{ backgroundColor: 'rgba(0, 0, 0, 0.1)' }}>
-              <div className="text-white text-sm font-medium">进入设计页查看更多方案</div>
+              <div className="text-theme-primary text-sm font-medium">进入设计页查看更多方案</div>
             </div>
           </Link>
         </div>
@@ -226,7 +225,6 @@ export default function Home() {
         ctaText="进入音乐页"
         ctaTo="/music"
         gradientType="music"
-        ctaTextColor="text-white"
         card={
                            featuredMusic ? (
                    <CardImage
@@ -236,8 +234,6 @@ export default function Home() {
                      overlayTitle={featuredMusic.hottitle || featuredMusic.title}
                      overlaySubtitle={featuredMusic.hotintro}
                      gradientType="music"
-                     textColor="text-white"
-                     extraTextColor="text-white"
                    />
                  ) : <EmptyCard tip="还没有添加音乐。" />
         }
@@ -392,14 +388,6 @@ function SectionOverlayCard({ id, ctaText, ctaTo, card, gradientType = 'photos',
 }
 
 function CardImage({ src, captionTitle, overlayTitle, overlaySubtitle, to, extra, gradientType = 'photos', textColor = 'text-theme-primary', extraTextColor = 'text-theme-primary' }) {
-  const getOverlayGradient = () => {
-    switch (gradientType) {
-      case 'photos': return 'var(--photos-gradient-overlay)';
-      case 'videos': return 'var(--videos-gradient-overlay)';
-      case 'music': return 'var(--music-gradient-overlay)';
-      default: return 'var(--photos-gradient-overlay)';
-    }
-  };
 
   const image = (
     <div className="group overflow-hidden rounded-2xl border border-theme-primary bg-black/5">
@@ -412,26 +400,24 @@ function CardImage({ src, captionTitle, overlayTitle, overlaySubtitle, to, extra
           decoding="async"
         />
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute inset-0" style={{ background: getOverlayGradient() }} />
-          <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6">
-            {overlayTitle && (
-              <div className="text-white text-lg md:text-2xl font-semibold tracking-tight">
-                {overlayTitle}
-              </div>
-            )}
-            {overlaySubtitle && (
-              <div className="mt-1 text-white/85 text-xs md:text-sm max-w-[85%]">
-                {overlaySubtitle}
+          <div className="absolute bottom-0 left-0 right-0">
+            {(overlayTitle || overlaySubtitle) && (
+              <div className="bg-black/30 text-white px-4 md:px-6 py-3">
+                {overlayTitle && (
+                  <div className="text-lg md:text-2xl font-semibold tracking-tight">{overlayTitle}</div>
+                )}
+                {overlaySubtitle && (
+                  <div className="mt-1 text-xs md:text-sm max-w-[85%]">{overlaySubtitle}</div>
+                )}
               </div>
             )}
           </div>
         </div>
       </div>
       <div className="p-3 bg-black/5">
-        {captionTitle && <div className={`text-sm font-medium ${textColor}`} style={{ color: textColor === 'text-white' ? '#ffffff' : undefined }}>{captionTitle}</div>}
+        {captionTitle && <div className={`text-sm font-medium ${textColor}`}>{captionTitle}</div>}
         {extra && React.cloneElement(extra, { 
-          className: `${extra.props.className || ''} ${extraTextColor}`.trim(),
-          style: { ...extra.props.style, color: extraTextColor === 'text-white' ? '#ffffff' : undefined }
+          className: `${extra.props.className || ''} ${extraTextColor}`.trim()
         })}
       </div>
     </div>

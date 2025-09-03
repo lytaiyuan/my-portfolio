@@ -54,11 +54,13 @@ export default function Photos() {
   // —— 筛选/搜索 —— //
   const [tag, setTag] = useState(ALL);
   const [q, setQ] = useState("");
+  const collator = useMemo(() => new Intl.Collator('zh-Hans-u-co-pinyin', { sensitivity: 'base' }), []);
   const tags = useMemo(() => {
     const s = new Set();
     (items || []).forEach((p) => (p.tags || []).forEach((t) => s.add(t)));
-    return [ALL, ...Array.from(s)];
-  }, [items]);
+    const arr = Array.from(s).sort(collator.compare);
+    return [ALL, ...arr];
+  }, [items, collator]);
 
   const photos = useMemo(() => {
     const list = Array.isArray(items) ? items : [];
@@ -135,39 +137,41 @@ export default function Photos() {
 
   return (
     <div className="bg-theme-primary text-theme-primary">
-      {/* 顶部留白标题（简洁版） */}
-              <section className="border-b border-theme-primary bg-theme-primary">
-        <div className="max-w-[1120px] mx-auto px-4 py-8">
-          <h1 className="text-2xl font-semibold">图片</h1>
+      {/* 顶部容器：背景采用与首页图片板块一致的配色变量 */}
+      <section className="relative h-[600px] photos-header photos-header-gradient overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="max-w-[1120px] mx-auto h-full px-4">
+            <div className="flex h-full justify-center items-start pt-24 md:items-center md:pt-0">
+              <h1 className="text-4xl md:text-6xl font-bold text-theme-primary text-center">图片</h1>
+            </div>
+          </div>
         </div>
-      </section>
-
-      {/* 筛选区 */}
-      <section className="bg-theme-primary">
-        <div className="max-w-[1120px] mx-auto px-4 py-6">
-          <div className="flex flex-wrap items-center gap-2">
-            {tags.map((t) => (
-              <button
-                key={t}
-                onClick={() => setTag(t)}
-                                  className={cx(
-                    "px-3 py-1.5 rounded-full text-sm border transition",
+        <div className="absolute bottom-0 left-0 right-0 bg-theme-primary/80 backdrop-blur-sm">
+          <div className="max-w-[1120px] mx-auto px-4 py-6">
+            <div className="flex flex-wrap items-center gap-2">
+              {tags.map((t) => (
+                <button
+                  key={t}
+                  onClick={() => setTag(t)}
+                  className={cx(
+                    "inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-theme-primary transition-colors duration-200 text-sm",
                     tag === t
-                      ? "bg-theme-secondary text-theme-primary border-theme-secondary"
-                      : "bg-theme-card text-theme-secondary border-theme-primary hover:bg-theme-hover"
+                      ? "is-active bg-black/15 text-theme-primary"
+                      : "bg-black/5 text-theme-primary hover:bg-black/15"
                   )}
-              >
-                {t}
-              </button>
-            ))}
-            <div className="ml-auto w-full sm:w-64">
-              <input
-                type="text"
-                placeholder="搜索标题…"
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                className="w-full rounded-xl border border-theme-primary px-3 py-2 text-sm bg-theme-card text-theme-primary placeholder:text-theme-muted focus:outline-none focus:ring-2 focus:ring-theme-accent"
-              />
+                >
+                  {t}
+                </button>
+              ))}
+              <div className="ml-auto w-full sm:w-64">
+                <input
+                  type="text"
+                  placeholder="搜索标题…"
+                  value={q}
+                  onChange={(e) => setQ(e.target.value)}
+                  className="w-full rounded-xl border border-theme-primary px-3 py-2 text-sm bg-black/5 text-theme-primary placeholder:text-theme-secondary focus:outline-none focus:ring-2 focus:ring-theme-accent backdrop-blur-sm"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -197,11 +201,11 @@ export default function Photos() {
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   />
                   <figcaption className="p-3">
-                    <div className="text-sm font-medium text-neutral-100">{img.title}</div>
-                    {!!img.desc && <div className="mt-1 text-xs text-neutral-400 line-clamp-2">{img.desc}</div>}
+                    <div className="text-sm font-medium text-theme-primary">{img.title}</div>
+                    {!!img.desc && <div className="mt-1 text-xs text-theme-primary line-clamp-2">{img.desc}</div>}
                     <div className="mt-2 flex flex-wrap gap-1">
                       {(img.tags || []).map((t) => (
-                        <span key={t} className="px-2 py-0.5 text-xs rounded-full bg-theme-secondary text-theme-secondary border border-theme-primary">
+                        <span key={t} className="inline-flex items-center px-3 py-1.5 text-xs rounded-lg border border-theme-primary bg-black/5 text-theme-primary hover:bg-black/15">
                           {t}
                         </span>
                       ))}
@@ -218,7 +222,7 @@ export default function Photos() {
       <AnimatePresence>
         {box && (
           <motion.div
-            className="fixed inset-0 z-[200] bg-black/90 backdrop-blur"
+            className="fixed inset-0 z-[200] overlay-glass backdrop-blur-lg"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             onClick={closeBox}
           >
@@ -237,7 +241,7 @@ export default function Photos() {
 
               {/* 稳定框：宽高来自 w/h 与视口计算 */}
               <div
-                className="overflow-hidden rounded-2xl border border-neutral-800 bg-black"
+                className="overflow-hidden bg-black"
                 style={{ width: `${fit.width}px`, height: `${fit.height}px` }}
               >
                 <img
@@ -259,14 +263,14 @@ export default function Photos() {
 
               {/* 标题/说明：始终在图像下方，保证不会压到图片 */}
               <div className="mt-3 max-w-[min(90vw,1120px)] text-center">
-                <div className="text-neutral-100 text-sm font-medium">{photos[box.index]?.title}</div>
+                <div className="text-theme-primary text-sm font-medium">{photos[box.index]?.title}</div>
                 {!!photos[box.index]?.desc && (
-                  <div className="mt-1 text-neutral-300/90 text-[13px] leading-relaxed">
+                  <div className="mt-1 text-theme-secondary text-[13px] leading-relaxed">
                     {photos[box.index]?.desc}
                   </div>
                 )}
                 {!!(photos[box.index]?.tags?.length) && (
-                  <div className="mt-1 text-neutral-500 text-[12px]">
+                  <div className="mt-1 text-theme-muted text-[12px]">
                     {(photos[box.index].tags || []).join(" · ")}
                   </div>
                 )}

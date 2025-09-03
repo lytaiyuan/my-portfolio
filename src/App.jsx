@@ -121,7 +121,7 @@ function FixedGlassBar() {
       {/* 遮罩 */}
       {open && (
         <div
-          className="fixed inset-0 z-[115] overlay-glass"
+          className="fixed inset-0 z-[115] overlay-glass menu-overlay"
           onClick={() => setOpen(false)}
         />
       )}

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 // 主题类型
 export const THEME_TYPES = {
@@ -67,8 +67,10 @@ export const useTheme = () => {
     }
     return 'dark'; // 默认深色
   });
+  const themeRef = useRef(theme);
+  useEffect(() => { themeRef.current = theme; }, [theme]);
 
-  // 初始化主题
+  // 初始化主题 & 监听系统主题变化
   useEffect(() => {
     const savedTheme = getCurrentTheme();
     if (!savedTheme) {
@@ -82,47 +84,37 @@ export const useTheme = () => {
       applyTheme(savedTheme);
     }
     
-    // 监听系统主题变化
+    // 监听系统主题变化（仅当当前为 system 模式时响应）
     const mediaQuery = window.matchMedia('(prefers-color-scheme: light)');
     const handleChange = () => {
       console.log('[Theme Debug] System theme change detected!');
-      // 检查当前保存的主题设置
-      const currentSavedTheme = localStorage.getItem('theme') || THEME_TYPES.SYSTEM;
-      console.log('[Theme Debug] Current saved theme:', currentSavedTheme);
-      if (currentSavedTheme === THEME_TYPES.SYSTEM) {
-        console.log('[Theme Debug] Following system theme change');
+      if (themeRef.current === THEME_TYPES.SYSTEM) {
         const newActualTheme = getSystemTheme();
         setActualTheme(newActualTheme);
         applyTheme(THEME_TYPES.SYSTEM);
+        console.log('[Theme Debug] Applied system theme change to:', newActualTheme);
       } else {
-        console.log('[Theme Debug] Not following system theme, using saved theme:', currentSavedTheme);
+        console.log('[Theme Debug] Ignored system change because current theme is:', themeRef.current);
       }
     };
-    
     mediaQuery.addEventListener('change', handleChange);
     console.log('[Theme Debug] System theme listener added');
-    
-    // 添加 polling 机制（每秒检查一次）
-    const interval = setInterval(() => {
-      if (theme === THEME_TYPES.SYSTEM) {
-        const currentSystemTheme = getSystemTheme();
-        if (currentSystemTheme !== actualTheme) {
-          setActualTheme(currentSystemTheme);
-          applyTheme(THEME_TYPES.SYSTEM);
-          console.log('[Theme Debug] Polling detected system change to:', currentSystemTheme);
-        }
-      }
-    }, 1000);
 
     return () => {
       mediaQuery.removeEventListener('change', handleChange);
-      clearInterval(interval);
     };
-  }, [theme]); // 移除 theme 依赖，避免无限循环
+  }, []);
 
   // 切换主题时使用sessionStorage
   const toggleTheme = () => {
-    let newTheme = theme === THEME_TYPES.LIGHT ? THEME_TYPES.DARK : THEME_TYPES.LIGHT;
+    let newTheme;
+    if (theme === THEME_TYPES.SYSTEM) {
+      // 如果是系统模式，切换到相反的明确主题
+      newTheme = actualTheme === 'light' ? THEME_TYPES.DARK : THEME_TYPES.LIGHT;
+    } else {
+      // 在 LIGHT/DARK 之间切换
+      newTheme = theme === THEME_TYPES.LIGHT ? THEME_TYPES.DARK : THEME_TYPES.LIGHT;
+    }
     setTheme(newTheme);
     setActualTheme(newTheme);
     sessionStorage.setItem('theme', newTheme);
@@ -137,9 +129,9 @@ export const useTheme = () => {
       
       if (typeof window !== 'undefined') {
         if (newTheme === THEME_TYPES.SYSTEM) {
-          localStorage.removeItem('theme'); // 跟随系统时清除保存的设置
+          sessionStorage.setItem('theme', THEME_TYPES.SYSTEM); // 显式写入 system，避免读取不一致
         } else {
-          localStorage.setItem('theme', newTheme);
+          sessionStorage.setItem('theme', newTheme);
         }
       }
       

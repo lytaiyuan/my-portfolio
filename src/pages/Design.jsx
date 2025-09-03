@@ -69,8 +69,27 @@ export default function Design() {
   if (loading) return <div className="min-h-[50svh] grid place-items-center text-neutral-400">加载设计内容…</div>;
 
   return (
-    <div className="bg-neutral-950 text-neutral-100">
+    <div className="bg-theme-primary text-theme-primary">
+      {/* 顶部容器：与图片页一致 */}
+      <section className="relative h-[600px] design-header overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="max-w-[1120px] mx-auto h-full px-4">
+            <div className="flex h-full justify-center items-start pt-24 md:items-center md:pt-0">
+              <h1 className="text-4xl md:text-6xl font-bold text-theme-primary text-center">设计</h1>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <div className="max-w-[1120px] mx-auto px-4 py-10 space-y-12">
+        <Section title="包装设计">
+          <Grid>
+            {pack.slice(0, 3).map(it => (
+              <Card key={it.slug} img={it.cover} title={it.title} subtitle={it.subtitle} to={`/design/packaging/${it.slug}`} />
+            ))}
+          </Grid>
+        </Section>
+
         <Section title="平面设计">
           <Grid>
             {graphic.slice(0, 3).map(it => (
@@ -83,14 +102,6 @@ export default function Design() {
           <Grid>
             {vi.slice(0, 3).map(it => (
               <Card key={it.slug} img={it.cover} title={it.title} subtitle={it.subtitle} to={`/design/vi/${it.slug}`} />
-            ))}
-          </Grid>
-        </Section>
-
-        <Section title="包装设计">
-          <Grid>
-            {pack.slice(0, 3).map(it => (
-              <Card key={it.slug} img={it.cover} title={it.title} subtitle={it.subtitle} to={`/design/packaging/${it.slug}`} />
             ))}
           </Grid>
         </Section>
@@ -118,7 +129,7 @@ function Section({ title, action, children }) {
   );
 }
 function Grid({ children }) {
-  return <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">{children}</div>;
+  return <div className="grid grid-cols-1 md:grid-cols-2 gap-4">{children}</div>;
 }
 function LinkBtn({ to, children }) {
   return (

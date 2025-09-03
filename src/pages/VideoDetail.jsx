@@ -110,14 +110,14 @@ export default function VideoDetail() {
     }
   }, [video]);
 
-  if (loading) return <Wrap><p className="text-neutral-400">加载中…</p></Wrap>;
+  if (loading) return <Wrap><p className="text-theme-muted">加载中…</p></Wrap>;
   if (err) return <Wrap><p className="text-red-400">读取出错：{String(err.message || err)}</p></Wrap>;
   if (!video) {
     return (
       <Wrap>
-        <p className="text-neutral-400">未找到该视频。</p>
+        <p className="text-theme-muted">未找到该视频。</p>
         <div className="mt-4">
-          <Link className="px-3 py-1.5 rounded-lg border border-neutral-800 bg-neutral-900 hover:bg-neutral-800 text-sm" to="/videos">
+          <Link className="px-3 py-1.5 rounded-lg border border-theme-primary bg-theme-card hover:bg-theme-hover text-sm text-theme-primary" to="/videos">
             返回视频列表
           </Link>
         </div>
@@ -142,7 +142,7 @@ export default function VideoDetail() {
   return (
     <Wrap>
       {/* 顶部播放器区：16:9 容器 */}
-      <div className="overflow-hidden rounded-2xl border border-neutral-800 bg-black">
+      <div className="overflow-hidden rounded-2xl border border-theme-primary bg-theme-card">
         <div className="relative w-full" style={{ paddingTop: "56.25%" }}>
           {!isPlaying ? (
             // —— 初始仅显示海报 + 播放按钮 ——
@@ -159,10 +159,9 @@ export default function VideoDetail() {
                 decoding="async"
               />
               <div className="absolute inset-0 bg-black/20 group-hover:bg-black/25 transition" />
-              <div className="absolute inset-0 grid place-items-center">
-                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-neutral-700 bg-neutral-800/80 text-white text-sm backdrop-blur">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>
-                  点击播放
+              <div className="absolute left-3 bottom-3">
+                <span className="inline-flex items-center justify-center w-10 h-10 rounded-full border border-neutral-700 bg-neutral-800/80 text-white backdrop-blur">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>
                 </span>
               </div>
             </button>
@@ -186,7 +185,7 @@ export default function VideoDetail() {
               controls
               playsInline
               preload="metadata"
-              className="absolute inset-0 w-full h-full object-contain bg-black"
+              className="absolute inset-0 w-full h-full object-contain bg-theme-card"
             />
           )}
         </div>
@@ -194,13 +193,13 @@ export default function VideoDetail() {
 
       {/* 标题 & 摘要 */}
       <div className="mt-6 text-center">
-        <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">{video.title}</h1>
-        {video.excerpt && <p className="mt-2 text-neutral-300 md:text-[15px]">{video.excerpt}</p>}
+        <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-theme-primary">{video.title}</h1>
+        {video.excerpt && <p className="mt-2 text-theme-secondary md:text-[15px]">{video.excerpt}</p>}
       </div>
 
       {/* 正文：从txt文件读取，空行分段，首行缩进，段落间距 */}
       {videoDescription && (
-        <div className="mt-6 text-neutral-300 leading-8 text-lg max-w-3xl mx-auto px-4 sm:px-0">
+        <div className="mt-6 text-theme-secondary leading-8 text-lg max-w-3xl mx-auto px-4 sm:px-0">
           {String(videoDescription)
             .split(/\n/)
             .filter(para => para.trim())
@@ -217,14 +216,14 @@ export default function VideoDetail() {
       {/* 操作区 */}
       <div className="mt-8 flex items-center justify-center gap-3">
         <Link
-          className="px-3 py-1.5 rounded-lg border border-neutral-800 bg-neutral-900 hover:bg-neutral-800 text-sm"
+          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-theme-primary bg-black/5 hover:bg-black/15 text-sm text-theme-primary transition-colors duration-200"
           to="/videos"
         >
           返回视频列表
         </Link>
         {pageUrl && (
           <a
-            className="px-3 py-1.5 rounded-lg border border-neutral-800 bg-neutral-900 hover:bg-neutral-800 text-sm"
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-theme-primary bg-black/5 hover:bg-black/15 text-sm text-theme-primary transition-colors duration-200"
             href={pageUrl}
             target="_blank"
             rel="noreferrer"
@@ -239,8 +238,8 @@ export default function VideoDetail() {
 
 function Wrap({ children }) {
   return (
-    <section className="border-t border-neutral-900/80 bg-neutral-950">
-      <div className="max-w-[1120px] mx-auto px-4 py-8">{children}</div>
+    <section className="border-t border-theme-primary bg-theme-primary pt-16">
+      <div className="max-w-[1120px] mx-auto px-4 py-8 text-theme-primary">{children}</div>
     </section>
   );
 }

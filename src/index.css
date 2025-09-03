@@ -32,6 +32,15 @@
   --shadow-secondary: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
+/* 覆盖文案统一样式：黑色30%衬底 + 白色文字 */
+.home-overlay-text { 
+  background-color: rgba(0, 0, 0, 0.3); 
+  color: #ffffff; 
+  border-radius: 0.5rem; 
+  padding: 0.5rem 0.75rem; 
+  display: inline-block; 
+}
+
 /* 浅色主题 */
 [data-theme="light"] {
   --bg-primary: #ffffff;
@@ -69,17 +78,17 @@
   --theme-color-light: rgba(163, 122, 99, 0.2);
   --theme-color-medium: rgba(163, 122, 99, 0.4);
   
-  /* 浅色模式下的照片板块渐变 */
-  --photos-gradient: linear-gradient(135deg, #C6FFDD 0%, #FBD786 50%, #F7797D 100%);
+  /* 浅色模式下的照片板块背景 */
+  --photos-gradient: #DBDBD9;
   
   /* 浅色模式下的视频板块渐变 */
-  --videos-gradient: linear-gradient(135deg, #A1FFCE 0%, #FAFFD1 100%);
+  --videos-gradient: #F8EBDB;
   
   /* 浅色模式下的设计板块渐变 */
-  --design-gradient: linear-gradient(135deg, #000428 0%, #004E92 100%);
+  --design-gradient: #C1CBD7;
   
   /* 浅色模式下的音乐板块渐变 */
-  --music-gradient: linear-gradient(135deg, #8E0E00 0%, #1F1C18 100%);
+  --music-gradient: #B5C4B1;
   
   /* 浅色模式下图片覆盖层的渐变（保持渐变效果） */
   --photos-gradient-overlay: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3), transparent);
@@ -114,6 +123,12 @@
   
   --shadow-primary: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   --shadow-secondary: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  
+  /* 深色模式下板块配色（莫兰迪深色系） */
+  --photos-gradient: #4A4A48;   /* 对应浅色 #DBDBD9 的深色莫兰迪灰 */
+  --videos-gradient: #7A6A5B;   /* 对应浅色 #F8EBDB 的深色莫兰迪杏褐 */
+  --design-gradient: #4F5A66;   /* 对应浅色 #C1CBD7 的深色莫兰迪蓝灰 */
+  --music-gradient: #4E5A4F;    /* 对应浅色 #B5C4B1 的深色莫兰迪绿灰 */
   
   /* 深色模式下图片覆盖层的渐变（保持原有渐变） */
   --photos-gradient-overlay: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3), transparent);
@@ -248,14 +263,143 @@ button:focus {
 }
 
 [data-theme="light"] .overlay-glass {
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: rgba(255, 255, 255, 0.85);
+}
+
+/* 仅菜单遮罩在浅色下不再变白：保持更轻的黑色透明度以不干扰页面视觉 */
+[data-theme="light"] .menu-overlay {
+  background-color: rgba(0, 0, 0, 0.15) !important;
 }
 
 [data-theme="dark"] .overlay-glass {
   background-color: rgba(0, 0, 0, 0.5);
 }
 
+/* 统一为遮罩添加毛玻璃效果 */
+.overlay-glass {
+  backdrop-filter: saturate(1.1) blur(12px);
+  -webkit-backdrop-filter: saturate(1.1) blur(12px);
+}
+
 /* 深色模式下桌面工具栏导航链接为纯白色 */
 [data-theme="dark"] .text-theme-secondary {
   color: #FFFFFF !important;
 }
+
+/* Photos页面顶部容器背景：与首页图片板块同步 */
+.photos-header {
+  background: var(--photos-gradient) !important;
+}
+/* 图案叠加：使用顶部容器的 ::before 覆盖层，10% 不透明度 */
+.photos-header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url('/backgrounds/photos.png');
+  background-repeat: repeat;
+  background-size: auto;
+  opacity: 0.05;
+  pointer-events: none;
+}
+/* 顶部图案混合：浅/深模式统一正片叠底 */
+[data-theme="light"] .photos-header::before,
+[data-theme="dark"]  .photos-header::before { mix-blend-mode: multiply; }
+
+/* Videos页面顶部容器背景：与首页视频板块同步 */
+.videos-header {
+  background: var(--videos-gradient) !important;
+}
+.videos-header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url('/backgrounds/videos.png');
+  background-repeat: repeat;
+  background-size: auto;
+  opacity: 0.05;
+  pointer-events: none;
+}
+[data-theme="light"] .videos-header::before,
+[data-theme="dark"]  .videos-header::before { mix-blend-mode: multiply; }
+
+/* Design页面顶部容器背景：与首页设计板块同步 */
+.design-header {
+  background: var(--design-gradient) !important;
+}
+.design-header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url('/backgrounds/design.png');
+  background-repeat: repeat;
+  background-size: auto;
+  opacity: 0.05;
+  pointer-events: none;
+}
+[data-theme="light"] .design-header::before,
+[data-theme="dark"]  .design-header::before { mix-blend-mode: multiply; }
+
+/* Music页面顶部容器背景：与首页音乐板块同步 */
+.music-header {
+  background: var(--music-gradient) !important;
+}
+.music-header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url('/backgrounds/music.png');
+  background-repeat: repeat;
+  background-size: auto;
+  opacity: 0.05;
+  pointer-events: none;
+}
+[data-theme="light"] .music-header::before,
+[data-theme="dark"]  .music-header::before { mix-blend-mode: multiply; }
+/* 保留浅色模式下的旧渐变开关占位（如需恢复改这里） */
+[data-theme="light"] .photos-header-gradient { }
+
+/* 深色模式下去除图片和视频区的黑色边缘描线 */
+[data-theme="dark"] #home-photos .border-theme-primary,
+[data-theme="dark"] #home-videos .border-theme-primary {
+  border-color: rgba(163, 122, 99, 0.3) !important;
+}
+/* 深色模式下为图片和视频区的按钮设置浅色边框 */
+[data-theme="dark"] #home-photos button.border-theme-primary,
+[data-theme="dark"] #home-videos button.border-theme-primary {
+  border-color: rgba(163, 122, 99, 0.3) !important;
+}
+/* 深色模式下为图片和视频区的卡片设置浅色边框 */
+[data-theme="dark"] #home-photos .border-theme-primary,
+[data-theme="dark"] #home-videos .border-theme-primary {
+  border-color: rgba(163, 122, 99, 0.3) !important;
+}
+
+/* 统一：深色模式下四板块边框与按钮呼应浅色设计 */
+[data-theme="dark"] #home-photos .border-theme-primary,
+[data-theme="dark"] #home-videos .border-theme-primary,
+[data-theme="dark"] #home-design .border-theme-primary,
+[data-theme="dark"] #home-music  .border-theme-primary {
+  border-color: rgba(229, 229, 229, 0.18) !important; /* 接近浅色下的细边框明度 */
+}
+
+/* 统一：深色模式下四板块按钮背景与悬停（呼应浅色 bg-black/5/15） */
+[data-theme="dark"] #home-photos .bg-black\/5,
+[data-theme="dark"] #home-videos .bg-black\/5,
+[data-theme="dark"] #home-design .bg-black\/5,
+[data-theme="dark"] #home-music  .bg-black\/5 {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+}
+[data-theme="dark"] #home-photos .hover\:bg-black\/15:hover,
+[data-theme="dark"] #home-videos .hover\:bg-black\/15:hover,
+[data-theme="dark"] #home-design .hover\:bg-black\/15:hover,
+[data-theme="dark"] #home-music  .hover\:bg-black\/15:hover {
+  background-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+/* 深色下图片二级页：标签选中高亮进一步变亮，呼应首页按钮层级 */
+[data-theme="dark"] .photos-header .is-active {
+  background-color: rgba(255, 255, 255, 0.18) !important; /* 比 hover 再亮一级 */
+  border-color: rgba(229, 229, 229, 0.25) !important;
+}
+
+/* 删除浅色模式下对 #home-design/#home-music 的强制文字覆盖，改由主题变量控制 */
