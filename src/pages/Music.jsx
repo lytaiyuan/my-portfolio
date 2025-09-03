@@ -52,7 +52,7 @@ export default function Music() {
 
   return (
     <>
-      {/* 顶部容器：与图片页一致 */}
+      {/* 顶部容器：与视频页一致 */}
       <section className="relative h-[600px] music-header overflow-hidden">
         <div className="absolute inset-0">
           <div className="max-w-[1120px] mx-auto h-full px-4">
@@ -62,42 +62,43 @@ export default function Music() {
           </div>
         </div>
       </section>
-    <PageWrap>
-      <h2 className="text-2xl font-semibold mb-6">全部音乐</h2>
 
-      {/* 桌面每行最多两个（md:grid-cols-2），手机 1 列 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {music.map(m => (
-          <Link
-            key={m.slug || m.id}
-            to={`/music/${encodeURIComponent(m.slug ?? String(m.id))}`}
-            className="group overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-600"
-          >
-            <div className="relative aspect-[16/9] w-full overflow-hidden">
-              <img
-                src={getGitHubUrl(m.cover)}
-                alt={m.title || ""}
-                className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
-            <div className="p-3">
-              <div className="text-sm font-medium text-neutral-100">{m.title}</div>
-              {m.excerpt && <div className="mt-1 text-xs text-neutral-400 line-clamp-2">{m.excerpt}</div>}
-            </div>
-          </Link>
-        ))}
-      </div>
-    </PageWrap>
+      <PageWrap>
+        <h2 className="text-2xl font-semibold mb-6 text-theme-primary">全部音乐</h2>
+
+        {/* 桌面每行最多两个（md:grid-cols-2），手机 1 列 */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {music.map(m => (
+            <Link
+              key={m.slug || m.id}
+              to={`/music/${encodeURIComponent(m.slug ?? String(m.id))}`}
+              className="group overflow-hidden rounded-2xl border border-theme-primary bg-black/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-theme-accent"
+            >
+              <div className="relative aspect-[16/9] w-full overflow-hidden">
+                <img
+                  src={getGitHubUrl(m.cover)}
+                  alt={m.title || ""}
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+              <div className="p-3 bg-black/5">
+                <div className="text-sm font-medium text-theme-primary">{m.title}</div>
+                {m.excerpt && <div className="mt-1 text-xs text-theme-secondary line-clamp-2">{m.excerpt}</div>}
+              </div>
+            </Link>
+          ))}
+        </div>
+      </PageWrap>
     </>
   );
 }
 
 function PageWrap({ children }) {
   return (
-    <section className="border-t border-neutral-900/80 bg-neutral-950">
-      <div className="max-w-[1120px] mx-auto px-4 py-8">{children}</div>
+    <section className="border-t border-theme-primary bg-theme-primary">
+      <div className="max-w-[1120px] mx-auto px-4 py-8 text-theme-primary">{children}</div>
     </section>
   );
 }

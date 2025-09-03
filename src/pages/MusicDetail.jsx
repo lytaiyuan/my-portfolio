@@ -318,7 +318,7 @@ export default function MusicDetail() {
   return (
     <Wrap>
       {/* 顶部播放器区：16:9 容器 */}
-      <div className="overflow-hidden rounded-2xl border border-neutral-800 bg-black">
+      <div className="overflow-hidden rounded-2xl border border-theme-primary bg-theme-card">
         <div className="relative w-full" style={{ paddingTop: "56.25%" }}>
           {!isPlaying ? (
             // —— 初始仅显示封面 + 播放按钮 ——
@@ -335,10 +335,9 @@ export default function MusicDetail() {
                 decoding="async"
               />
               <div className="absolute inset-0 bg-black/20 group-hover:bg-black/25 transition" />
-              <div className="absolute inset-0 grid place-items-center">
-                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-neutral-700 bg-neutral-800/80 text-white text-sm backdrop-blur">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>
-                  点击播放
+              <div className="absolute left-3 bottom-3">
+                <span className="inline-flex items-center justify-center w-10 h-10 rounded-full border border-neutral-700 bg-neutral-800/80 text-white backdrop-blur">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>
                 </span>
               </div>
             </button>
@@ -359,13 +358,13 @@ export default function MusicDetail() {
 
       {/* 标题 & 摘要 */}
       <div className="mt-6 text-center">
-        <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">{music.title}</h1>
-        {music.hotintro && <p className="mt-2 text-neutral-300 md:text-[15px]">{music.hotintro}</p>}
+        <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-theme-primary">{music.title}</h1>
+        {music.hotintro && <p className="mt-2 text-theme-secondary md:text-[15px]">{music.hotintro}</p>}
       </div>
 
       {/* 正文：从txt文件读取，空行分段，首行缩进，段落间距 */}
       {musicDescription && (
-        <div className="mt-6 text-neutral-300 leading-8 text-lg max-w-3xl mx-auto px-4 sm:px-0">
+        <div className="mt-6 text-theme-secondary leading-8 text-lg max-w-3xl mx-auto px-4 sm:px-0">
           {String(musicDescription)
             .split(/\n/)
             .filter(para => para.trim())
@@ -382,10 +381,10 @@ export default function MusicDetail() {
       {/* 乐谱展示区 */}
       <div className="mt-12">
         <div className="flex items-center justify-center gap-3 mb-6">
-          <h2 className="text-xl font-semibold">乐谱</h2>
+          <h2 className="text-xl font-semibold text-theme-primary">乐谱</h2>
           <button
             onClick={clearScoreCache}
-            className="p-2 rounded-lg border border-neutral-700 bg-neutral-800 hover:bg-neutral-700 transition-colors"
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-theme-primary bg-black/5 hover:bg-black/15 text-sm text-theme-primary transition-colors duration-200"
             title="刷新乐谱图片"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -396,14 +395,13 @@ export default function MusicDetail() {
             </svg>
           </button>
         </div>
-        
         {scoreLoading ? (
           <div className="max-w-4xl mx-auto text-center py-12">
-            <div className="inline-flex items-center gap-3 text-neutral-400">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-neutral-400"></div>
+            <div className="inline-flex items-center gap-3 text-theme-secondary">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-theme-secondary"></div>
               <span>正在加载乐谱图片...</span>
             </div>
-            <p className="mt-2 text-sm text-neutral-500">使用智能预加载策略，通常只需1-2秒</p>
+            <p className="mt-2 text-sm text-theme-muted">使用智能预加载策略，通常只需1-2秒</p>
           </div>
         ) : scoreImages.length > 0 ? (
           <div className="max-w-4xl mx-auto space-y-6">
@@ -412,18 +410,15 @@ export default function MusicDetail() {
                 <img
                   src={imageUrl}
                   alt={`乐谱第${index + 1}页`}
-                  className="max-w-full h-auto rounded-lg border border-neutral-800 shadow-lg"
+                  className="max-w-full h-auto rounded-lg border border-theme-primary shadow-theme-primary"
                   loading="lazy"
-                  onError={(e) => {
-                    // 如果图片加载失败，隐藏这个元素
-                    e.target.style.display = 'none';
-                  }}
+                  onError={(e) => { e.target.style.display = 'none'; }}
                 />
               </div>
             ))}
           </div>
         ) : (
-          <div className="max-w-4xl mx-auto text-center py-8 text-neutral-400">
+          <div className="max-w-4xl mx-auto text-center py-8 text-theme-secondary">
             <p>暂无乐谱图片</p>
           </div>
         )}
@@ -432,14 +427,14 @@ export default function MusicDetail() {
       {/* 操作区 */}
       <div className="mt-8 flex items-center justify-center gap-3">
         <Link
-          className="px-3 py-1.5 rounded-lg border border-neutral-800 bg-neutral-900 hover:bg-neutral-800 text-sm"
+          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-theme-primary bg-black/5 hover:bg-black/15 text-sm text-theme-primary transition-colors duration-200"
           to="/music"
         >
           返回音乐列表
         </Link>
         {pageUrl && (
           <a
-            className="px-3 py-1.5 rounded-lg border border-neutral-800 bg-neutral-900 hover:bg-neutral-800 text-sm"
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-theme-primary bg-black/5 hover:bg-black/15 text-sm text-theme-primary transition-colors duration-200"
             href={pageUrl}
             target="_blank"
             rel="noreferrer"
@@ -454,8 +449,8 @@ export default function MusicDetail() {
 
 function Wrap({ children }) {
   return (
-    <section className="border-t border-neutral-900/80 bg-neutral-950">
-      <div className="max-w-[1120px] mx-auto px-4 py-8">{children}</div>
+    <section className="border-t border-theme-primary bg-theme-primary pt-16">
+      <div className="max-w-[1120px] mx-auto px-4 py-8 text-theme-primary">{children}</div>
     </section>
   );
 }

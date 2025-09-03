@@ -136,7 +136,7 @@ export default function Home() {
               to="/photos"
               src={getGitHubUrl(featuredPhoto.url)}
               captionTitle={featuredPhoto.title}
-              overlayTitle="天坑地缝"
+              overlayTitle="裂缝里的秘密"
               overlaySubtitle="在这片陡峭的幽暗裂谷中，仿佛隐藏着通往未知世界的入口。"
               gradientType="photos"
             />
