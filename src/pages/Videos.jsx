@@ -1,6 +1,7 @@
 // src/pages/Videos.jsx
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { getConfigUrl, pickUrl } from "../lib/configSource.js";
 
 export default function Videos() {
   const [items, setItems] = useState([]);
@@ -8,21 +9,14 @@ export default function Videos() {
   const [err, setErr] = useState(null);
 
   // 路径转换函数：将相对路径转换为GitHub raw URL
-  const getGitHubUrl = (path) => {
-    if (path.startsWith('http')) {
-      return path; // 如果是外部链接，直接返回
-    }
-    return `https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main${path}`;
-  };
+  const getGitHubUrl = (path) => (path.startsWith('http') ? path : path);
 
   useEffect(() => {
     let alive = true;
     
     const fetchVideos = async () => {
       try {
-        const response = await fetch(
-          'https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/config/videos.json'
-        );
+        const response = await fetch(getConfigUrl('videos'));
         
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`);
@@ -76,7 +70,7 @@ export default function Videos() {
           >
             <div className="relative aspect-[16/9] w-full overflow-hidden">
               <img
-                src={getGitHubUrl(v.poster)}
+                src={pickUrl(v.poster, v.posterLocalUrl)}
                 alt={v.title || ""}
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                 loading="lazy"

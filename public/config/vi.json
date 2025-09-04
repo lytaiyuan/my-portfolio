@@ -1,0 +1,21 @@
+{
+  "featuredId": 1,
+  "items": [
+    {
+      "id": 1,
+      "slug": "brand-identity",
+      "title": "品牌视觉手册提案",
+      "cover": "https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/vi/km/cover.jpg",
+      "images": [
+        "https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/vi/km/image.jpg"
+      ],
+      "pdf": "https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/vi/km/doc.pdf",
+      "subtitle": "春城湖畔度假村",
+      "coverLocalUrl": "/vi/km/cover.jpg",
+      "pdfLocalUrl": "/vi/km/doc.pdf",
+      "imagesLocalUrls": [
+        "/vi/km/image.jpg"
+      ]
+    }
+  ]
+}

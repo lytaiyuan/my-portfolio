@@ -1,0 +1,43 @@
+{
+  "version": "2025.01.29-1",
+  "items": [
+    {
+      "id": 1,
+      "slug": "杜秋怡琵琶演奏",
+      "title": "杜秋怡",
+      "hottitle": "弦拨之间：琵琶诉说的千年风华",
+      "hotintro": "或悲壮、或柔美、或激昂，让我们在声声余韵中，与古人心意相通。",
+      "excerpt": "或悲壮、或柔美、或激昂，让我们在声声余韵中，与古人心意相通。",
+      "cover": "https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/music/Epic/cover.jpg",
+      "embed": {
+        "playerUrl": "https://player.bilibili.com/player.html?bvid=BV1xx411c7mu",
+        "iframe": "<iframe src=\"https://player.bilibili.com/player.html?bvid=BV1xx411c7mu\" scrolling=\"no\" border=\"0\" frameborder=\"no\" framespacing=\"0\" allowfullscreen=\"true\" width=\"100%\" height=\"100%\"> </iframe>"
+      },
+      "descriptionFile": "https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/music/Epic/Epic.txt",
+      "scoreFolder": "https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/music/Epic/score/",
+      "duration": "3:45",
+      "coverLocalUrl": "/music/Epic/cover.jpg",
+      "descriptionLocalUrl": "/music/Epic/Epic.txt",
+      "scoreFolderLocalUrl": "/music/Epic/score/"
+    },
+    {
+      "id": 2,
+      "slug": "another-song",
+      "title": "Another Song",
+      "hottitle": "现代流行音乐",
+      "hotintro": "充满活力的现代流行音乐作品",
+      "excerpt": "一首充满活力的现代流行音乐作品，融合了当代流行音乐的精髓，通过动感的节奏和朗朗上口的旋律，展现出现代音乐的魅力。",
+      "cover": "https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/music/AnotherSong/cover.jpg",
+      "embed": {
+        "playerUrl": "https://player.bilibili.com/player.html?bvid=BV1xx411c7mu",
+        "iframe": "<iframe src=\"https://player.bilibili.com/player.html?bvid=BV1xx411c7mu\" scrolling=\"no\" border=\"0\" frameborder=\"no\" framespacing=\"0\" allowfullscreen=\"true\" width=\"100%\" height=\"100%\"> </iframe>"
+      },
+      "descriptionFile": "https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/music/AnotherSong/AnotherSong.txt",
+      "scoreFolder": "https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/music/AnotherSong/score/",
+      "duration": "4:12",
+      "coverLocalUrl": "/music/AnotherSong/cover.jpg",
+      "descriptionLocalUrl": "/music/AnotherSong/AnotherSong.txt",
+      "scoreFolderLocalUrl": "/music/AnotherSong/score/"
+    }
+  ]
+}

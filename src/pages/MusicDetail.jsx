@@ -1,5 +1,6 @@
 // src/pages/MusicDetail.jsx
 import React, { useEffect, useState, useMemo } from "react";
+import { getConfigUrl, pickUrl } from "../lib/configSource.js";
 import { useParams, Link } from "react-router-dom";
 
 export default function MusicDetail() {
@@ -13,38 +14,14 @@ export default function MusicDetail() {
   const [isPlaying, setIsPlaying] = useState(false);
 
   // 路径转换函数：将相对路径转换为GitHub raw URL，避免重复
-  const getGitHubUrl = (path) => {
-    if (!path) return '';
-    
-    console.log('[MusicDetail] 原始路径:', path);
-    
-    // 如果路径已经包含GitHub URL，直接返回
-    if (path.includes('raw.githubusercontent.com')) {
-      console.log('[MusicDetail] 路径已包含GitHub URL，直接返回:', path);
-      return path;
-    }
-    
-    // 如果是外部链接，直接返回
-    if (path.startsWith('http')) {
-      console.log('[MusicDetail] 外部链接，直接返回:', path);
-      return path;
-    }
-    
-    // 处理相对路径
-    const cleanPath = path.startsWith('/') ? path : `/${path}`;
-    const finalUrl = `https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main${cleanPath}`;
-    console.log('[MusicDetail] 构建的最终URL:', finalUrl);
-    return finalUrl;
-  };
+  const getGitHubUrl = (path) => (path && path.startsWith('http') ? path : path || '');
 
   useEffect(() => {
     let alive = true;
     
     const fetchMusicData = async () => {
       try {
-        const response = await fetch(
-          'https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/config/music.json'
-        );
+        const response = await fetch(getConfigUrl('music'));
         
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`);
@@ -328,7 +305,7 @@ export default function MusicDetail() {
               className="absolute inset-0 w-full h-full group"
             >
               <img
-                src={getGitHubUrl(music.cover)}
+                src={pickUrl(music.cover, music.coverLocalUrl)}
                 alt={music.title || "cover"}
                 className="absolute inset-0 w-full h-full object-cover"
                 loading="lazy"

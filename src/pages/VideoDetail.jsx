@@ -1,6 +1,7 @@
 // src/pages/VideoDetail.jsx
 import React, { useEffect, useMemo, useState, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
+import { getConfigUrl, pickUrl } from "../lib/configSource.js";
 
 export default function VideoDetail() {
   const { slug } = useParams(); // /videos/:slug
@@ -10,21 +11,14 @@ export default function VideoDetail() {
   const [err, setErr] = useState(null);
 
   // 路径转换函数：将相对路径转换为GitHub raw URL
-  const getGitHubUrl = (path) => {
-    if (path.startsWith('http')) {
-      return path; // 如果是外部链接，直接返回
-    }
-    return `https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main${path}`;
-  };
+  const getGitHubUrl = (path) => path;
 
   useEffect(() => {
     let alive = true;
     
     const fetchVideos = async () => {
       try {
-        const response = await fetch(
-          'https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/config/videos.json'
-        );
+        const response = await fetch(getConfigUrl('videos'));
         
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`);
@@ -102,8 +96,9 @@ export default function VideoDetail() {
 
   // 加载视频描述文件
   useEffect(() => {
-    if (video && video.descriptionFile) {
-      fetch(getGitHubUrl(video.descriptionFile))
+    if (video && (video.descriptionFile || video.descriptionLocalUrl)) {
+      const url = pickUrl(video.descriptionFile, video.descriptionLocalUrl);
+      fetch(url)
         .then((res) => res.text())
         .then((text) => setVideoDescription(text))
         .catch((err) => console.error("Failed to load video description:", err));
@@ -127,7 +122,7 @@ export default function VideoDetail() {
 
   const { playerSrc, pageUrl } = fromEmbed(video.embed);
   const useIframe = !!playerSrc;
-  const poster = video.poster ? getGitHubUrl(video.poster) : "/covers/placeholder.jpg";
+  const poster = video.poster ? pickUrl(video.poster, video.posterLocalUrl) : "/covers/placeholder.jpg";
 
   // 点击海报开始播放（iframe 直接加载；mp4 自动播放）
   const onStart = () => {

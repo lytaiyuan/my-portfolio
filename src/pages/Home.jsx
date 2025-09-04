@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { useContent } from "../lib/useContent.js";
+import { pickUrl, getConfigUrl } from "../lib/configSource.js";
 
 export default function Home() {
   const { hero, photos, videos, loading: contentLoading } = useContent();
@@ -11,33 +12,15 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [player, setPlayer] = useState(null); // { title, poster, src }
 
-  // 路径转换函数：将相对路径转换为GitHub raw URL，避免重复
-  const getGitHubUrl = (path) => {
-    if (!path) return '';
-    
-    // 如果路径已经包含GitHub URL，直接返回
-    if (path.includes('raw.githubusercontent.com')) {
-      return path;
-    }
-    
-    // 如果是外部链接，直接返回
-    if (path.startsWith('http')) {
-      return path;
-    }
-    
-    // 处理相对路径
-    const cleanPath = path.startsWith('/') ? path : `/${path}`;
-    return `https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main${cleanPath}`;
-  };
+  // 选择本地或远程 URL
+  const getGitHubUrl = (path) => path; // 统一走 pickUrl 逻辑，保留函数避免大范围改动
 
   useEffect(() => {
     let alive = true;
     
     const fetchMusic = async () => {
       try {
-        const response = await fetch(
-          'https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/config/music.json'
-        );
+        const response = await fetch(getConfigUrl('music'));
         
         if (response.ok) {
           const m = await response.json();
@@ -134,7 +117,7 @@ export default function Home() {
           featuredPhoto ? (
             <CardImage
               to="/photos"
-              src={getGitHubUrl(featuredPhoto.url)}
+              src={pickUrl(featuredPhoto.url, featuredPhoto.localurl)}
               captionTitle={featuredPhoto.title}
               overlayTitle="裂缝里的秘密"
               overlaySubtitle="在这片陡峭的幽暗裂谷中，仿佛隐藏着通往未知世界的入口。"
@@ -154,7 +137,7 @@ export default function Home() {
           featuredVideo ? (
             <CardImage
               to={`/videos/${featuredVideo.slug}`}
-              src={featuredVideo.poster ? getGitHubUrl(featuredVideo.poster) : "/covers/placeholder.jpg"}
+              src={featuredVideo.poster ? pickUrl(featuredVideo.poster, featuredVideo.posterLocalUrl) : "/covers/placeholder.jpg"}
               captionTitle={featuredVideo.title}
               overlayTitle={featuredVideo.hottitle || featuredVideo.title}
               overlaySubtitle={featuredVideo.hotintro}
@@ -229,7 +212,7 @@ export default function Home() {
                            featuredMusic ? (
                    <CardImage
                      to={`/music/${featuredMusic.slug}`}
-                     src={getGitHubUrl(featuredMusic.cover)}
+                     src={pickUrl(featuredMusic.cover, featuredMusic.coverLocalUrl)}
                      captionTitle={featuredMusic.title}
                      overlayTitle={featuredMusic.hottitle || featuredMusic.title}
                      overlaySubtitle={featuredMusic.hotintro}

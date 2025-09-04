@@ -1,6 +1,7 @@
 // src/pages/Design.jsx
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { getConfigUrl, pickUrl } from "../lib/configSource.js";
 
 const Card = ({ img, title, subtitle, to }) => (
   <Link to={to} className="group block overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900">
@@ -38,13 +39,13 @@ export default function Design() {
     const fetchDesignData = async () => {
       try {
         const [g, v, p] = await Promise.all([
-          fetch('https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/config/graphiccontent.json')
+          fetch(getConfigUrl('graphiccontent'))
             .then(r => r.json())
             .catch(() => ({ items: [] })),
-          fetch('https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/config/vi.json')
+          fetch(getConfigUrl('vi'))
             .then(r => r.json())
             .catch(() => ({ items: [] })),
-          fetch('https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/config/packaging.json')
+          fetch(getConfigUrl('packaging'))
             .then(r => r.json())
             .catch(() => ({ items: [] }))
         ]);
@@ -85,7 +86,7 @@ export default function Design() {
         <Section title="包装设计">
           <Grid>
             {pack.slice(0, 3).map(it => (
-              <Card key={it.slug} img={it.cover} title={it.title} subtitle={it.subtitle} to={`/design/packaging/${it.slug}`} />
+              <Card key={it.slug} img={pickUrl(it.cover, it.coverLocalUrl)} title={it.title} subtitle={it.subtitle} to={`/design/packaging/${it.slug}`} />
             ))}
           </Grid>
         </Section>
@@ -93,7 +94,7 @@ export default function Design() {
         <Section title="平面设计">
           <Grid>
             {graphic.slice(0, 3).map(it => (
-              <Card key={it.slug} img={it.cover} title={it.title} subtitle={it.subtitle} to={`/design/graphic/${it.slug}`} />
+              <Card key={it.slug} img={pickUrl(it.cover, it.coverLocalUrl)} title={it.title} subtitle={it.subtitle} to={`/design/graphic/${it.slug}`} />
             ))}
           </Grid>
         </Section>
@@ -101,7 +102,7 @@ export default function Design() {
         <Section title="视觉识别（VI）方案">
           <Grid>
             {vi.slice(0, 3).map(it => (
-              <Card key={it.slug} img={it.cover} title={it.title} subtitle={it.subtitle} to={`/design/vi/${it.slug}`} />
+              <Card key={it.slug} img={pickUrl(it.cover, it.coverLocalUrl)} title={it.title} subtitle={it.subtitle} to={`/design/vi/${it.slug}`} />
             ))}
           </Grid>
         </Section>

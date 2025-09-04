@@ -1,5 +1,6 @@
 // src/pages/design/Product.jsx
 import React, { useEffect, useMemo, useState } from "react";
+import { getConfigUrl, pickUrl } from "../../lib/configSource.js";
 import { motion, AnimatePresence } from "framer-motion";
 
 const ALL = "全部";
@@ -10,39 +11,14 @@ export default function Product() {
   const [tag, setTag] = useState(ALL);
   const [q, setQ] = useState("");
 
-  // 路径转换函数：将相对路径转换为GitHub raw URL
-  const getGitHubUrl = (path) => {
-    if (!path) return '';
-    
-    console.log('[Product] 原始路径:', path);
-    
-    // 如果路径已经包含GitHub URL，直接返回
-    if (path.includes('raw.githubusercontent.com')) {
-      console.log('[Product] 路径已包含GitHub URL，直接返回:', path);
-      return path;
-    }
-    
-    // 如果是外部链接，直接返回
-    if (path.startsWith('http')) {
-      console.log('[Product] 外部链接，直接返回:', path);
-      return path;
-    }
-    
-    // 处理相对路径
-    const cleanPath = path.startsWith('/') ? path : `/${path}`;
-    const finalUrl = `https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main${cleanPath}`;
-    console.log('[Product] 构建的最终URL:', finalUrl);
-    return finalUrl;
-  };
+  const getLocalOrRemote = (remote, local) => pickUrl(remote, local);
 
   useEffect(() => {
     let alive = true;
     
     const fetchProductPhotos = async () => {
       try {
-        const response = await fetch(
-          'https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/config/productphotos.json'
-        );
+        const response = await fetch(getConfigUrl('productphotos'));
         
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`);
@@ -107,7 +83,7 @@ export default function Product() {
                 layout initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.98 }} transition={{ duration: 0.25 }}
                 className="mb-4 break-inside-avoid overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900"
               >
-                <img src={getGitHubUrl(img.url)} alt={img.title} className="w-full h-auto block" loading="lazy" />
+                <img src={pickUrl(img.url, img.localurl)} alt={img.title} className="w-full h-auto block" loading="lazy" />
                 <figcaption className="p-3">
                   <div className="text-sm font-medium text-neutral-100">{img.title}</div>
                 </figcaption>

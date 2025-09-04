@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import { getConfigUrl, pickUrl } from "../../lib/configSource.js";
 
 const ensureSlash = (p) => (p ? (p.startsWith("/") ? p : "/" + p) : "");
 const normArray = (xs) => (Array.isArray(xs) ? xs : []).map(ensureSlash);
@@ -10,30 +11,7 @@ export default function PackagingDetail() {
   const [err, setErr] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // 路径转换函数：将相对路径转换为GitHub raw URL
-  const getGitHubUrl = (path) => {
-    if (!path) return '';
-    
-    console.log('[PackagingDetail] 原始路径:', path);
-    
-    // 如果路径已经包含GitHub URL，直接返回
-    if (path.includes('raw.githubusercontent.com')) {
-      console.log('[PackagingDetail] 路径已包含GitHub URL，直接返回:', path);
-      return path;
-    }
-    
-    // 如果是外部链接，直接返回
-    if (path.startsWith('http')) {
-      console.log('[PackagingDetail] 外部链接，直接返回:', path);
-      return path;
-    }
-    
-    // 处理相对路径
-    const cleanPath = path.startsWith('/') ? path : `/${path}`;
-    const finalUrl = `https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main${cleanPath}`;
-    console.log('[PackagingDetail] 构建的最终URL:', finalUrl);
-    return finalUrl;
-  };
+  const getLocalOrRemote = (remote, local) => pickUrl(remote, local);
 
   useEffect(() => {
     let alive = true;
@@ -41,9 +19,7 @@ export default function PackagingDetail() {
     
     const fetchPackagingData = async () => {
       try {
-        const response = await fetch(
-          'https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/config/packaging.json'
-        );
+        const response = await fetch(getConfigUrl('packaging'));
         
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`);
@@ -75,18 +51,19 @@ export default function PackagingDetail() {
 
   const images = useMemo(() => {
     if (!item) return [];
-    // 直接使用原始路径，不经过normArray处理
-    if (item.images && Array.isArray(item.images) && item.images.length > 0) {
-      return item.images;
+    const remotes = Array.isArray(item.images) ? item.images : [];
+    const locals = Array.isArray(item.imagesLocalUrls) ? item.imagesLocalUrls : [];
+    if (remotes.length || locals.length) {
+      const len = Math.max(remotes.length, locals.length);
+      return Array.from({ length: len }).map((_, i) => pickUrl(remotes[i], locals[i]));
     }
-    // 如果没有images数组，使用cover
-    if (item.cover) {
-      return [item.cover];
+    if (item.cover || item.coverLocalUrl) {
+      return [pickUrl(item.cover, item.coverLocalUrl)];
     }
     return [];
   }, [item]);
 
-  const pdfPath = item?.pdf || "";
+  const pdfPath = pickUrl(item?.pdf, item?.pdfLocalUrl) || "";
 
   if (loading) return <div className="min-h-screen grid place-items-center bg-neutral-950 text-neutral-300">加载中…</div>;
   if (err) return <div className="min-h-screen grid place-items-center bg-neutral-950 text-neutral-300">读取 packaging.json 出错：{String(err.message || err)}</div>;
@@ -111,14 +88,14 @@ export default function PackagingDetail() {
         <div className="mt-6 space-y-4">
           {images.map((src, i) => (
             <figure key={src} className="overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900">
-              <img src={getGitHubUrl(src)} alt={`${item.title} - ${i + 1}`} className="w-full h-auto block" loading="lazy" />
+              <img src={src} alt={`${item.title} - ${i + 1}`} className="w-full h-auto block" loading="lazy" />
             </figure>
           ))}
         </div>
 
         {pdfPath && (
           <div className="mt-8">
-            <a href={getGitHubUrl(pdfPath)} download className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-neutral-700 bg-neutral-900 hover:bg-neutral-800">
+            <a href={pdfPath} download className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-neutral-700 bg-neutral-900 hover:bg-neutral-800">
               下载该 PDF
             </a>
           </div>

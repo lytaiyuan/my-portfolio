@@ -1,0 +1,24 @@
+{
+  "photos": [
+    {
+      "id": 1,
+      "url": "/product/1.jpg",
+      "title": "手冲咖啡器具",
+      "tags": [
+        "产品",
+        "咖啡"
+      ],
+      "localurl": "/product/1.jpg"
+    },
+    {
+      "id": 2,
+      "url": "/product/2.jpg",
+      "title": "耳机静物",
+      "tags": [
+        "产品",
+        "电子"
+      ],
+      "localurl": "/product/2.jpg"
+    }
+  ]
+}

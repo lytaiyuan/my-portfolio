@@ -1,5 +1,6 @@
 // src/pages/Photos.jsx
 import React, { useEffect, useMemo, useState, useCallback } from "react";
+import { getConfigUrl, pickUrl } from "../lib/configSource.js";
 import { AnimatePresence, motion } from "framer-motion";
 
 const ALL = "全部";
@@ -12,10 +13,8 @@ export default function Photos() {
 
   // 路径转换函数：将相对路径转换为GitHub raw URL
   const getGitHubUrl = (path) => {
-    if (path.startsWith('http')) {
-      return path; // 如果是外部链接，直接返回
-    }
-    return `https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main${path}`;
+    if (path.startsWith('http')) return path;
+    return path; // 已支持本地路径
   };
 
   useEffect(() => {
@@ -25,9 +24,7 @@ export default function Photos() {
       try {
         console.log('🚀 开始从GitHub获取照片数据...');
         
-        const response = await fetch(
-          'https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/config/photos.json'
-        );
+        const response = await fetch(getConfigUrl('photos'));
         
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`);
@@ -194,7 +191,7 @@ export default function Photos() {
                   onClick={() => openBox(i)}
                 >
                   <img
-                    src={getGitHubUrl(img.url)}
+                    src={pickUrl(img.url, img.localurl)}
                     alt={img.title}
                     className="w-full h-auto block"
                     loading="lazy"

@@ -1,10 +1,11 @@
 // src/lib/useContent.js
 import { useEffect, useState } from "react";
+import { getConfigUrl } from "./configSource.js";
 
 // 从本地 public 目录读取 hero.json 配置（保留远程 url 字段，但优先使用本地路径）
 async function getHeroImages() {
   try {
-    const response = await fetch('/hero.json', { cache: 'no-cache' });
+    const response = await fetch(getConfigUrl('hero'), { cache: 'no-cache' });
     if (response.ok) {
       const data = await response.json();
       if (Array.isArray(data.images)) {
@@ -59,25 +60,25 @@ export function useContent() {
       getHeroImages(),
       (async () => {
         try {
-          const response = await fetch('https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/config/photos.json');
+          const response = await fetch(getConfigUrl('photos'));
           if (response.ok) {
             return await response.json();
           }
           return { items: [] };
         } catch (error) {
-          console.warn("Failed to load photos from GitHub:", error);
+          console.warn("Failed to load photos config:", error);
           return { items: [] };
         }
       })(),
       (async () => {
         try {
-          const response = await fetch('https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/config/videos.json');
+          const response = await fetch(getConfigUrl('videos'));
           if (response.ok) {
             return await response.json();
           }
           return { items: [] };
         } catch (error) {
-          console.warn("Failed to load videos from GitHub:", error);
+          console.warn("Failed to load videos config:", error);
           return { items: [] };
         }
       })()
