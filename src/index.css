@@ -401,6 +401,62 @@ button:focus {
   transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+/* 工具栏内展开区的文字显隐动画（回滚至最后一次正确状态） */
+.toolbar-menu-content {
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.toolbar-menu-content.is-open {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.05s;
+}
+
+/* 菜单项渐显+轻微位移动画（分段延时，观感更柔和） */
+.toolbar-menu-content ul > li {
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.toolbar-menu-content.is-open ul > li { opacity: 1; transform: translateY(0); }
+.toolbar-menu-content.is-open ul > li:nth-child(1) { transition-delay: 0.02s; }
+.toolbar-menu-content.is-open ul > li:nth-child(2) { transition-delay: 0.06s; }
+.toolbar-menu-content.is-open ul > li:nth-child(3) { transition-delay: 0.10s; }
+.toolbar-menu-content.is-open ul > li:nth-child(4) { transition-delay: 0.14s; }
+.toolbar-menu-content.is-open ul > li:nth-child(5) { transition-delay: 0.18s; }
+
+/* 展开菜单时的全屏背景毛玻璃层（不拦截点击） */
+.toolbar-blur-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100; /* 低于 toolbar (105)，高于页面内容 */
+  pointer-events: none;
+  opacity: 0;
+  backdrop-filter: saturate(1.1) blur(0px);
+  -webkit-backdrop-filter: saturate(1.1) blur(0px);
+  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+              backdrop-filter 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+              -webkit-backdrop-filter 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.toolbar-blur-overlay.is-open {
+  opacity: 1;
+  backdrop-filter: saturate(1.1) blur(8px);
+  -webkit-backdrop-filter: saturate(1.1) blur(8px);
+}
+.top-menu-fade {
+  height: 40px;
+  backdrop-filter: saturate(1.1) blur(8px);
+  -webkit-backdrop-filter: saturate(1.1) blur(8px);
+}
+[data-theme="light"] .top-menu-fade {
+  background: linear-gradient(to bottom, rgba(255,255,255,0.4), rgba(255,255,255,0));
+}
+[data-theme="dark"] .top-menu-fade {
+  background: linear-gradient(to bottom, rgba(10,10,10,0.4), rgba(10,10,10,0));
+}
+
 /* 深色模式下去除图片和视频区的黑色边缘描线 */
 [data-theme="dark"] #home-photos .border-theme-primary,
 [data-theme="dark"] #home-videos .border-theme-primary {

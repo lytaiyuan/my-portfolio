@@ -23,6 +23,7 @@ import MusicDetail from "./pages/MusicDetail.jsx";
 const OPACITY_HEADER = 0.30; // 顶部玻璃条透明度
 const OPACITY_DRAWER = 0.30; // 手机端抽屉透明度
 const HEADER_HEIGHT_PX = 48; // 12 * 4px
+const MENU_HEIGHT_PX = 280;  // 工具栏展开时的额外高度（可调）
 
 /** 固定在最上方的玻璃背景条（包含所有工具栏功能） */
 function FixedGlassBar() {
@@ -45,21 +46,43 @@ function FixedGlassBar() {
   // 调试：每次渲染时都检查状态
   console.log('[FixedGlassBar] Rendering with:', { isLight, isDark, actualTheme, forceUpdate });
 
+  // 将 open 状态广播给 App，用于控制全屏模糊
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent('app:menuOpen', { detail: open }));
+  }, [open]);
+
   return (
     <>
       {/* 主工具栏背景 */}
       <div
         className="fixed top-0 left-0 w-screen toolbar-glass"
         style={{
-          height: HEADER_HEIGHT_PX,
+          height: open ? HEADER_HEIGHT_PX + MENU_HEIGHT_PX : HEADER_HEIGHT_PX,
           zIndex: 105,
+          transition: "height 1s cubic-bezier(0.16, 1, 0.3, 1)",
+          overflow: "hidden",
         }}
       >
         <div className="max-w-[1120px] mx-auto px-4">
           <div className="h-12 grid grid-cols-3 items-center relative z-[120]" key={`toolbar-content-${isLight ? 'light' : 'dark'}-${forceUpdate}`}>
-            {/* 手机：左 菜单键（含文字） */}
+            {/* 手机：左 菜单键 */}
             <div className="md:hidden flex items-center justify-self-start">
-              {!open && (
+              {open ? (
+                <button
+                  aria-label="关闭菜单"
+                  onClick={() => setOpen(false)}
+                  className="p-2 rounded-lg border border-theme-primary bg-theme-card/80"
+                >
+                  <ThemeImage 
+                    type="close" 
+                    alt="close" 
+                    className="h-4 w-4" 
+                    isLight={isLight} 
+                    actualTheme={actualTheme} 
+                    key={`close-${isLight ? 'light' : 'dark'}`}
+                  />
+                </button>
+              ) : (
                 <button
                   aria-label="打开菜单"
                   onClick={() => setOpen(true)}
@@ -120,50 +143,23 @@ function FixedGlassBar() {
               <ThemeToggle variant="mobile" useToolbarThemeStyle className="ml-2" />
             </div>
           </div>
+
+          {/* 手机端：展开区（随工具栏高度展开） */}
+          <div className="md:hidden">
+            <div className={"toolbar-menu-content " + (open ? "is-open" : "") }>
+              <ul className="text-center text-base space-y-6 py-4">
+                <li><Link onClick={() => setOpen(false)} to="/">主页</Link></li>
+                <li><Link onClick={() => setOpen(false)} to="/photos">图片</Link></li>
+                <li><Link onClick={() => setOpen(false)} to="/videos">视频</Link></li>
+                <li><Link onClick={() => setOpen(false)} to="/design">设计</Link></li>
+                <li><Link onClick={() => setOpen(false)} to="/music">音乐</Link></li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* 遮罩：恢复模糊过渡 */}
-      {/* 始终挂载遮罩，通过类名切换非线性过渡，避免卸载导致的退出闪动 */}
-      <div
-        className={
-          "fixed inset-0 z-[115] overlay-glass menu-overlay menu-overlay-transition " +
-          (open ? "is-open" : "pointer-events-none")
-        }
-        onClick={() => setOpen(false)}
-      />
-
-      {/* 左侧抽屉菜单 */}
-      <div
-        className={
-          "fixed inset-y-0 left-0 z-[130] w-36 p-4 drawer-glass transform drawer-transition " +
-          (open ? "translate-x-0" : "-translate-x-full pointer-events-none")
-        }
-      >
-        {/* 关闭按钮：抽屉左上角（与旧版对称） */}
-        <button
-          aria-label="关闭菜单"
-          onClick={() => setOpen(false)}
-          className="absolute top-2 left-4 p-2 rounded-lg border border-theme-primary bg-theme-card/80"
-        >
-          <ThemeImage 
-            type="close" 
-            alt="close" 
-            className="h-4 w-4" 
-            isLight={isLight} 
-            actualTheme={actualTheme} 
-            key={`close-${isLight ? 'light' : 'dark'}`}
-          />
-        </button>
-
-        <div className="mt-12 flex flex-col gap-2 text-theme-primary" key={`drawer-content-${isLight ? 'light' : 'dark'}-${forceUpdate}`}>
-          <DrawerLink to="/">主页</DrawerLink>
-          <DrawerLink to="/photos">图片</DrawerLink>
-          <DrawerLink to="/videos">视频</DrawerLink>
-          <DrawerLink to="/design">设计</DrawerLink>
-          <DrawerLink to="/music">音乐</DrawerLink>
-        </div>
-      </div>
+      {/* 顶部下拉菜单层已移除（逻辑合并到工具栏） */}
     </>
   );
 }
@@ -200,6 +196,12 @@ function DrawerLink({ to, children }) {
 
 export default function App() {
   const location = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
+  useEffect(() => {
+    const handler = (e) => setMenuOpen(Boolean(e.detail));
+    window.addEventListener('app:menuOpen', handler);
+    return () => window.removeEventListener('app:menuOpen', handler);
+  }, []);
 
   // 设置标签页标题
   useEffect(() => {
@@ -224,6 +226,10 @@ export default function App() {
   return (
     <div className="min-h-screen bg-theme-primary text-theme-primary selection:bg-theme-secondary transition-colors duration-300">
       <FixedGlassBar />
+      {/* 全屏背景毛玻璃层：不拦截点击，曲线非线性 */}
+      <div className={"toolbar-blur-overlay " + (menuOpen ? "is-open" : "")}></div>
+      {/* 全屏背景毛玻璃：随菜单开合做非线性模糊/透明度过渡，不拦截点击 */}
+      <div className={"toolbar-blur-overlay " + (menuOpen ? "is-open" : "")}></div>
       <ScrollToTop />
 
       <AnimatePresence mode="wait">

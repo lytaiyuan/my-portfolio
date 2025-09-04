@@ -7,13 +7,13 @@ export function useLocal() {
 
 export function pickUrl(remoteUrl, localUrl) {
   // 本地优先
-  if (useLocal()) return localUrl || remoteUrl || "";
+  if (useLocal()) return localUrl || remoteUrl || null;
   // 远程优先：若是绝对 URL 直接用；否则构造成 GitHub Raw
   if (remoteUrl) {
     if (/^https?:\/\//i.test(remoteUrl)) return remoteUrl;
     return buildRawAssetUrl(remoteUrl);
   }
-  return localUrl || "";
+  return localUrl || null;
 }
 
 export function getConfigUrl(name) {
