@@ -141,7 +141,7 @@
 body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.18s ease, color 0.18s ease;
 }
 
 /* 去除主题切换按钮的焦点边框 */
@@ -158,10 +158,10 @@ button:focus {
 
 /* 主题切换过渡动画 */
 * {
-  transition: background-color 0.3s ease, 
-              color 0.3s ease, 
-              border-color 0.3s ease, 
-              box-shadow 0.3s ease;
+  transition: background-color 0.18s ease,
+              color 0.18s ease,
+              border-color 0.18s ease,
+              box-shadow 0.18s ease;
 }
 
 /* 通用组件样式 */
@@ -257,14 +257,14 @@ button:focus {
   background-color: rgba(255, 255, 255, 0.4);
   backdrop-filter: saturate(1.1) blur(10px);
   -webkit-backdrop-filter: saturate(1.1) blur(10px);
-  border-left: 1px solid rgba(229, 229, 229, 0.2);
+  border-right: 1px solid rgba(229, 229, 229, 0.2);
 }
 
 [data-theme="dark"] .drawer-glass {
   background-color: rgba(10, 10, 10, 0.4);
   backdrop-filter: saturate(1.1) blur(10px);
   -webkit-backdrop-filter: saturate(1.1) blur(10px);
-  border-left: 1px solid #404040;
+  border-right: 1px solid #404040;
 }
 
 [data-theme="light"] .overlay-glass {
@@ -284,6 +284,23 @@ button:focus {
 .overlay-glass {
   backdrop-filter: saturate(1.1) blur(12px);
   -webkit-backdrop-filter: saturate(1.1) blur(12px);
+}
+
+/* 菜单遮罩：CSS 过渡控制，避免 JS 与 CSS 双重动画引发闪烁 */
+.menu-overlay {
+  -webkit-backdrop-filter: saturate(1.1) blur(0px);
+  backdrop-filter: saturate(1.1) blur(0px);
+  opacity: 0;
+}
+.menu-overlay.is-open {
+  -webkit-backdrop-filter: saturate(1.1) blur(6px);
+  backdrop-filter: saturate(1.1) blur(6px);
+  opacity: 1;
+}
+.menu-overlay-transition {
+  transition: opacity 0.28s cubic-bezier(0.22, 1, 0.36, 1), backdrop-filter 0.28s cubic-bezier(0.22, 1, 0.36, 1), -webkit-backdrop-filter 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, backdrop-filter;
+  transform: translateZ(0);
 }
 
 /* 深色模式下桌面工具栏导航链接为纯白色 */
@@ -379,6 +396,11 @@ button:focus {
 /* 保留浅色模式下的旧渐变开关占位（如需恢复改这里） */
 [data-theme="light"] .photos-header-gradient { }
 
+/* 抽屉非线性过渡 */
+.drawer-transition {
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 /* 深色模式下去除图片和视频区的黑色边缘描线 */
 [data-theme="dark"] #home-photos .border-theme-primary,
 [data-theme="dark"] #home-videos .border-theme-primary {
@@ -428,6 +450,18 @@ button:focus {
 [data-theme="light"] #about article.bg-theme-card {
   background-color: rgba(0, 0, 0, 0.05) !important; /* 等同于 bg-black/5 */
 }
+
+/* 关于我们/联系：统一并加速文字与边框颜色过渡（更快更一致） */
+#about, #about *,
+.contact-section, .contact-section * {
+  transition: color 0.08s ease-out, background-color 0.08s ease-out, border-color 0.08s ease-out !important;
+}
+
+/* 明确在区块自身设定文字颜色，避免继承自 body 导致过渡用到全局时长 */
+#about { color: var(--text-primary); }
+#about h2, #about h3, #about h4 { color: var(--text-primary); }
+.contact-section { color: var(--text-primary); background-color: var(--bg-primary) !important; }
+.contact-section h2 { color: var(--text-primary); }
 
 /* 浅色模式下：图片二级页每个图片卡片采用与四板块一致的半透明衬底 */
 [data-theme="light"] .photos-page .photo-card {

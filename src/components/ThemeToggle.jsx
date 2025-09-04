@@ -39,11 +39,11 @@ const MoonIcon = ({ className = "w-5 h-5", strokeWidth = 2 }) => (
 const ThemeToggle = ({ variant = 'desktop', className = '', useToolbarThemeStyle = false }) => {
   const { isLight, toggleTheme } = useTheme();
   
-  // 与工具栏菜单按钮一致的样式
-  const toolbarStyle = 'p-2 rounded-lg border border-theme-primary bg-theme-card/80';
+  // 与工具栏菜单按钮一致的样式（提速颜色过渡）
+  const toolbarStyle = 'p-2 rounded-lg border border-theme-primary bg-theme-card/80 text-theme-primary transition-colors duration-100 ease-out';
 
   // 原桌面样式（保留以便在非工具栏场景使用）
-  const desktopStyle = `p-2 rounded-lg border transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+  const desktopStyle = `p-2 rounded-lg border transition-colors duration-100 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
     isLight 
       ? 'border-gray-300/20 bg-white/20 text-gray-700 hover:bg-white/30 focus:ring-blue-500' 
       : 'border-neutral-700 bg-neutral-800 text-neutral-300 hover:bg-neutral-700 focus:ring-blue-400'

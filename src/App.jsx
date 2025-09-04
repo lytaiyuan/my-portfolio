@@ -57,9 +57,24 @@ function FixedGlassBar() {
       >
         <div className="max-w-[1120px] mx-auto px-4">
           <div className="h-12 grid grid-cols-3 items-center relative z-[120]" key={`toolbar-content-${isLight ? 'light' : 'dark'}-${forceUpdate}`}>
-            {/* 手机：左 主题切换 */}
+            {/* 手机：左 菜单键（含文字） */}
             <div className="md:hidden flex items-center justify-self-start">
-              <ThemeToggle variant="mobile" useToolbarThemeStyle className="mr-2" />
+              {!open && (
+                <button
+                  aria-label="打开菜单"
+                  onClick={() => setOpen(true)}
+                  className="p-2 rounded-lg border border-theme-primary bg-theme-card/80"
+                >
+                  <ThemeImage 
+                    type="menu" 
+                    alt="menu" 
+                    className="h-4 w-4" 
+                    isLight={isLight} 
+                    actualTheme={actualTheme} 
+                    key={`menu-${isLight ? 'light' : 'dark'}`}
+                  />
+                </button>
+              )}
             </div>
 
             {/* 手机：中 LOGO */}
@@ -100,50 +115,36 @@ function FixedGlassBar() {
               <ThemeToggle variant="desktop" useToolbarThemeStyle />
             </div>
 
-            {/* 手机：右侧菜单键 */}
+            {/* 手机：右 主题切换 */}
             <div className="md:hidden flex items-center justify-self-end">
-              {!open && (
-                <button
-                  aria-label="打开菜单"
-                  onClick={() => setOpen(true)}
-                  className="p-2 rounded-lg border border-theme-primary bg-theme-card/80"
-                >
-                  <ThemeImage 
-                    type="menu" 
-                    alt="menu" 
-                    className="h-4 w-4" 
-                    isLight={isLight} 
-                    actualTheme={actualTheme} 
-                    key={`menu-${isLight ? 'light' : 'dark'}`}
-                  />
-                </button>
-              )}
+              <ThemeToggle variant="mobile" useToolbarThemeStyle className="ml-2" />
             </div>
           </div>
         </div>
       </div>
 
-      {/* 遮罩 */}
-      {open && (
-        <div
-          className="fixed inset-0 z-[115] overlay-glass menu-overlay"
-          onClick={() => setOpen(false)}
-        />
-      )}
-
-      {/* 右侧抽屉菜单 */}
+      {/* 遮罩：恢复模糊过渡 */}
+      {/* 始终挂载遮罩，通过类名切换非线性过渡，避免卸载导致的退出闪动 */}
       <div
         className={
-          "fixed inset-y-0 right-0 z-[130] w-72 p-4 drawer-glass " +
-          "transform transition-transform duration-300 ease-out " +
-          (open ? "translate-x-0" : "translate-x-full pointer-events-none")
+          "fixed inset-0 z-[115] overlay-glass menu-overlay menu-overlay-transition " +
+          (open ? "is-open" : "pointer-events-none")
+        }
+        onClick={() => setOpen(false)}
+      />
+
+      {/* 左侧抽屉菜单 */}
+      <div
+        className={
+          "fixed inset-y-0 left-0 z-[130] w-36 p-4 drawer-glass transform drawer-transition " +
+          (open ? "translate-x-0" : "-translate-x-full pointer-events-none")
         }
       >
-        {/* 关闭按钮：抽屉右上角（与菜单键位置一致） */}
+        {/* 关闭按钮：抽屉左上角（与旧版对称） */}
         <button
           aria-label="关闭菜单"
           onClick={() => setOpen(false)}
-          className="absolute top-2 right-4 p-2 rounded-lg border border-theme-primary bg-theme-card/80"
+          className="absolute top-2 left-4 p-2 rounded-lg border border-theme-primary bg-theme-card/80"
         >
           <ThemeImage 
             type="close" 
@@ -155,7 +156,7 @@ function FixedGlassBar() {
           />
         </button>
 
-        <div className="mt-8 flex flex-col gap-2 text-theme-primary" key={`drawer-content-${isLight ? 'light' : 'dark'}-${forceUpdate}`}>
+        <div className="mt-12 flex flex-col gap-2 text-theme-primary" key={`drawer-content-${isLight ? 'light' : 'dark'}-${forceUpdate}`}>
           <DrawerLink to="/">主页</DrawerLink>
           <DrawerLink to="/photos">图片</DrawerLink>
           <DrawerLink to="/videos">视频</DrawerLink>
@@ -190,7 +191,7 @@ function DrawerLink({ to, children }) {
   return (
     <Link
       to={to}
-      className="px-3 py-2 rounded-lg bg-theme-card/40 hover:bg-theme-card/60 text-theme-primary"
+      className="w-full text-center px-0 py-2 rounded-lg bg-theme-card/40 hover:bg-theme-card/60 text-theme-primary"
     >
       {children}
     </Link>
