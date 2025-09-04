@@ -3,6 +3,22 @@
   "items": [
     {
       "id": 1,
+      "slug": "dongyunli",
+      "title": "冻干咖啡包装设计",
+      "cover": "https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/packaging/dongyunli/cover.jpg",
+      "images": [
+        "https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/packaging/dongyunli/image.jpg"
+      ],
+      "pdf": "https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/packaging/dongyunli/doc.pdf",
+      "subtitle": "咖啡包装设计案例·Ai与人类设计师合作",
+      "coverLocalUrl": "/packaging/dongyunli/cover.jpg",
+      "pdfLocalUrl": "/packaging/dongyunli/doc.pdf",
+      "imagesLocalUrls": [
+        "/packaging/dongyunli/image.jpg"
+      ]
+    },
+    {
+      "id": 2,
       "slug": "oufen",
       "title": "藕粉包装设计",
       "cover": "https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/packaging/oufen/cover.jpg",
@@ -18,7 +34,7 @@
       ]
     },
     {
-      "id": 2,
+      "id": 3,
       "slug": "bupin",
       "title": "补品包装设计",
       "cover": "https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/packaging/bupin/cover.jpg",
