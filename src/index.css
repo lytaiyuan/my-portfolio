@@ -536,3 +536,8 @@ button:focus {
 [data-theme="light"] .photos-page .photo-card {
   background-color: rgba(0, 0, 0, 0.05) !important; /* 等同于 bg-black/5 */
 }
+
+/* 浅色模式下：任何使用 photo-card 的卡片，其底部信息区半透明衬底（与图片页一致） */
+[data-theme="light"] .photo-card figcaption {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}

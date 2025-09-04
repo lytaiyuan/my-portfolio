@@ -11,6 +11,7 @@ export default function Home() {
   const [music, setMusic] = useState([]);
   const [loading, setLoading] = useState(true);
   const [player, setPlayer] = useState(null); // { title, poster, src }
+  const [heroLoaded, setHeroLoaded] = useState(false);
 
   // 选择本地或远程 URL
   const getGitHubUrl = (path) => path; // 统一走 pickUrl 逻辑，保留函数避免大范围改动
@@ -63,34 +64,42 @@ export default function Home() {
           loading="eager"
           fetchPriority="high"
           decoding="async"
+          onLoad={() => setHeroLoaded(true)}
+          onError={() => setHeroLoaded(true)}
         />
         <div className="relative z-10 max-w-[1120px] mx-auto px-4 pt-14 md:pt-20">
           <div className="grid md:grid-cols-2 gap-8 md:gap-10 items-start md:items-end min-h-[60vh] md:min-h-[70vh]">
             <div className="pb-8 md:pb-14 pt-[22svh] md:pt-0">
-              <motion.h1
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1.0, ease: "easeOut" }}
-                className="text-[28px] leading-tight font-medium tracking-[-0.01em] md:text-[44px] md:leading-[1.1] text-white text-center md:text-left"
-              >
-                Li Yang  |  Studio
-              </motion.h1>
-              <motion.p
-                initial={{ opacity: 0, y: 18 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1.0, delay: 0.05, ease: "easeOut" }}
-                className="mt-3 text-white/95 max-w-prose md:text-lg text-center md:text-left mx-auto md:mx-0"
-              >
-                让影像、设计、音乐，诉说着同一种语言
-              </motion.p>
+              {heroLoaded && (
+                <motion.h1
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 1.0, ease: "easeOut" }}
+                  className="text-[28px] leading-tight font-medium tracking-[-0.01em] md:text-[44px] md:leading-[1.1] text-white text-center md:text-left"
+                >
+                  Li Yang  |  Studio
+                </motion.h1>
+              )}
+              {heroLoaded && (
+                <motion.p
+                  initial={{ opacity: 0, y: 18 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 1.0, delay: 0.05, ease: "easeOut" }}
+                  className="mt-3 text-white/95 max-w-prose md:text-lg text-center md:text-left mx-auto md:mx-0"
+                >
+                  让影像、设计、音乐，诉说着同一种语言
+                </motion.p>
+              )}
 
               {/* 桌面端快捷按钮（手机隐藏） */}
-              <div className="mt-6 hidden md:flex flex-wrap gap-3">
-                <Link to="/photos" className="px-4 py-2 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">图片</Link>
-                <Link to="/videos" className="px-4 py-2 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">视频</Link>
-                <Link to="/design" className="px-4 py-2 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">设计</Link>
-                <Link to="/music"  className="px-4 py-2 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">音乐</Link>
-              </div>
+              {heroLoaded && (
+                <div className="mt-6 hidden md:flex flex-wrap gap-3">
+                  <Link to="/photos" className="px-4 py-2 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">图片</Link>
+                  <Link to="/videos" className="px-4 py-2 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">视频</Link>
+                  <Link to="/design" className="px-4 py-2 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">设计</Link>
+                  <Link to="/music"  className="px-4 py-2 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">音乐</Link>
+                </div>
+              )}
             </div>
             <div className="hidden md:block" />
           </div>
