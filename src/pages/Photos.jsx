@@ -135,39 +135,42 @@ export default function Photos() {
   return (
     <div className="bg-theme-primary text-theme-primary photos-page">
       {/* 顶部容器：背景采用与首页图片板块一致的配色变量 */}
-      <section className="relative h-[600px] photos-header photos-header-gradient overflow-hidden">
+      <section className="relative h-[46svh] md:h-[600px] photos-header photos-header-gradient overflow-hidden">
         <div className="absolute inset-0">
           <div className="max-w-[1120px] mx-auto h-full px-4">
-            <div className="flex h-full justify-center items-start pt-24 md:items-center md:pt-0">
-              <h1 className="text-4xl md:text-6xl font-bold text-theme-primary text-center">图片</h1>
-            </div>
-          </div>
-        </div>
-        <div className="absolute bottom-0 left-0 right-0 bg-theme-primary/80 backdrop-blur-sm">
-          <div className="max-w-[1120px] mx-auto px-4 py-6">
-            <div className="flex flex-wrap items-center gap-2">
-              {tags.map((t) => (
-                <button
-                  key={t}
-                  onClick={() => setTag(t)}
-                  className={cx(
-                    "inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-theme-primary transition-colors duration-200 text-sm",
-                    tag === t
-                      ? "is-active bg-black/15 text-theme-primary"
-                      : "bg-black/5 text-theme-primary hover:bg-black/15"
-                  )}
-                >
-                  {t}
-                </button>
-              ))}
-              <div className="ml-auto w-full sm:w-64">
-                <input
-                  type="text"
-                  placeholder="搜索标题…"
-                  value={q}
-                  onChange={(e) => setQ(e.target.value)}
-                  className="w-full rounded-xl border border-theme-primary px-3 py-2 text-sm bg-black/5 text-theme-primary placeholder:text-theme-secondary focus:outline-none focus:ring-2 focus:ring-theme-accent backdrop-blur-sm"
-                />
+            {/* 三段式：顶部工具栏留白 / 中部标题（居中）/ 底部标签区（自适应多行） */}
+            <div className="flex flex-col h-full pt-12 md:pt-16">
+              {/* 中部标题在顶部留白与底部标签区之间居中 */}
+              <div className="flex-1 grid place-items-center">
+                <h1 className="text-4xl md:text-6xl font-bold text-theme-primary text-center">图片</h1>
+              </div>
+              {/* 底部标签区域（多行自适应） */}
+              <div className="bg-theme-primary/80 backdrop-blur-sm -mx-4 px-4 py-6">
+                <div className="flex flex-wrap items-center gap-2">
+                  {tags.map((t) => (
+                    <button
+                      key={t}
+                      onClick={() => setTag(t)}
+                      className={cx(
+                        "inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-theme-primary transition-colors duration-200 text-sm",
+                        tag === t
+                          ? "is-active bg-black/15 text-theme-primary"
+                          : "bg-black/5 text-theme-primary hover:bg-black/15"
+                      )}
+                    >
+                      {t}
+                    </button>
+                  ))}
+                  <div className="ml-auto w-full sm:w-64">
+                    <input
+                      type="text"
+                      placeholder="搜索标题…"
+                      value={q}
+                      onChange={(e) => setQ(e.target.value)}
+                      className="w-full rounded-xl border border-theme-primary px-3 py-2 text-sm bg-black/5 text-theme-primary placeholder:text-theme-secondary focus:outline-none focus:ring-2 focus:ring-theme-accent backdrop-blur-sm"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>

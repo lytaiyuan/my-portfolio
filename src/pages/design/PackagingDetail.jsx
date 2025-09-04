@@ -87,7 +87,7 @@ export default function PackagingDetail() {
 
         <div className="mt-6 space-y-4">
           {images.map((src, i) => (
-            <figure key={src} className="overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900">
+            <figure key={src} className="overflow-hidden rounded-xl border border-theme-primary bg-black/5">
               <img src={src} alt={`${item.title} - ${i + 1}`} className="w-full h-auto block" loading="lazy" />
             </figure>
           ))}
@@ -95,7 +95,7 @@ export default function PackagingDetail() {
 
         {pdfPath && (
           <div className="mt-8">
-            <a href={pdfPath} download className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-neutral-700 bg-neutral-900 hover:bg-neutral-800">
+            <a href={pdfPath} download className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-theme-primary bg-black/5 hover:bg-black/15 text-sm text-theme-primary transition-colors duration-200">
               下载该 PDF
             </a>
           </div>

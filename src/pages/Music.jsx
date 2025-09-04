@@ -46,11 +46,11 @@ export default function Music() {
 
   return (
     <>
-      {/* 顶部容器：与视频页一致 */}
-      <section className="relative h-[600px] music-header overflow-hidden">
+      {/* 顶部容器：移动端略高，容纳标题与留白 */}
+      <section className="relative h-[46svh] md:h-[600px] music-header overflow-hidden">
         <div className="absolute inset-0">
           <div className="max-w-[1120px] mx-auto h-full px-4">
-            <div className="flex h-full justify-center items-start pt-24 md:items-center md:pt-0">
+            <div className="flex h-full justify-center items-center">
               <h1 className="text-4xl md:text-6xl font-bold text-theme-primary text-center">音乐</h1>
             </div>
           </div>
@@ -66,7 +66,7 @@ export default function Music() {
             <Link
               key={m.slug || m.id}
               to={`/music/${encodeURIComponent(m.slug ?? String(m.id))}`}
-              className="group overflow-hidden rounded-2xl border border-theme-primary bg-black/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-theme-accent"
+              className="group overflow-hidden rounded-2xl border border-theme-primary bg-black/5 focus:outline-none"
             >
               <div className="relative aspect-[16/9] w-full overflow-hidden">
                 <img
@@ -77,7 +77,7 @@ export default function Music() {
                   decoding="async"
                 />
               </div>
-              <div className="p-3 bg-black/5">
+              <div className="p-3">
                 <div className="text-sm font-medium text-theme-primary">{m.title}</div>
                 {m.excerpt && <div className="mt-1 text-xs text-theme-secondary line-clamp-2">{m.excerpt}</div>}
               </div>

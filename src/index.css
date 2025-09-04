@@ -232,6 +232,11 @@ button:focus {
   color: var(--accent-hover);
 }
 
+/* 浅色模式下：设计页每个卡片图片移除渐变覆盖，仅保留文字块底部衬底 */
+[data-theme="light"] .design-card-overlay {
+  display: none;
+}
+
 [data-theme="light"] .toolbar-glass {
   background-color: rgba(255, 255, 255, 0.4);
   backdrop-filter: saturate(1.1) blur(10px);
@@ -296,8 +301,9 @@ button:focus {
   position: absolute;
   inset: 0;
   background-image: url('/backgrounds/photos.png');
-  background-repeat: repeat;
-  background-size: auto;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
   opacity: 0.05;
   pointer-events: none;
 }
@@ -314,8 +320,9 @@ button:focus {
   position: absolute;
   inset: 0;
   background-image: url('/backgrounds/videos.png');
-  background-repeat: repeat;
-  background-size: auto;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
   opacity: 0.05;
   pointer-events: none;
 }
@@ -331,8 +338,9 @@ button:focus {
   position: absolute;
   inset: 0;
   background-image: url('/backgrounds/design.png');
-  background-repeat: repeat;
-  background-size: auto;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
   opacity: 0.05;
   pointer-events: none;
 }
@@ -348,10 +356,23 @@ button:focus {
   position: absolute;
   inset: 0;
   background-image: url('/backgrounds/music.png');
-  background-repeat: repeat;
-  background-size: auto;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
   opacity: 0.05;
   pointer-events: none;
+}
+
+/* 移动端下避免过度放大：优先完整展示衬底图（contain），更克制 */
+@media (max-width: 640px) {
+  .photos-header::before,
+  .videos-header::before,
+  .design-header::before,
+  .music-header::before {
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center top;
+  }
 }
 [data-theme="light"] .music-header::before,
 [data-theme="dark"]  .music-header::before { mix-blend-mode: multiply; }

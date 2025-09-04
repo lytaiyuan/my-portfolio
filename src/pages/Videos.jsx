@@ -47,10 +47,10 @@ export default function Videos() {
   return (
     <>
       {/* 顶部容器：与图片页一致 */}
-      <section className="relative h-[600px] videos-header overflow-hidden">
+      <section className="relative h-[46svh] md:h-[600px] videos-header overflow-hidden">
         <div className="absolute inset-0">
           <div className="max-w-[1120px] mx-auto h-full px-4">
-            <div className="flex h-full justify-center items-start pt-24 md:items-center md:pt-0">
+            <div className="flex h-full justify-center items-center">
               <h1 className="text-4xl md:text-6xl font-bold text-theme-primary text-center">视频</h1>
             </div>
           </div>
@@ -77,7 +77,7 @@ export default function Videos() {
                 decoding="async"
               />
             </div>
-            <div className="p-3 bg-black/5">
+            <div className="p-3">
               <div className="text-sm font-medium text-theme-primary">{v.title}</div>
               {v.excerpt && <div className="mt-1 text-xs text-theme-secondary line-clamp-2">{v.excerpt}</div>}
             </div>
