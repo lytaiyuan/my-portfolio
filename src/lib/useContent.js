@@ -1,45 +1,38 @@
 // src/lib/useContent.js
 import { useEffect, useState } from "react";
 
-// 从GitHub获取hero.json配置文件
+// 从本地 public 目录读取 hero.json 配置（保留远程 url 字段，但优先使用本地路径）
 async function getHeroImages() {
   try {
-    const response = await fetch('https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/hero.json');
+    const response = await fetch('/hero.json', { cache: 'no-cache' });
     if (response.ok) {
       const data = await response.json();
       if (Array.isArray(data.images)) {
-        return data.images.map(img => img.path);
+        // 优先本地字段（localurl/local），其次 path（可能为远程）、最后 url
+        return data.images
+          .map((img) => img.localurl || img.local || img.path || img.url)
+          .filter(Boolean);
       }
     }
   } catch (error) {
-    console.warn("Failed to load hero.json from GitHub:", error);
+    console.warn("Failed to load local hero.json:", error);
   }
-  
-  // 如果无法获取配置，返回默认图片列表作为后备
+  // 如果无法获取配置，返回默认图片列表作为后备（本地）
   return [
     "/hero/hero.jpg",
     "/hero/hero.1756305625.bak.jpg",
     "/hero/2.jpg",
-    "/hero/IMG_8176.JPG",
+    "/hero/123.jpg",
+    "/hero/234.jpg",
     "/hero/DSC09073.JPG"
   ];
 }
 
-// 路径转换函数：将相对路径转换为GitHub raw URL，避免重复
+// 保留：其他内容可能仍使用 GitHub 资源的场景
 function getGitHubUrl(path) {
   if (!path) return '';
-  
-  // 如果路径已经包含GitHub URL，直接返回
-  if (path.includes('raw.githubusercontent.com')) {
-    return path;
-  }
-  
-  // 如果是外部链接，直接返回
-  if (path.startsWith('http')) {
-    return path;
-  }
-  
-  // 处理相对路径
+  if (path.includes('raw.githubusercontent.com')) return path;
+  if (path.startsWith('http')) return path;
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
   return `https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main${cleanPath}`;
 }
@@ -91,11 +84,10 @@ export function useContent() {
     ])
       .then(([heroImages, photosData, videosData]) => {
         if (alive) {
-          // 从配置文件中获取的图片列表中随机选择
+          // 从配置文件中获取的图片列表中随机选择（本地路径为主）
           const randomHero = getRandomHeroImage(heroImages);
-          
           setData({
-            hero: getGitHubUrl(randomHero),
+            hero: randomHero,
             photos: Array.isArray(photosData.items) ? photosData.items : [],
             videos: Array.isArray(videosData.items) ? videosData.items : [],
           });

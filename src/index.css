@@ -403,3 +403,12 @@ button:focus {
 }
 
 /* 删除浅色模式下对 #home-design/#home-music 的强制文字覆盖，改由主题变量控制 */
+/* 浅色模式下：关于我们两条外层卡片使用与四板块卡片一致的半透明填充 */
+[data-theme="light"] #about article.bg-theme-card {
+  background-color: rgba(0, 0, 0, 0.05) !important; /* 等同于 bg-black/5 */
+}
+
+/* 浅色模式下：图片二级页每个图片卡片采用与四板块一致的半透明衬底 */
+[data-theme="light"] .photos-page .photo-card {
+  background-color: rgba(0, 0, 0, 0.05) !important; /* 等同于 bg-black/5 */
+}

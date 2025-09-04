@@ -294,30 +294,7 @@ export default function Home() {
             </div>
           </article>
 
-          {/* 原世芳 */}
-          <article className="mt-6 rounded-2xl border border-theme-primary bg-theme-card p-4 md:p-6">
-            <div className="grid gap-6 md:grid-cols-12 md:items-center">
-              <div className="md:col-span-5">
-                <h3 className="text-2xl md:text-3xl font-semibold tracking-tight">原世芳</h3>
-                <p className="mt-2 text-theme-secondary text-sm leading-relaxed">
-                  占位符描述文字，请根据实际情况修改。
-                </p>
-              </div>
-                             <div className="md:col-span-4">
-                <h4 className="text-sm font-medium text-theme-secondary">优势</h4>
-                <ul className="mt-2 space-y-2 text-sm text-theme-secondary list-disc pl-5">
-                  <li>占位符优势描述1</li>
-                  <li>占位符优势描述2</li>
-                  <li>占位符优势描述3</li>
-                </ul>
-              </div>
-              <div className="md:col-span-3 justify-self-start md:justify-self-end">
-                <div className="w-36 md:w-40 aspect-[3/4] overflow-hidden rounded-xl border border-theme-primary bg-theme-card">
-                  <img src="/about3.jpg" alt="原世芳" className="w-full h-full object-cover" />
-                </div>
-              </div>
-            </div>
-          </article>
+          
         </div>
       </section>
 

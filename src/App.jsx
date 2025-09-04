@@ -56,9 +56,14 @@ function FixedGlassBar() {
         }}
       >
         <div className="max-w-[1120px] mx-auto px-4">
-          <div className="h-12 flex items-center justify-between md:grid md:grid-cols-3 md:justify-normal relative z-[120]" key={`toolbar-content-${isLight ? 'light' : 'dark'}-${forceUpdate}`}>
-            {/* 手机：左 LOGO */}
-            <Link to="/" className="md:hidden flex items-center">
+          <div className="h-12 grid grid-cols-3 items-center relative z-[120]" key={`toolbar-content-${isLight ? 'light' : 'dark'}-${forceUpdate}`}>
+            {/* 手机：左 主题切换 */}
+            <div className="md:hidden flex items-center justify-self-start">
+              <ThemeToggle variant="mobile" useToolbarThemeStyle className="mr-2" />
+            </div>
+
+            {/* 手机：中 LOGO */}
+            <Link to="/" className="md:hidden flex items-center justify-center justify-self-center">
               <ThemeImage 
                 type="logo" 
                 alt="Li Yang Studio" 
@@ -92,11 +97,11 @@ function FixedGlassBar() {
 
             {/* 桌面：右侧主题切换按钮 */}
             <div className="hidden md:flex justify-self-end items-center">
-              <ThemeToggle variant="desktop" />
+              <ThemeToggle variant="desktop" useToolbarThemeStyle />
             </div>
 
             {/* 手机：右侧菜单键 */}
-            <div className="md:hidden">
+            <div className="md:hidden flex items-center justify-self-end">
               {!open && (
                 <button
                   aria-label="打开菜单"
@@ -156,13 +161,6 @@ function FixedGlassBar() {
           <DrawerLink to="/videos">视频</DrawerLink>
           <DrawerLink to="/design">设计</DrawerLink>
           <DrawerLink to="/music">音乐</DrawerLink>
-          
-          {/* 手机端主题切换按钮 */}
-          <div className="mt-4 pt-4 border-t border-theme-primary">
-            <div className="flex items-center justify-center">
-              <ThemeToggle variant="mobile" />
-            </div>
-          </div>
         </div>
       </div>
     </>

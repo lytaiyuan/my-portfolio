@@ -136,7 +136,7 @@ export default function Photos() {
   if (err) return <div className="min-h-[60svh] grid place-items-center text-neutral-400">读取 photos.json 出错：{String(err.message || err)}</div>;
 
   return (
-    <div className="bg-theme-primary text-theme-primary">
+    <div className="bg-theme-primary text-theme-primary photos-page">
       {/* 顶部容器：背景采用与首页图片板块一致的配色变量 */}
       <section className="relative h-[600px] photos-header photos-header-gradient overflow-hidden">
         <div className="absolute inset-0">
@@ -190,7 +190,7 @@ export default function Photos() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.98 }}
                   transition={{ duration: 0.25 }}
-                  className="mb-4 break-inside-avoid overflow-hidden rounded-2xl border border-theme-primary bg-theme-card cursor-zoom-in"
+                  className="mb-4 break-inside-avoid overflow-hidden rounded-2xl border border-theme-primary bg-theme-card cursor-zoom-in photo-card"
                   onClick={() => openBox(i)}
                 >
                   <img
