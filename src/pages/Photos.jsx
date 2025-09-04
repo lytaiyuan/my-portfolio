@@ -11,11 +11,7 @@ export default function Photos() {
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState(null);
 
-  // 路径转换函数：将相对路径转换为GitHub raw URL
-  const getGitHubUrl = (path) => {
-    if (path.startsWith('http')) return path;
-    return path; // 已支持本地路径
-  };
+  
 
   useEffect(() => {
     let alive = true;
@@ -245,7 +241,7 @@ export default function Photos() {
                 style={{ width: `${fit.width}px`, height: `${fit.height}px` }}
               >
                 <img
-                  src={getGitHubUrl(photos[box.index]?.url)}
+                  src={pickUrl(photos[box.index]?.url, photos[box.index]?.localurl)}
                   alt={photos[box.index]?.title}
                   className="w-full h-full object-contain block"
                   // 万一 json 没提供尺寸，用自然尺寸回填一次，之后就稳定

@@ -65,29 +65,33 @@ export default function ViDetail() {
 
   const pdfPath = pickUrl(item?.pdf, item?.pdfLocalUrl) || "";
 
-  if (loading) return <div className="min-h-screen grid place-items-center bg-neutral-950 text-neutral-300">加载中…</div>;
-  if (err) return <div className="min-h-screen grid place-items-center bg-neutral-950 text-neutral-300">读取 vi.json 出错：{String(err.message || err)}</div>;
+  if (loading) return <Wrap><p className="text-theme-muted">加载中…</p></Wrap>;
+  if (err) return <Wrap><p className="text-red-400">读取出错：{String(err.message || err)}</p></Wrap>;
   if (!item) {
     return (
-      <div className="min-h-screen bg-neutral-950 text-neutral-100">
-        <div className="max-w-[1120px] mx-auto px-4 py-10">
-          <p className="text-sm text-neutral-400">未找到 slug = <code>{slug}</code> 的 VI 条目。</p>
-          <p className="mt-2"><Link to="/design" className="underline">← 返回设计</Link></p>
+      <Wrap>
+        <p className="text-theme-muted">未找到该 VI 条目（slug = <code>{slug}</code>）。</p>
+        <div className="mt-4">
+          <Link className="px-3 py-1.5 rounded-lg border border-theme-primary bg-black/5 hover:bg-black/15 text-sm text-theme-primary" to="/design">
+            返回设计
+          </Link>
         </div>
-      </div>
+      </Wrap>
     );
   }
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-100">
-      <div className="max-w-[1120px] mx-auto px-4 py-6">
-        <Link to="/design" className="text-sm text-neutral-400 underline">← 返回设计</Link>
-        <h1 className="mt-4 text-2xl font-semibold">{item.title}</h1>
-        {item.subtitle && <p className="mt-1 text-neutral-400">{item.subtitle}</p>}
+    <Wrap>
+      <div>
+        <Link to="/design" className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-theme-primary bg-black/5 hover:bg-black/15 text-sm text-theme-primary">
+          ← 返回设计
+        </Link>
+        <h1 className="mt-4 text-2xl md:text-3xl font-semibold tracking-tight text-theme-primary">{item.title}</h1>
+        {item.subtitle && <p className="mt-1 text-theme-secondary md:text-[15px]">{item.subtitle}</p>}
 
         <div className="mt-6 space-y-4">
           {images.map((src, i) => (
-            <figure key={src} className="overflow-hidden rounded-xl border border-theme-primary bg-black/5">
+            <figure key={src} className="overflow-hidden rounded-2xl border border-theme-primary bg-black/5">
               <img src={src} alt={`${item.title} - ${i + 1}`} className="w-full h-auto block" loading="lazy" />
             </figure>
           ))}
@@ -101,6 +105,14 @@ export default function ViDetail() {
           </div>
         )}
       </div>
-    </div>
+    </Wrap>
+  );
+}
+
+function Wrap({ children }) {
+  return (
+    <section className="border-t border-theme-primary bg-theme-primary pt-16">
+      <div className="max-w-[1120px] mx-auto px-4 py-8 text-theme-primary">{children}</div>
+    </section>
   );
 }
