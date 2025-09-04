@@ -135,7 +135,7 @@ export default function Photos() {
   return (
     <div className="bg-theme-primary text-theme-primary photos-page">
       {/* 顶部容器：背景采用与首页图片板块一致的配色变量 */}
-      <section className="relative h-[46svh] md:h-[600px] photos-header photos-header-gradient overflow-hidden">
+      <section className="relative h-[64svh] md:h-[600px] photos-header photos-header-gradient overflow-hidden">
         <div className="absolute inset-0">
           <div className="max-w-[1120px] mx-auto h-full px-4">
             {/* 三段式：顶部工具栏留白 / 中部标题（居中）/ 底部标签区（自适应多行） */}
