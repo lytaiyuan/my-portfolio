@@ -3,41 +3,27 @@
   "images": [
     {
       "id": 1,
-      "filename": "123.jpg",
-      "path": "https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/hero/123.jpg",
-      "alt": "Hero图片1",
-      "localurl": "/hero/123.jpg"
-    },
-    {
-      "id": 2,
       "filename": "2.jpg",
       "path": "https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/hero/2.jpg",
       "alt": "Hero图片2",
       "localurl": "/hero/2.jpg"
     },
     {
-      "id": 3,
+      "id": 2,
       "filename": "234.jpg",
       "path": "https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/hero/234.jpg",
       "alt": "Hero图片3",
       "localurl": "/hero/234.jpg"
     },
     {
-      "id": 4,
+      "id": 3,
       "filename": "DSC09073.JPG",
       "path": "https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/hero/DSC09073.JPG",
       "alt": "Hero图片4",
       "localurl": "/hero/DSC09073.JPG"
     },
     {
-      "id": 5,
-      "filename": "hero.1756305625.bak.jpg",
-      "path": "https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/hero/hero.1756305625.bak.jpg",
-      "alt": "Hero图片5",
-      "localurl": "/hero/hero.1756305625.bak.jpg"
-    },
-    {
-      "id": 6,
+      "id": 4,
       "filename": "hero.jpg",
       "path": "https://raw.githubusercontent.com/lytaiyuan/my-portfolio-data/main/hero/hero.jpg",
       "alt": "Hero图片6",

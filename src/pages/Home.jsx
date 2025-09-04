@@ -65,13 +65,13 @@ export default function Home() {
           decoding="async"
         />
         <div className="relative z-10 max-w-[1120px] mx-auto px-4 pt-14 md:pt-20">
-          <div className="grid md:grid-cols-2 gap-8 md:gap-10 items-end min-h-[60vh] md:min-h-[70vh]">
-            <div className="pb-8 md:pb-14">
+          <div className="grid md:grid-cols-2 gap-8 md:gap-10 items-start md:items-end min-h-[60vh] md:min-h-[70vh]">
+            <div className="pb-8 md:pb-14 pt-[22svh] md:pt-0">
               <motion.h1
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1.0, ease: "easeOut" }}
-                className="text-[28px] leading-tight font-medium tracking-[-0.01em] md:text-[44px] md:leading-[1.1] text-white"
+                className="text-[28px] leading-tight font-medium tracking-[-0.01em] md:text-[44px] md:leading-[1.1] text-white text-center md:text-left"
               >
                 Li Yang  |  Studio
               </motion.h1>
@@ -79,9 +79,9 @@ export default function Home() {
                 initial={{ opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1.0, delay: 0.05, ease: "easeOut" }}
-                className="mt-3 text-white/95 max-w-prose md:text-lg"
+                className="mt-3 text-white/95 max-w-prose md:text-lg text-center md:text-left mx-auto md:mx-0"
               >
-                让影像、设计、音乐诉说着同一种语言。
+                让影像、设计、音乐，诉说着同一种语言
               </motion.p>
 
               {/* 桌面端快捷按钮（手机隐藏） */}

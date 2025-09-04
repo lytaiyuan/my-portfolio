@@ -253,6 +253,16 @@ button:focus {
   box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.15);
 }
 
+/* 工具栏过渡：比全局略慢，观感更稳重 */
+.toolbar-glass {
+  transition: background-color 0.3s ease,
+              color 0.3s ease,
+              border-color 0.3s ease,
+              box-shadow 0.3s ease,
+              backdrop-filter 0.3s ease,
+              -webkit-backdrop-filter 0.3s ease;
+}
+
 [data-theme="light"] .drawer-glass {
   background-color: rgba(255, 255, 255, 0.4);
   backdrop-filter: saturate(1.1) blur(10px);
@@ -327,6 +337,9 @@ button:focus {
 /* 顶部图案混合：浅/深模式统一正片叠底 */
 [data-theme="light"] .photos-header::before,
 [data-theme="dark"]  .photos-header::before { mix-blend-mode: multiply; }
+
+/* 图片页搜索框文字颜色（接近黑的深灰），仅在浅色模式下覆盖 */
+[data-theme="light"] .photos-search-input { color: #111827 !important; }
 
 /* Videos页面顶部容器背景：与首页视频板块同步 */
 .videos-header {
