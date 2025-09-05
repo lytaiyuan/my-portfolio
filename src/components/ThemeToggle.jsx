@@ -40,13 +40,13 @@ const ThemeToggle = ({ variant = 'desktop', className = '', useToolbarThemeStyle
   const { isLight, toggleTheme } = useTheme();
   
   // 与工具栏菜单按钮一致的样式（提速颜色过渡）
-  const toolbarStyle = 'p-2 rounded-lg border border-theme-primary bg-theme-card/80 text-theme-primary transition-colors duration-100 ease-out';
+  const toolbarStyle = 'p-2 text-theme-primary transition-colors duration-100 ease-out';
 
   // 原桌面样式（保留以便在非工具栏场景使用）
-  const desktopStyle = `p-2 rounded-lg border transition-colors duration-100 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+  const desktopStyle = `p-2 transition-colors duration-100 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
     isLight 
-      ? 'border-gray-300/20 bg-white/20 text-gray-700 hover:bg-white/30 focus:ring-blue-500' 
-      : 'border-neutral-700 bg-neutral-800 text-neutral-300 hover:bg-neutral-700 focus:ring-blue-400'
+      ? 'text-gray-700 focus:ring-blue-500' 
+      : 'text-neutral-300 focus:ring-blue-400'
   }`;
 
   const iconClass = useToolbarThemeStyle 

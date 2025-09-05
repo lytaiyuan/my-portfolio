@@ -20,6 +20,37 @@ import Product from "./pages/design/Product.jsx";
 import VideoDetail from "./pages/VideoDetail.jsx";
 import MusicDetail from "./pages/MusicDetail.jsx";
 
+// 内联 SVG 图标：与 ThemeToggle 的风格一致（stroke=currentColor）
+const MenuIcon = ({ className = "w-4 h-4", strokeWidth = 1.5 }) => (
+  <svg
+    className={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={strokeWidth}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M3 6h18M3 12h18M3 18h14" />
+  </svg>
+);
+
+const CloseIcon = ({ className = "w-4 h-4", strokeWidth = 1.5 }) => (
+  <svg
+    className={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={strokeWidth}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M6 6l12 12M18 6l-12 12" />
+  </svg>
+);
+
 /** ===== 可调参数（0~1 之间）===== */
 const OPACITY_HEADER = 0.30; // 顶部玻璃条透明度
 const OPACITY_DRAWER = 0.30; // 手机端抽屉透明度
@@ -134,27 +165,17 @@ function FixedGlassBar() {
                 <button
                   aria-label="关闭菜单"
                   onClick={() => setOpen(false)}
-                  className="p-2 rounded-lg border border-theme-primary bg-theme-card/80"
+                  className="p-2 text-theme-primary"
                 >
-                  <ThemeImage 
-                    type="close" 
-                    alt="close" 
-                    className="h-4 w-4" 
-                    key={`close-${isLight ? 'light' : 'dark'}`}
-                  />
+                  <CloseIcon className="h-4 w-4" />
                 </button>
               ) : (
                 <button
                   aria-label="打开菜单"
                   onClick={() => setOpen(true)}
-                  className="p-2 rounded-lg border border-theme-primary bg-theme-card/80"
+                  className="p-2 text-theme-primary"
                 >
-                  <ThemeImage 
-                    type="menu" 
-                    alt="menu" 
-                    className="h-4 w-4" 
-                    key={`menu-${isLight ? 'light' : 'dark'}`}
-                  />
+                  <MenuIcon className="h-4 w-4" />
                 </button>
               )}
             </div>
@@ -214,7 +235,7 @@ function FixedGlassBar() {
         </div>
       </div>
 
-      {/* 顶部下拉菜单层已移除（逻辑合并到工具栏） */}
+      {/* 顶部下拉菜单层已移除（逻辑合并回工具栏高度过渡） */}
     </>
   );
 }

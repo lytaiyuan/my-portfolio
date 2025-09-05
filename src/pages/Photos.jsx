@@ -175,7 +175,7 @@ export default function Photos() {
                       placeholder="搜索标题…"
                       value={q}
                       onChange={(e) => setQ(e.target.value)}
-                      className="w-full rounded-xl border border-theme-primary px-3 py-2 text-sm bg-black/5 text-theme-primary placeholder:text-theme-secondary focus:outline-none focus:ring-2 focus:ring-theme-accent backdrop-blur-sm"
+                      className="photos-search-input w-full rounded-xl border border-theme-primary px-3 py-2 text-base md:text-sm bg-black/5 text-theme-primary placeholder:text-theme-secondary focus:outline-none focus:ring-2 focus:ring-theme-accent backdrop-blur-sm"
                     />
                   </div>
                 </div>
