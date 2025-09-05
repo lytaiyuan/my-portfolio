@@ -1,5 +1,6 @@
 // src/pages/Videos.jsx
 import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { getConfigUrl, pickUrl } from "../lib/configSource.js";
 
@@ -7,6 +8,8 @@ export default function Videos() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState(null);
+  const [loadedMap, setLoadedMap] = useState({});
+  const [routeReadySent, setRouteReadySent] = useState(false);
 
   // 路径转换函数：将相对路径转换为GitHub raw URL
   const getGitHubUrl = (path) => (path.startsWith('http') ? path : path);
@@ -40,6 +43,16 @@ export default function Videos() {
     return () => { alive = false; };
   }, []);
 
+  // 顶部容器就绪后即可结束转场
+  useEffect(() => {
+    if (routeReadySent) return;
+    const id = requestAnimationFrame(() => {
+      setRouteReadySent(true);
+      window.dispatchEvent(new CustomEvent('app:routeReady'));
+    });
+    return () => cancelAnimationFrame(id);
+  }, [routeReadySent]);
+
   if (loading) return <PageWrap><p className="text-theme-muted">加载视频列表…</p></PageWrap>;
   if (err) return <PageWrap><p className="text-red-400">读取出错：{String(err.message || err)}</p></PageWrap>;
   if (!items.length) return <PageWrap><p className="text-theme-muted">暂无视频。</p></PageWrap>;
@@ -62,27 +75,39 @@ export default function Videos() {
 
       {/* 桌面每行最多两个（md:grid-cols-2），手机 1 列 */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {items.map(v => (
-          <Link
-            key={v.slug || v.id}
-            to={`/videos/${encodeURIComponent(v.slug ?? String(v.id))}`}
-            className="group overflow-hidden rounded-2xl border border-theme-primary bg-black/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-theme-accent"
-          >
-            <div className="relative aspect-[16/9] w-full overflow-hidden">
-              <img
-                src={pickUrl(v.poster, v.posterLocalUrl)}
-                alt={v.title || ""}
-                className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
-            <div className="p-3">
-              <div className="text-sm font-medium text-theme-primary">{v.title}</div>
-              {v.excerpt && <div className="mt-1 text-xs text-theme-secondary line-clamp-2">{v.excerpt}</div>}
-            </div>
-          </Link>
-        ))}
+        {items.map(v => {
+          const key = v.poster || v.posterLocalUrl || v.slug || v.id;
+          const isLoaded = !!loadedMap[key];
+          return (
+            <motion.div
+              key={key}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 12 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+            >
+              <Link
+                to={`/videos/${encodeURIComponent(v.slug ?? String(v.id))}`}
+                className="group overflow-hidden rounded-2xl border border-theme-primary bg-black/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-theme-accent"
+              >
+                <div className="relative aspect-[16/9] w-full overflow-hidden">
+                  <img
+                    src={pickUrl(v.poster, v.posterLocalUrl)}
+                    alt={v.title || ""}
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                    loading="lazy"
+                    decoding="async"
+                    onLoad={() => setLoadedMap(prev => (prev[key] ? prev : { ...prev, [key]: true }))}
+                    onError={() => setLoadedMap(prev => (prev[key] ? prev : { ...prev, [key]: true }))}
+                  />
+                </div>
+                <div className="p-3">
+                  <div className="text-sm font-medium text-theme-primary">{v.title}</div>
+                  {v.excerpt && <div className="mt-1 text-xs text-theme-secondary line-clamp-2">{v.excerpt}</div>}
+                </div>
+              </Link>
+            </motion.div>
+          );
+        })}
       </div>
       </PageWrap>
     </>

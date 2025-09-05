@@ -1,33 +1,42 @@
 // src/pages/Design.jsx
 import React, { useEffect, useState, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { getConfigUrl, pickUrl } from "../lib/configSource.js";
 
-const Card = ({ img, title, subtitle, to }) => (
-  <Link to={to} className="group overflow-hidden rounded-2xl border border-theme-primary bg-black/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-theme-accent">
-    <div className="relative aspect-[16/9] w-full overflow-hidden">
-      <img
-        src={img}
-        alt={title}
-        className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-        loading="lazy"
-        decoding="async"
-      />
-    </div>
-    <div className="p-3">
-      <div className="text-sm font-medium text-theme-primary">{title}</div>
-      {subtitle && <div className="mt-1 text-xs text-theme-secondary line-clamp-2">{subtitle}</div>}
-    </div>
-  </Link>
-);
+const Card = ({ img, title, subtitle, to }) => {
+  const [ready, setReady] = useState(false);
+  return (
+    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: ready ? 1 : 0, y: ready ? 0 : 12 }} transition={{ duration: 0.4, ease: "easeOut" }}>
+      <Link to={to} className="group overflow-hidden rounded-2xl border border-theme-primary bg-black/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-theme-accent">
+        <div className="relative aspect-[16/9] w-full overflow-hidden">
+          <img
+            src={img}
+            alt={title}
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+            loading="lazy"
+            decoding="async"
+            onLoad={() => setReady(true)}
+            onError={() => setReady(true)}
+          />
+        </div>
+        <div className="p-3">
+          <div className="text-sm font-medium text-theme-primary">{title}</div>
+          {subtitle && <div className="mt-1 text-xs text-theme-secondary line-clamp-2">{subtitle}</div>}
+        </div>
+      </Link>
+    </motion.div>
+  );
+};
 
 export default function Design() {
   const [graphic, setGraphic] = useState([]);
   const [vi, setVi] = useState([]);
   const [pack, setPack] = useState([]);
   const [productPhotos, setProductPhotos] = useState([]);
+  const [loadedMap, setLoadedMap] = useState({});
   const [loading, setLoading] = useState(true);
+  const [routeReadySent, setRouteReadySent] = useState(false);
   // 产品摄影大图浏览
   const [box, setBox] = useState(null); // { index }
   const closeBox = () => setBox(null);
@@ -115,6 +124,16 @@ export default function Design() {
     return () => { alive = false; };
   }, []);
 
+  // 顶部容器就绪后即可结束转场
+  useEffect(() => {
+    if (routeReadySent) return;
+    const id = requestAnimationFrame(() => {
+      setRouteReadySent(true);
+      window.dispatchEvent(new CustomEvent('app:routeReady'));
+    });
+    return () => cancelAnimationFrame(id);
+  }, [routeReadySent]);
+
   if (loading) return <div className="min-h-[50svh] grid place-items-center text-neutral-400">加载设计内容…</div>;
 
   return (
@@ -159,28 +178,36 @@ export default function Design() {
           <div className="mt-2 columns-1 sm:columns-2 lg:columns-3 gap-4 [column-fill:_balance]">
             <AnimatePresence>
               {productPhotos.map((p, i) => (
-                <motion.figure
-                  key={p.url}
-                  layout
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.98 }}
-                  transition={{ duration: 0.25 }}
-                  className="mb-4 break-inside-avoid overflow-hidden rounded-2xl border border-theme-primary bg-theme-card cursor-zoom-in photo-card"
-                  onClick={() => openBox(i)}
-                >
-                  <img
-                    src={pickUrl(p.url, p.localurl)}
-                    alt={p.title}
-                    className="w-full h-auto block"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                  <figcaption className="p-3">
-                    <div className="text-sm font-medium text-theme-primary">{p.title}</div>
-                    {p.desc && <div className="mt-1 text-xs text-theme-primary line-clamp-2">{p.desc}</div>}
-                  </figcaption>
-                </motion.figure>
+                (() => {
+                  const key = p.url || p.localurl || String(i);
+                  const isLoaded = !!loadedMap[key];
+                  return (
+                    <motion.figure
+                      key={key}
+                      layout
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 12 }}
+                      exit={{ opacity: 0, scale: 0.98 }}
+                      transition={{ duration: 0.4, ease: "easeOut" }}
+                      className="mb-4 break-inside-avoid overflow-hidden rounded-2xl border border-theme-primary bg-theme-card cursor-zoom-in photo-card"
+                      onClick={() => openBox(i)}
+                    >
+                      <img
+                        src={pickUrl(p.url, p.localurl)}
+                        alt={p.title}
+                        className="w-full h-auto block"
+                        loading="lazy"
+                        decoding="async"
+                        onLoad={() => setLoadedMap(prev => (prev[key] ? prev : { ...prev, [key]: true }))}
+                        onError={() => setLoadedMap(prev => (prev[key] ? prev : { ...prev, [key]: true }))}
+                      />
+                      <figcaption className="p-3">
+                        <div className="text-sm font-medium text-theme-primary">{p.title}</div>
+                        {p.desc && <div className="mt-1 text-xs text-theme-primary line-clamp-2">{p.desc}</div>}
+                      </figcaption>
+                    </motion.figure>
+                  );
+                })()
               ))}
             </AnimatePresence>
           </div>

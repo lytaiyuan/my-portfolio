@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 // 根据主题动态切换图片的组件
-const ThemeImage = ({ type, className = "", alt = "", ...props }) => {
+const ThemeImage = ({ type, className = "", alt = "" }) => {
   const [imageSrc, setImageSrc] = useState('');
 
   // 根据DOM主题选择图片
@@ -44,11 +44,10 @@ const ThemeImage = ({ type, className = "", alt = "", ...props }) => {
 
   return (
     <img
-      src={imageSrc}
+      src={imageSrc || null}
       alt={alt}
       className={className}
       key={`${type}-${imageSrc}`}
-      {...props}
     />
   );
 };

@@ -10,6 +10,8 @@ export default function Photos() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState(null);
+  const [loadedMap, setLoadedMap] = useState({});
+  const [routeReadySent, setRouteReadySent] = useState(false);
 
   
 
@@ -43,6 +45,16 @@ export default function Photos() {
     fetchPhotos();
     return () => { alive = false; };
   }, []);
+
+  // 首屏容器就绪后即可结束转场：页面挂载后下一帧派发 routeReady
+  useEffect(() => {
+    if (routeReadySent) return;
+    const id = requestAnimationFrame(() => {
+      setRouteReadySent(true);
+      window.dispatchEvent(new CustomEvent('app:routeReady'));
+    });
+    return () => cancelAnimationFrame(id);
+  }, [routeReadySent]);
 
   // —— 筛选/搜索 —— //
   const [tag, setTag] = useState(ALL);
@@ -178,37 +190,43 @@ export default function Photos() {
         <div className="max-w-[1120px] mx-auto px-4 pb-10">
           <div className="mt-2 columns-1 sm:columns-2 lg:columns-3 gap-4 [column-fill:_balance]">
             <AnimatePresence>
-              {photos.map((img, i) => (
-                <motion.figure
-                  key={img.url}
-                  layout
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.98 }}
-                  transition={{ duration: 0.25 }}
-                  className="mb-4 break-inside-avoid overflow-hidden rounded-2xl border border-theme-primary bg-theme-card cursor-zoom-in photo-card"
-                  onClick={() => openBox(i)}
-                >
-                  <img
-                    src={pickUrl(img.url, img.localurl)}
-                    alt={img.title}
-                    className="w-full h-auto block"
-                    loading="lazy"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  />
-                  <figcaption className="p-3">
-                    <div className="text-sm font-medium text-theme-primary">{img.title}</div>
-                    {!!img.desc && <div className="mt-1 text-xs text-theme-primary line-clamp-2">{img.desc}</div>}
-                    <div className="mt-2 flex flex-wrap gap-1">
-                      {(img.tags || []).map((t) => (
-                        <span key={t} className="inline-flex items-center px-3 py-1.5 text-xs rounded-lg border border-theme-primary bg-black/5 text-theme-primary hover:bg-black/15">
-                          {t}
-                        </span>
-                      ))}
-                    </div>
-                  </figcaption>
-                </motion.figure>
-              ))}
+              {photos.map((img, i) => {
+                const key = img.url || img.localurl || String(i);
+                const isLoaded = !!loadedMap[key];
+                return (
+                  <motion.figure
+                    key={key}
+                    layout
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 12 }}
+                    exit={{ opacity: 0, scale: 0.98 }}
+                    transition={{ duration: 0.4, ease: "easeOut" }}
+                    className="mb-4 break-inside-avoid overflow-hidden rounded-2xl border border-theme-primary bg-theme-card cursor-zoom-in photo-card"
+                    onClick={() => openBox(i)}
+                  >
+                    <img
+                      src={pickUrl(img.url, img.localurl)}
+                      alt={img.title}
+                      className="w-full h-auto block"
+                      loading="lazy"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      onLoad={() => setLoadedMap(prev => (prev[key] ? prev : { ...prev, [key]: true }))}
+                      onError={() => setLoadedMap(prev => (prev[key] ? prev : { ...prev, [key]: true }))}
+                    />
+                    <figcaption className="p-3">
+                      <div className="text-sm font-medium text-theme-primary">{img.title}</div>
+                      {!!img.desc && <div className="mt-1 text-xs text-theme-primary line-clamp-2">{img.desc}</div>}
+                      <div className="mt-2 flex flex-wrap gap-1">
+                        {(img.tags || []).map((t) => (
+                          <span key={t} className="inline-flex items-center px-3 py-1.5 text-xs rounded-lg border border-theme-primary bg-black/5 text-theme-primary hover:bg-black/15">
+                            {t}
+                          </span>
+                        ))}
+                      </div>
+                    </figcaption>
+                  </motion.figure>
+                );
+              })}
             </AnimatePresence>
           </div>
         </div>

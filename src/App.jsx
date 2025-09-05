@@ -1,10 +1,11 @@
 // src/App.jsx
-import React, { useEffect, useState } from "react";
-import { Routes, Route, Link, useLocation } from "react-router-dom";
+import React, { useEffect, useMemo, useState } from "react";
+import { Routes, Route, Link, useLocation, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import ThemeToggle from "./components/ThemeToggle";
 import ThemeImage from "./components/ThemeImage";
 import { useTheme } from "./lib/useTheme.js";
+import { getConfigUrl, pickUrl } from "./lib/configSource.js";
 
 import Home from "./pages/Home.jsx";
 import Photos from "./pages/Photos.jsx";
@@ -30,6 +31,7 @@ function FixedGlassBar() {
   const [open, setOpen] = useState(false);
   const [forceUpdate, setForceUpdate] = useState(0);
   const location = useLocation();
+  const navigate = useNavigate();
 
   // 路由切换时自动收起抽屉
   useEffect(() => { setOpen(false); }, [location.pathname]);
@@ -51,6 +53,68 @@ function FixedGlassBar() {
     window.dispatchEvent(new CustomEvent('app:menuOpen', { detail: open }));
   }, [open]);
 
+  // 预加载工具
+  const preloadImage = (src) => new Promise((resolve) => {
+    if (!src) return resolve();
+    const img = new Image();
+    img.onload = img.onerror = () => resolve();
+    img.src = src;
+  });
+
+  const prefetchRouteAssets = async (path) => {
+    try {
+      if (path === '/photos') {
+        const res = await fetch(getConfigUrl('photos'));
+        const json = await res.json();
+        const items = Array.isArray(json.items) ? json.items.slice(0, 12) : [];
+        await Promise.all(items.map(it => preloadImage(pickUrl(it.url, it.localurl))));
+      } else if (path === '/videos') {
+        const res = await fetch(getConfigUrl('videos'));
+        const json = await res.json();
+        const items = Array.isArray(json.items) ? json.items.slice(0, 8) : [];
+        await Promise.all(items.map(it => preloadImage(pickUrl(it.poster, it.posterLocalUrl))));
+      } else if (path === '/music') {
+        const res = await fetch(getConfigUrl('music'));
+        const json = await res.json();
+        const items = Array.isArray(json.items) ? json.items.slice(0, 10) : [];
+        await Promise.all(items.map(it => preloadImage(pickUrl(it.cover, it.coverLocalUrl))));
+      } else if (path === '/design') {
+        // 设计页：预加载封面与部分产品摄影
+        await preloadImage('/home/design/cover.jpg');
+        try {
+          const res = await fetch(getConfigUrl('productphotos'));
+          const json = await res.json();
+          const items = Array.isArray(json.items) ? json.items.slice(0, 12) : [];
+          await Promise.all(items.map(it => preloadImage(pickUrl(it.url, it.localurl))));
+        } catch (_) {}
+      }
+    } catch (e) {
+      console.warn('[Prefetch] 预加载失败（忽略）：', e);
+    }
+  };
+
+  // 带预加载的导航组件（仅用于工具栏/抽屉菜单）
+  function PrefetchLink({ to, children, className }) {
+    const onClick = async (e) => {
+      e.preventDefault();
+      try {
+        // 告知 App 进入转场：淡出旧页面
+        window.dispatchEvent(new CustomEvent('app:pageTransition', { detail: true }));
+        // 先收起菜单（如在移动端）
+        setOpen(false);
+        // 等淡出开始
+        await new Promise(r => setTimeout(r, 120));
+        // 预加载目标页关键资源
+        await prefetchRouteAssets(to);
+        // 导航到目标页
+        navigate(to);
+      } finally {
+        // 不在此处结束转场，改由目标页在就绪时派发 app:routeReady 结束
+      }
+    };
+    return <a href={to} onClick={onClick} className={className}>{children}</a>;
+  }
+
   return (
     <>
       {/* 主工具栏背景 */}
@@ -59,7 +123,6 @@ function FixedGlassBar() {
         style={{
           height: open ? HEADER_HEIGHT_PX + MENU_HEIGHT_PX : HEADER_HEIGHT_PX,
           zIndex: 105,
-          transition: "height 1s cubic-bezier(0.16, 1, 0.3, 1)",
           overflow: "hidden",
         }}
       >
@@ -77,8 +140,6 @@ function FixedGlassBar() {
                     type="close" 
                     alt="close" 
                     className="h-4 w-4" 
-                    isLight={isLight} 
-                    actualTheme={actualTheme} 
                     key={`close-${isLight ? 'light' : 'dark'}`}
                   />
                 </button>
@@ -92,8 +153,6 @@ function FixedGlassBar() {
                     type="menu" 
                     alt="menu" 
                     className="h-4 w-4" 
-                    isLight={isLight} 
-                    actualTheme={actualTheme} 
                     key={`menu-${isLight ? 'light' : 'dark'}`}
                   />
                 </button>
@@ -106,19 +165,17 @@ function FixedGlassBar() {
                 type="logo" 
                 alt="Li Yang Studio" 
                 className="h-5 w-auto" 
-                isLight={isLight} 
-                actualTheme={actualTheme} 
                 key={`logo-mobile-${isLight ? 'light' : 'dark'}`}
               />
             </Link>
 
             {/* 桌面：左侧菜单 */}
             <nav className="hidden md:flex justify-self-start gap-6 text-sm text-theme-secondary">
-              <NavLink to="/">主页</NavLink>
-              <NavLink to="/photos">图片</NavLink>
-              <NavLink to="/videos">视频</NavLink>
-              <NavLink to="/design">设计</NavLink>
-              <NavLink to="/music">音乐</NavLink>
+              <PrefetchLink to="/" className="hover:text-theme-primary transition">主页</PrefetchLink>
+              <PrefetchLink to="/photos" className="hover:text-theme-primary transition">图片</PrefetchLink>
+              <PrefetchLink to="/videos" className="hover:text-theme-primary transition">视频</PrefetchLink>
+              <PrefetchLink to="/design" className="hover:text-theme-primary transition">设计</PrefetchLink>
+              <PrefetchLink to="/music" className="hover:text-theme-primary transition">音乐</PrefetchLink>
             </nav>
 
             {/* 桌面：中 LOGO */}
@@ -127,8 +184,6 @@ function FixedGlassBar() {
                 type="logo" 
                 alt="Li Yang Studio" 
                 className="h-5 w-auto" 
-                isLight={isLight} 
-                actualTheme={actualTheme} 
                 key={`logo-desktop-${isLight ? 'light' : 'dark'}`}
               />
             </Link>
@@ -148,11 +203,11 @@ function FixedGlassBar() {
           <div className="md:hidden">
             <div className={"toolbar-menu-content " + (open ? "is-open" : "") }>
               <ul className="text-center text-base space-y-6 py-4">
-                <li><Link onClick={() => setOpen(false)} to="/">主页</Link></li>
-                <li><Link onClick={() => setOpen(false)} to="/photos">图片</Link></li>
-                <li><Link onClick={() => setOpen(false)} to="/videos">视频</Link></li>
-                <li><Link onClick={() => setOpen(false)} to="/design">设计</Link></li>
-                <li><Link onClick={() => setOpen(false)} to="/music">音乐</Link></li>
+                <li><PrefetchLink to="/">主页</PrefetchLink></li>
+                <li><PrefetchLink to="/photos">图片</PrefetchLink></li>
+                <li><PrefetchLink to="/videos">视频</PrefetchLink></li>
+                <li><PrefetchLink to="/design">设计</PrefetchLink></li>
+                <li><PrefetchLink to="/music">音乐</PrefetchLink></li>
               </ul>
             </div>
           </div>
@@ -197,11 +252,33 @@ function DrawerLink({ to, children }) {
 export default function App() {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   useEffect(() => {
     const handler = (e) => setMenuOpen(Boolean(e.detail));
     window.addEventListener('app:menuOpen', handler);
     return () => window.removeEventListener('app:menuOpen', handler);
   }, []);
+
+  // 监听页面转场事件：true 表示开始淡出旧页面；false 表示可以淡入新页面
+  useEffect(() => {
+    const handler = (e) => setIsTransitioning(Boolean(e.detail));
+    window.addEventListener('app:pageTransition', handler);
+    return () => window.removeEventListener('app:pageTransition', handler);
+  }, []);
+
+  // 监听新页面就绪事件
+  useEffect(() => {
+    const onReady = () => setIsTransitioning(false);
+    window.addEventListener('app:routeReady', onReady);
+    return () => window.removeEventListener('app:routeReady', onReady);
+  }, []);
+
+  // 当路由变化且仍处于转场中时，设置兜底计时器，避免极端情况下卡住
+  useEffect(() => {
+    if (!isTransitioning) return;
+    const timer = setTimeout(() => setIsTransitioning(false), 2000);
+    return () => clearTimeout(timer);
+  }, [location.pathname, isTransitioning]);
 
   // 设置标签页标题
   useEffect(() => {
@@ -226,9 +303,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-theme-primary text-theme-primary selection:bg-theme-secondary transition-colors duration-300">
       <FixedGlassBar />
-      {/* 全屏背景毛玻璃层：不拦截点击，曲线非线性 */}
-      <div className={"toolbar-blur-overlay " + (menuOpen ? "is-open" : "")}></div>
-      {/* 全屏背景毛玻璃：随菜单开合做非线性模糊/透明度过渡，不拦截点击 */}
+      {/* 全屏背景毛玻璃层：不拦截点击，曲线非线性（去重） */}
       <div className={"toolbar-blur-overlay " + (menuOpen ? "is-open" : "")}></div>
       <ScrollToTop />
 
@@ -236,9 +311,9 @@ export default function App() {
         <motion.main
           key={location.pathname}
           initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
+          animate={{ opacity: isTransitioning ? 0 : 1, y: isTransitioning ? 8 : 0 }}
           exit={{ opacity: 0, y: -6 }}
-          transition={{ duration: 0.18 }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
         >
           <Routes location={location}>
             <Route path="/" element={<Home />} />
@@ -256,19 +331,26 @@ export default function App() {
         </motion.main>
       </AnimatePresence>
 
-      {/* 页脚也给同款玻璃效果（保持一致） */}
-      <footer
+      {/* 页面淡入淡出覆盖层（在淡出期间激活） */}
+      <div className={"page-fade-overlay " + (isTransitioning ? "is-active" : "")}></div>
+
+      {/* 页脚最后渐显（在页面内容出现之后） */}
+      <motion.footer
+        key={`footer-${location.pathname}`}
         className="footer-glass"
         style={{
           backgroundColor: `rgba(10,10,10,${OPACITY_HEADER})`,
           backdropFilter: "saturate(1.1) blur(10px)",
           WebkitBackdropFilter: "saturate(1.1) blur(10px)",
         }}
+        initial={{ opacity: 0, y: 4 }}
+        animate={{ opacity: isTransitioning ? 0 : 1, y: isTransitioning ? 4 : 0 }}
+        transition={{ duration: 0.5, delay: isTransitioning ? 0 : 0.55, ease: [0.22, 1, 0.36, 1] }}
       >
         <div className="max-w-[1120px] mx-auto px-4 py-6 text-sm text-neutral-500 flex flex-col sm:flex-row items-center justify-between gap-2">
           <p>© {new Date().getFullYear()} Li Yang Studio. 保留所有权利。</p>
         </div>
-      </footer>
+      </motion.footer>
     </div>
   );
 }

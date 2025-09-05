@@ -62,7 +62,8 @@
   --accent-primary: #2563eb;
   --accent-hover: #3b82f6;
   
-  --hero-gradient: none;
+  /* 为了实现从深色到浅色的“渐隐”，保留与深色一致的渐变，由透明度控制显隐 */
+  --hero-gradient: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.6));
   --overlay-color: rgba(0, 0, 0, 0.1);
   
   --shadow-primary: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
@@ -255,12 +256,32 @@ button:focus {
 
 /* 工具栏过渡：比全局略慢，观感更稳重 */
 .toolbar-glass {
-  transition: background-color 0.3s ease,
-              color 0.3s ease,
-              border-color 0.3s ease,
-              box-shadow 0.3s ease,
-              backdrop-filter 0.3s ease,
-              -webkit-backdrop-filter 0.3s ease;
+  /* 颜色/边框/阴影/毛玻璃 0.5s；高度单独在下方非线性 */
+  transition: background-color 0.5s ease,
+              color 0.5s ease,
+              border-color 0.5s ease,
+              box-shadow 0.5s ease,
+              backdrop-filter 0.5s ease,
+              -webkit-backdrop-filter 0.5s ease;
+}
+.toolbar-glass {
+  /* 高度过渡使用非线性曲线，避免覆盖上面的颜色过渡 */
+  transition-property: background-color, color, border-color, box-shadow, backdrop-filter, -webkit-backdrop-filter, height;
+  transition-duration: 0.5s, 0.5s, 0.5s, 0.5s, 0.5s, 0.5s, 1s;
+  transition-timing-function: ease, ease, ease, ease, ease, ease, cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 工具栏与其内部所有元素在主题切换时统一采用 0.5s 过渡（颜色/背景/边框/阴影/图标填充/描边/毛玻璃） */
+.toolbar-glass * {
+  transition: background-color 0.5s ease,
+              color 0.5s ease,
+              border-color 0.5s ease,
+              box-shadow 0.5s ease,
+              fill 0.5s ease,
+              stroke 0.5s ease,
+              filter 0.5s ease,
+              -webkit-backdrop-filter 0.5s ease,
+              backdrop-filter 0.5s ease;
 }
 
 [data-theme="light"] .drawer-glass {
@@ -393,6 +414,15 @@ button:focus {
   pointer-events: none;
 }
 
+/* Hero 区底部渐变：深色模式下显示，主题切换时做渐显/渐隐 */
+.hero-gradient-overlay {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+[data-theme="dark"] .hero-gradient-overlay.is-mounted { opacity: 1; }
+[data-theme="light"] .hero-gradient-overlay.is-mounted { opacity: 0; }
+
 /* 移动端下避免过度放大：优先完整展示衬底图（contain），更克制 */
 @media (max-width: 640px) {
   .photos-header::before,
@@ -425,6 +455,18 @@ button:focus {
   transform: translateY(0);
   transition-delay: 0.05s;
 }
+
+/* 页面转场覆盖层：非线性淡入淡出，用于在预加载期间遮挡并呈现渐隐/渐显效果 */
+.page-fade-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90; /* 低于工具栏(105)，高于页面内容 */
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.06), rgba(0,0,0,0.12));
+  opacity: 0;
+  transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.page-fade-overlay.is-active { opacity: 1; }
 
 /* 菜单项渐显+轻微位移动画（分段延时，观感更柔和） */
 .toolbar-menu-content ul > li {

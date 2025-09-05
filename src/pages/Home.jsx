@@ -12,6 +12,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [player, setPlayer] = useState(null); // { title, poster, src }
   const [heroLoaded, setHeroLoaded] = useState(false);
+  const [routeReadySent, setRouteReadySent] = useState(false);
 
   // 选择本地或远程 URL
   const getGitHubUrl = (path) => path; // 统一走 pickUrl 逻辑，保留函数避免大范围改动
@@ -49,15 +50,35 @@ export default function Home() {
   const openPlay = (title, poster, src) => setPlayer({ title, poster, src });
   const closePlay = () => setPlayer(null);
 
+  // 当 hero 与首页关键数据就绪后，发出路由就绪事件；并设置兜底 2s
+  useEffect(() => {
+    if (routeReadySent) return;
+    const ready = heroLoaded && Array.isArray(photos) && Array.isArray(videos);
+    if (ready) {
+      setRouteReadySent(true);
+      window.dispatchEvent(new CustomEvent('app:routeReady'));
+      return;
+    }
+    const timer = setTimeout(() => {
+      if (!routeReadySent) {
+        setRouteReadySent(true);
+        window.dispatchEvent(new CustomEvent('app:routeReady'));
+      }
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [heroLoaded, photos, videos, routeReadySent]);
+
   if (contentLoading || loading) {
     return <div className="min-h-[60svh] grid place-items-center text-theme-muted">加载主页内容…</div>;
   }
+
+  
 
   return (
     <>
       {/* HERO：文字与底部渐变动画时长 1s（注意：图片从顶端开始，被顶栏"盖住"以形成毛玻璃效果） */}
       <section className="relative min-h-[100svh]">
-        <img
+        <motion.img
           src={heroUrl}
           alt=""
           className="absolute top-0 left-0 right-0 bottom-0 h-full w-full object-cover"
@@ -66,6 +87,9 @@ export default function Home() {
           decoding="async"
           onLoad={() => setHeroLoaded(true)}
           onError={() => setHeroLoaded(true)}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: heroLoaded ? 1 : 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
         />
         <div className="relative z-10 max-w-[1120px] mx-auto px-4 pt-14 md:pt-20">
           <div className="grid md:grid-cols-2 gap-8 md:gap-10 items-start md:items-end min-h-[60vh] md:min-h-[70vh]">
@@ -74,7 +98,7 @@ export default function Home() {
                 <motion.h1
                   initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 1.0, ease: "easeOut" }}
+                  transition={{ duration: 0.8, delay: 0.85, ease: "easeOut" }}
                   className="text-[28px] leading-tight font-medium tracking-[-0.01em] md:text-[44px] md:leading-[1.1] text-white text-center md:text-left"
                 >
                   Li Yang  |  Studio
@@ -84,34 +108,34 @@ export default function Home() {
                 <motion.p
                   initial={{ opacity: 0, y: 18 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 1.0, delay: 0.05, ease: "easeOut" }}
+                  transition={{ duration: 0.8, delay: 1.0, ease: "easeOut" }}
                   className="mt-3 text-white/95 max-w-prose md:text-lg text-center md:text-left mx-auto md:mx-0"
                 >
                   让影像、设计、音乐，诉说着同一种语言
                 </motion.p>
               )}
 
-              {/* 桌面端快捷按钮（手机隐藏） */}
+              {/* 桌面端快捷按钮（手机隐藏）：在文字之后再渐显 */}
               {heroLoaded && (
-                <div className="mt-6 hidden md:flex flex-wrap gap-3">
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 1.15, ease: "easeOut" }}
+                  className="mt-6 hidden md:flex flex-wrap gap-3"
+                >
                   <Link to="/photos" className="px-4 py-2 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">图片</Link>
                   <Link to="/videos" className="px-4 py-2 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">视频</Link>
                   <Link to="/design" className="px-4 py-2 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">设计</Link>
                   <Link to="/music"  className="px-4 py-2 rounded-xl bg-black/20 hover:bg-black/30 transition text-white">音乐</Link>
-                </div>
+                </motion.div>
               )}
             </div>
             <div className="hidden md:block" />
           </div>
         </div>
-        <motion.div
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-40 z-10"
-          style={{
-            background: 'var(--hero-gradient)'
-          }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1.0, ease: "easeOut" }}
+        <div
+          className={"pointer-events-none absolute inset-x-0 bottom-0 h-40 z-10 hero-gradient-overlay " + (heroLoaded ? "is-mounted" : "")}
+          style={{ background: 'var(--hero-gradient)' }}
         />
       </section>
 
