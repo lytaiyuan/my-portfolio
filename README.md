@@ -2,19 +2,46 @@ Li Yang Studio · 个人影像与设计作品集
 ==================================
 
 深浅双主题 · 响应式 · 本地/远程可切换内容源（Hybrid）
-当前代码版本：v2.0.0
+当前代码版本：v2.1.0
 
-一、特性
---------
-- 暗黑扁平式设计，参考 Apple 官网的留白与质感
-- Hero 首屏大图 + 顶部居中 Logo（移动端带抽屉式菜单）
-- 图片：瀑布流 + Lightbox（支持竖图、放大、标题/标签/简介）
-- 视频：列表（桌面端最多两列）→ 详情页（顶部视频、下方长文案）
-- 音乐：列表（桌面端最多两列）→ 详情页（顶部封面+播放按钮、B站视频、乐谱展示）
-- 设计：平面/VI/包装/产品摄影四板块展示
-- 模块化路由：主页 / 图片 / 视频 / 设计 / 音乐
-- 内容即数据：所有作品来自 GitHub 仓库，无需改代码即可更新
-- 移动端优化：安全区域、抽屉菜单、触控体验
+一、特性（Features）
+---------------------
+- 主题与视觉
+  - 深/浅双主题，统一变量与过渡；工具栏及内部元素颜色切换统一 0.5s
+  - 莫兰迪配色体系与连续背景设计，卡片/按钮描线与衬底一致化
+  - Hero 首屏：图片加载完成后，标题、字幕、桌面端按钮按序渐显；底部渐变随主题渐显/渐隐
+
+- 导航与菜单
+  - 顶部固定毛玻璃工具栏（桌面：左菜单/中 Logo/右主题切换）
+  - 移动端菜单：采用 height 过渡的下拉展开/收回，非线性曲线更顺滑；背景模糊随开合渐变
+  - 内联 SVG 图标（菜单/关闭/主题切换），减少图片依赖
+
+- 页面与转场
+  - 路由级淡出/预取/淡入流程：点击菜单项触发旧页淡出 → 预取目标页关键资源 → 目标页就绪后淡入
+  - 各列表页在首屏容器就绪后即可结束转场；页脚最后渐显
+  - 自定义事件：app:pageTransition / app:routeReady / app:menuOpen
+
+- 内容与数据源（Hybrid）
+  - 本地/远程内容源一键切换（默认本地优先）；JSON 支持同时提供 url 与 localurl 字段
+  - 自动构造 GitHub Raw 地址（buildRawAssetUrl），确保 remote 模式稳定读取
+
+- 图片（Photos）
+  - Masonry 瀑布流：每张卡片按图片 onLoad 独立渐显；Lightbox 采用稳定尺寸计算（竖图无黑边）
+  - 标签筛选 + 标题搜索；移动端搜索框文本 16px 规避 iOS 自动放大；浅色下字幕半透明底
+
+- 视频（Videos）
+  - 列表卡片独立渐显；详情页支持封面、描述文件与段落格式
+
+- 音乐（Music）
+  - 列表卡片独立渐显；详情页内联 B 站播放器；支持多页乐谱展示（score/ 目录）
+
+- 设计（Design）
+  - 平面/VI/包装/产品摄影四板块；产品摄影并入设计页并采用瀑布流布局
+  - 产品摄影卡片与 Lightbox 交互完全对齐图片页，浅/深模式样式一致
+
+- 性能与体验
+  - 关键动画使用非线性曲线；工具栏高度过渡设置 will-change: height 提示合成优化
+  - 图片/封面在导航前预加载，减少页面抖动；避免布局重排导致的明显卡顿
 
 二、技术栈
 ----------
@@ -22,7 +49,7 @@ Li Yang Studio · 个人影像与设计作品集
 - React Router v6（多页面路由）
 - Tailwind CSS（样式）
 - Framer Motion（动效）
-- GitHub Raw API（内容数据源）
+- GitHub Raw API（内容数据源，可切换 local/remote）
 
 说明：本地 Node 版本建议使用 v22 系列（例如 v22.18.0）。
 
@@ -37,7 +64,7 @@ Li Yang Studio · 个人影像与设计作品集
 export const ASSET_SOURCE = "local"; // 或 "remote"
 ```
 读取配置：`getConfigUrl(name)`（自动返回本地 /config/*.json 或远程 URL）
-选择资源：`pickUrl(remote, local)`（优先选本地 local* 字段）
+选择资源：`pickUrl(remote, local)`（本地优先；remote 支持相对路径自动转 Raw）
 
 说明：本项目为“动静结合”的混合模式（Hybrid）。默认读取本地 public 内容，亦可一键切换到远程 GitHub 数据源，二者并存且可回退。
 
@@ -83,6 +110,8 @@ export const ASSET_SOURCE = "local"; // 或 "remote"
   - 统一容器宽度 1120px，保持舒适的阅读行长；
   - 文字层级清晰：标题（2xl~6xl）— 正文（sm~lg）— 辅助（xs），并控制行高提升可读性；
   - 动效克制：入场与 hover 采用 ease-out 0.18~0.30s 的细微动效，强调“轻量”和“连续”。
+
+补充：菜单高度过渡采用 height + 非线性曲线，与背景模糊配合，确保在用户偏好“真实展开”视觉时的顺滑体验。
 
 三、目录结构（详细）
 --------------------
@@ -199,7 +228,11 @@ my-portfolio-data/ (内容数据仓库)
 **JSON 配置约定**：
 
 1) config/photos.json
-用于图片瀑布流 + Lightbox。新增字段 desc（约 30 字）只在点开大图时显示。
+用于图片瀑布流 + Lightbox。字段：
+- id, title, desc, tags[]
+- url（远程，GitHub Raw）
+- localurl（本地，public 路径）
+- w/h（可选，原始尺寸，利于稳定布局与 Lightbox 拟合）
 
 2) public/hero/ 文件夹
 用于存放网站首页背景图片。支持.jpg和.JPG格式，系统会自动随机选择展示。
@@ -224,7 +257,7 @@ my-portfolio-data/ (内容数据仓库)
 - hero背景图片放 public/hero/，支持.jpg和.JPG格式，系统自动随机选择；
 - 文件名区分大小写（上线到 Linux/对象存储时尤为重要）。
 
-2) public/videos.json
+2) config/videos.json
 用于视频列表（桌面最多两列）与视频详情页（/videos/:slug）。支持从外部txt文件读取详细介绍。
 
 示例：
@@ -250,7 +283,7 @@ my-portfolio-data/ (内容数据仓库)
 - 详细介绍文本放 public/videos/[项目名]/ 下的 .txt 文件；
 - slug 使用小写短横线，避免中文/空格，利于 SEO 与后端迁移。
 
-3) public/music.json
+3) config/music.json
 用于音乐列表与音乐详情页（/music/:slug）。支持B站视频嵌入和乐谱展示。
 
 示例：
@@ -281,8 +314,12 @@ my-portfolio-data/ (内容数据仓库)
 - 音乐介绍文本放 public/music/{音乐名}/{音乐名}.txt；
 - B站视频通过 embed.playerUrl 或 embed.iframe 字段配置。
 
-4) public/design/ 文件夹
-用于存放设计作品，支持平面设计、VI设计、包装设计、产品摄影等分类。
+4) config/graphiccontent.json / config/packaging.json / config/vi.json / config/productphotos.json
+用于存放设计各分类与产品摄影的数据。字段约定：
+- id, title, desc
+- url（远程，GitHub Raw）
+- localurl（本地，public 路径）
+- 可选：cover/poster/descriptionFile/scoreFolder 等按类别扩展
 
 七、版本管理（建议）
 --------------------
@@ -393,3 +430,12 @@ my-portfolio-data/ (内容数据仓库)
 十二、许可
 ----------
 如无特别声明，个人作品版权归 Li Yang Studio 所有；页面代码可按个人项目使用，不得用于侵犯作品权益的场景。
+
+十三、v2.1.0 版本更新内容
+--------------------------
+- 菜单动画：恢复 height 过渡方案，使用非线性曲线并优化合成层（will-change: height），显著提升展开/收回流畅度
+- 转场与预取：完善点击菜单后的淡出→预取→淡入流程，四个二级页面首屏容器就绪即可结束转场
+- 列表动画：图片/视频/音乐/产品摄影卡片独立 onLoad 渐显，视觉过渡更平滑
+- Hero 顺序动画：背景图→标题→副标题→桌面端按钮按序出现，底部渐变在主题切换时渐显/渐隐
+- 内容源：补充 JSON 约定与示例，强调 url/localurl 混合策略与 Raw URL 构造
+- 文档与版本：README 特性全面补充，版本号提升至 v2.1.0
